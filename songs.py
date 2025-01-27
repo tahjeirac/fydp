@@ -34,7 +34,7 @@ class Songs:
         print("Match")
         if time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY:
                         #enough time has passed
-            if played_note == self.currentNote:
+            if played_note == self.CurrentNote:
                 print("Match")
                 if self.Start:
                     #first match
