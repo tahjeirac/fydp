@@ -17,6 +17,7 @@ class Songs:
             data = json.load(file)
         print (name)
         self.notes  = data[name]["tracks"][0]["notes"]
+        print(self.notes)
 
     def getCurrentNote(self):
         if (self.NOTE_INDEX < len(self.notes)):
