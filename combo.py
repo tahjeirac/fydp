@@ -6,7 +6,7 @@ import sounddevice as sd
 import time
 from rpi_ws281x import *
 import argparse
-
+import json
 
 # LED strip configuration:
 LED_COUNT      = 8      # Number of LED pixels.
@@ -43,6 +43,17 @@ NOTES1 = [
     {"note": "D4", "duration": 480, "led": 2},
     {"note": "C4", "duration": 480, "led": 3}
   ]
+
+
+file_path = "mary.json"  # Replace with the actual file path
+
+# Open the JSON file and load the data
+with open(file_path, 'r') as file:
+    data = json.load(file)
+
+# Now `data` contains the parsed JSON as a Python dictionary or list
+print(data)  # Display the data
+
 
 NOTE_INDEX = 0
 LED_ON = -1
