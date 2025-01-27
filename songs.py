@@ -2,7 +2,7 @@ import time
 import json
 
 class Songs:
-    def __init__(self, file_path, MATCH_DELAY):
+    def __init__(self, file_path, MATCH_DELAY, strip):
 
         self.file_path = file_path
         self.notes = None
@@ -15,6 +15,7 @@ class Songs:
         self.Start = True
         self.CurrentNote = None
         self.StartTime = None
+        self.strip = strip
 
     def setSong(self, name):
         with open(self.file_path, 'r') as file:
@@ -49,26 +50,26 @@ class Songs:
                         #played long enough
                         print("DONE")
                         self.Start = True
-                        self.NOTE_INDEX = self.NOTE_INDEX+1
+                        self.NOTE_INDEX = self.NOTE_INDEX+1 # get nxt not
                         self.LAST_MATCH_TIME = time.time() 
 
-                if (self.NOTE_INDEX < len(self.notes)):
-                    note_info = self.notes[self.NOTE_INDEX]
-                    note = note_info.get("name")
-                    self.CurrentNote = note_info
-                    led = self.NoteConversion.get(note)
-                    print(led)
-                    if led:
-                        return led
-                    
-                else:
-                    self.FINISHED = True
-                    return -1
+                        if (self.NOTE_INDEX < len(self.notes)):
+                            note_info = self.notes[self.NOTE_INDEX]
+                            note = note_info.get("name")
+                            self.CurrentNote = note_info
+                            led = self.NoteConversion.get(note)
+                            print(led)
+                            if led:
+                                if self.CurrentNote.get("duration") > 0.31:
+                                    print("h")
+                                    self.strip.turnOnLED(led, "h")
+                                else:
+                                    print("q")
+                                    self.strip.turnOnLED(led, "q")
+                        else:
+                            self.FINISHED = True
             
             else:
                 print ("no match")
                 self.Start = True
-                led = self.NoteConversion.get(self.CurrentNote.get("name"))
-                if led:
-                    return led
 

@@ -32,7 +32,7 @@ ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 strip = Strip()
-songs = Songs("songs.json", MATCH_DELAY)
+songs = Songs("songs.json", MATCH_DELAY, strip)
 
 
 def find_closest_note(pitch):
@@ -126,9 +126,7 @@ def callback(indata, frames, time, status):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      led = songs.noteMatch(closest_note)
-      if led and led!= -1:
-        strip.turnOnLED(led)
+      songs.noteMatch(closest_note)
 
     else:
       print(f"Closest note: ...")
