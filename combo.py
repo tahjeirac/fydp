@@ -4,19 +4,10 @@ import numpy as np
 import scipy.fftpack
 import sounddevice as sd
 import time
-from rpi_ws281x import *
 import argparse
 import json
 
-# LED strip configuration:
-LED_COUNT      = 8      # Number of LED pixels.
-LED_PIN        = 13      # GPIO pin connected to the pixels (18 uses PWM!).
-#LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
-LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
-LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 65     # Set to 0 for darkest and 255 for brightest
-LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
-LED_CHANNEL    = 1       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+from led_control import Strip
 
 
 # General settings that can be changed by the user
@@ -44,6 +35,7 @@ NOTES1 = [
     {"note": "C4", "duration": 480, "led": 3}
   ]
 
+strip = Strip()
 
 file_path = "mary.json"  # Replace with the actual file path
 
@@ -51,79 +43,15 @@ file_path = "mary.json"  # Replace with the actual file path
 with open(file_path, 'r') as file:
     data = json.load(file)
 
-# Now `data` contains the parsed JSON as a Python dictionary or list
-print(data)  # Display the data
+MIDI_NOTES = data["tracks"][0]["notes"]
 
 
 NOTE_INDEX = 0
-LED_ON = -1
 FINISHED = False
 LAST_MATCH_TIME = 0  # Store the time of the last match
 MATCH_DELAY = 0.8 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
+ 
 
-LAST = Color(0, 255, 0)
-def blinkLED(led):
-    strip.setPixelColor(led, Color(255, 0, 0))
-    strip.show()
-    time.sleep(0.5)
-    strip.setPixelColor(led, Color(0,0,0))
-    strip.show()
-    time.sleep(0.5)
-
-def turnOnLED(led):
-    global LED_ON
-    global LAST
-    c = Color(0, 255, 0)
-    if LED_ON != -1:
-        strip.setPixelColor(LED_ON, Color(0,0,0))
-        strip.show()
-    if LED_ON == led:
-        if LAST == Color(0, 255, 0):
-            c = Color(0, 0, 255)
-            LAST =  Color(0, 0, 255)
-        else:
-            c =  Color(0, 255, 0)
-            LAST =  Color(0, 255, 0)
-    strip.setPixelColor(led, c)
-    strip.show()
-    LED_ON = led
-
-
-def wheel(pos):
-    """Generate rainbow colors across 0-255 positions."""
-    if pos < 85:
-        return Color(pos * 3, 255 - pos * 3, 0)
-    elif pos < 170:
-        pos -= 85
-        return Color(255 - pos * 3, 0, pos * 3)
-    else:
-        pos -= 170
-        return Color(0, pos * 3, 255 - pos * 3)
-
-def rainbow(strip, wait_ms=20, iterations=1):
-    """Draw rainbow that fades across all pixels at once."""
-    for j in range(256*iterations):
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, wheel((i+j) & 255))
-        strip.show()
-        time.sleep(wait_ms/1000.0)
-
-
-def rainbow(strip, wait_ms=20, iterations=1):
-    """Draw rainbow that fades across all pixels at once."""
-    for j in range(256*iterations):
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, wheel((i+j) & 255))
-        strip.show()
-        time.sleep(wait_ms/1000.0)    
-def littleLamb(strip):
-    noteConversion = {'C':0, 'B':1, 'A':2, 'G': 3, 'F':4, 'E': 5, 'D':6}
-    notes = ['E', 'D', 'C', 'D', 'E', 'E', 'E', 'D', 'D', 'D', 'E', 'G', 'G', 'E', 'D', 'C', 'D', 'E', 'E', 'E', 'E', 'D', 'D', 'E', 'D', 'E', 'C']
-    for note in notes:
-        led = NoteConversion.get(note)
-        if led:
-            print(f"displaying Note:{note} on LED number:{led}")
-            blinkLED(led)
 
 def noteMatch():
     print("Match")
@@ -141,18 +69,10 @@ def noteMatch():
             LAST_MATCH_TIME = current_time 
             if led:
                 print(f"displaying Note:{note} on LED number:{led}")
-                turnOnLED(led)
+                strip.turnOnLED(led)
         else:
             FINISHED = True
-            
-
-
-def startLED():
-    note = NOTES[0]
-    led = NoteConversion.get(note)
-    if led:
-            print(f"displaying Note:{note} on LED number:{led}")
-            turnOnLED(led)
+          
    
 def find_closest_note(pitch):
   """
@@ -274,36 +194,17 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
     args = parser.parse_args()
 
-    # Create NeoPixel object with appropriate configuration.
-    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
-    strip.begin()
 
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
 
     try:
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, Color(0,0,0))
-            strip.show()
-        print ('little lamb.')
-        print("Starting tuner...")
- 
-        rainbow(strip)
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, Color(0,0,0))
-            strip.show()
-        startLED()
+  
         with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
             while not FINISHED:
               time.sleep(0.5)
 
-        rainbow(strip)
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, Color(0,0,0))
-            strip.show()
-
     except KeyboardInterrupt:
         if args.clear:
-            colorWipe(strip, Color(0,0,0), 10)
+            strip.colourWipe()
