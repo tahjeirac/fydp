@@ -127,7 +127,6 @@ def callback(indata, frames, time, status):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       led = songs.noteMatch(closest_note)
       if led and led!= -1:
-        print(f"displaying Note:{currentNote} on LED number:{led}")
         strip.turnOnLED(led)
 
     else:
@@ -163,7 +162,9 @@ if __name__ == '__main__':
       strip.colourWipe()
 
       note = songs.getCurrentNote()
+      print(note)
       led = NoteConversion.get(note)
+      print(led)
       strip.startSeq(led)
 
       with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
