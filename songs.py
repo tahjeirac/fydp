@@ -46,6 +46,7 @@ class Songs:
                     print(self.CurrentNote.get("duration"))
                     if duration >= self.CurrentNote.get("duration"):
                         #played long enough
+                        print("DONE")
                         self.Start = True
                         self.NOTE_INDEX = self.NOTE_INDEX+1
                         self.LAST_MATCH_TIME = time.time() 
@@ -55,6 +56,7 @@ class Songs:
                     note = note_info.get("name")
                     self.CurrentNote = note_info
                     led = self.NoteConversion.get(note)
+                    print(led)
                     if led:
                         return led
                     
