@@ -29,11 +29,6 @@ ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 NOTES = ['E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'D4', 'D4', 'D4', 'E4', 'G4', 'G4', 'E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'E4', 'D4', 'D4', 'E4', 'D4', 'E4', 'C4']
-NOTES1 = [
-    {"note": "E4", "duration": 480, "led": 1},
-    {"note": "D4", "duration": 480, "led": 2},
-    {"note": "C4", "duration": 480, "led": 3}
-  ]
 
 strip = Strip()
 
@@ -51,7 +46,7 @@ FINISHED = False
 LAST_MATCH_TIME = 0  # Store the time of the last match
 MATCH_DELAY = 0.8 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
  
-
+   
 
 def noteMatch():
     print("Match")
@@ -63,8 +58,9 @@ def noteMatch():
     if current_time - LAST_MATCH_TIME > MATCH_DELAY:
 
         NOTE_INDEX = NOTE_INDEX+1
-        if (NOTE_INDEX < len(NOTES)):
-            note = NOTES[NOTE_INDEX]
+        if (NOTE_INDEX < len(MIDI_NOTES                                                                                                                                                                              )):
+            note_info = MIDI_NOTES[NOTE_INDEX]
+            note = note_info.get("name")
             led = NoteConversion.get(note)
             LAST_MATCH_TIME = current_time 
             if led:
@@ -201,7 +197,8 @@ if __name__ == '__main__':
 
     try:
       strip.colourWipe()
-      note = NOTES[NOTE_INDEX]
+      note_info = MIDI_NOTES[NOTE_INDEX]
+      note = note_info.get("name")
       led = NoteConversion.get(note)
       strip.startSeq(led)
       print ("Starting Song!")
