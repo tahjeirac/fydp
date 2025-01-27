@@ -166,7 +166,9 @@ if __name__ == '__main__':
       songs.setSong(song_name)
       strip.colourWipe()
 
-      led = songs.getCurrentNote()
+      note = songs.getCurrentNote()
+      print(led)
+      led = NoteConversion.get(note)
       strip.startSeq(led)
 
       with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
