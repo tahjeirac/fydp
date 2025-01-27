@@ -40,7 +40,6 @@ class Songs:
         print (self.CurrentNote.get("name"))
         if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT:
                         #enough time has passed
-            self.setSilence(False)
             if played_note == self.CurrentNote.get("name"):
                 print("Match!")
                 if self.Start:
@@ -57,6 +56,7 @@ class Songs:
                         self.Start = True
                         self.NOTE_INDEX = self.NOTE_INDEX+1 # get nxt not
                         self.LAST_MATCH_TIME = time.time() 
+                        self.setSilence(False)
 
                         if (self.NOTE_INDEX < len(self.notes)):
                             note_info = self.notes[self.NOTE_INDEX]
@@ -77,4 +77,5 @@ class Songs:
             else:
                 print ("no match")
                 self.Start = True
+
 
