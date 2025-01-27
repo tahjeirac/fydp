@@ -26,7 +26,7 @@ OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
 
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 
-NoteConversion = {'C':7, 'B':1, 'A':2, 'G': 3, 'F':4, 'E': 5, 'D':6}
+NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 NOTES = ['E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'D4', 'D4', 'D4', 'E4', 'G4', 'G4', 'E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'E4', 'D4', 'D4', 'E4', 'D4', 'E4', 'C4']
 NOTES1 = [
@@ -202,9 +202,7 @@ if __name__ == '__main__':
     try:
       strip.colourWipe()
       note = NOTES[NOTE_INDEX]
-      print (note)
       led = NoteConversion.get(note)
-      print (led)
       strip.startSeq(led)
       print ("Starting Song!")
       with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):

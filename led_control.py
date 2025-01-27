@@ -32,19 +32,20 @@ class Strip:
     def turnOnLED(self, led):
         c = Color(0, 255, 0)
         print (led)
-        if self.LED_ON != -1:
-            self.strip.setPixelColor(self.LED_ON, Color(0,0,0))
+        if led:
+            if self.LED_ON != -1:
+                self.strip.setPixelColor(self.LED_ON, Color(0,0,0))
+                self.strip.show()
+            if self.LED_ON == led:
+                if self.LAST == Color(0, 255, 0):
+                    c = Color(0, 0, 255)
+                    self.LAST =  Color(0, 0, 255)
+                else:
+                    c =  Color(0, 255, 0)
+                    self.LAST =  Color(0, 255, 0)
+            self.strip.setPixelColor(led, c)
             self.strip.show()
-        if self.LED_ON == led:
-            if self.LAST == Color(0, 255, 0):
-                c = Color(0, 0, 255)
-                self.LAST =  Color(0, 0, 255)
-            else:
-                c =  Color(0, 255, 0)
-                self.LAST =  Color(0, 255, 0)
-        self.strip.setPixelColor(led, c)
-        self.strip.show()
-        self.LED_ON = led
+            self.LED_ON = led
 
     def wheel(self, pos):
         """Generate rainbow colors across 0-255 positions."""
