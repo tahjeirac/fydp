@@ -6,6 +6,7 @@ import sounddevice as sd
 import time
 import argparse
 import json
+import wave
 
 from led_control import Strip
 from songs import Songs
@@ -33,6 +34,24 @@ NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 strip = Strip()
 songs = Songs("songs.json", MATCH_DELAY, strip)
+wav_file = None
+
+def setup_wav_file(filename, channels=1, sample_width=2, frame_rate=SAMPLE_FREQ):
+    """
+    Sets up the WAV file for recording audio.
+    Parameters:
+        filename (str): Name of the WAV file to save.
+        channels (int): Number of audio channels.
+        sample_width (int): Width of each audio sample in bytes.
+        frame_rate (int): Sampling rate in Hz.
+    Returns:
+        wave.Wave_write: Open WAV file object.
+    """
+    wav_file = wave.open(filename, 'wb')
+    wav_file.setnchannels(channels)
+    wav_file.setsampwidth(sample_width)  # 2 bytes per sample for 16-bit audio
+    wav_file.setframerate(frame_rate)
+    return wav_file
 
 
 def find_closest_note(pitch):
@@ -147,6 +166,8 @@ if __name__ == '__main__':
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
+
+    wav_file = setup_wav_file("recorded_audio.wav")
 
     try:
       if args.song == 1:

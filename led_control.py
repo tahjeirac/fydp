@@ -11,6 +11,10 @@ ROSE = Color(255,0,128)
 MAGENTA = Color(255,0,255)
 VIOLET = Color(128,0,255)
 BLUE = Color(255,255,0)
+GREEN = Color(0,255,0)
+CHART = Color(128,255,0)
+YELLOW = Color(255,255,0)
+
 class Strip:
     def __init__(self):
         self.LED_COUNT      = 8      # Number of LED pixels.
@@ -23,7 +27,7 @@ class Strip:
         self.LAST = Color(0, 255, 0)
         self.LED_ON = -1
         self.QUARTER = [RED, ROSE]
-        self.HALF = [VIOLET, BLUE]
+        self.HALF = [GREEN, YELLOW]
         self.strip = Adafruit_NeoPixel(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
         self.strip.begin()
 
