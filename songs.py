@@ -33,7 +33,7 @@ class Songs:
             note_info = self.notes[self.NOTE_INDEX]
             note = note_info.get("name")
             self.CurrentNote = note_info
-            return note
+            return note_info
         
         self.FINISHED = True
         print("Lesson complete!")

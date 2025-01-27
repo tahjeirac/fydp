@@ -17,7 +17,7 @@ class NoteStateMachine:
 
     
     def waiting(self, played_note):
-        current_note_name = self.song.getCurrentNote()["name"]
+        current_note_name = self.song.CurrentNote.get("name")
         print(f"Waiting for: {current_note_name}, Received: {played_note}")
 
         if played_note == current_note_name:
@@ -30,7 +30,7 @@ class NoteStateMachine:
             print("Wrong note!")
 
     def listening(self, played_note):
-        current_note_name = self.song.getCurrentNote()["name"]
+        current_note_name = self.song.CurrentNote.get("name")
         intended_duration = self.song.CurrentNote.get("duration")
 
         if played_note == current_note_name:
