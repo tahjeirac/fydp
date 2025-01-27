@@ -86,8 +86,10 @@ def find_closest_note(pitch):
 
 def getCurrentNote():
     global FINISHED
-    if (NOTE_INDEX < len(NOTES)):
-      return NOTES[NOTE_INDEX]
+    if (NOTE_INDEX < len(MIDI_NOTES)):
+      note_info = MIDI_NOTES[NOTE_INDEX]
+      note = note_info.get("name")
+      return note
     FINISHED = True
     return "FINI"
 
