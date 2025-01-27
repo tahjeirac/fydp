@@ -73,8 +73,8 @@ def callback(indata, frames, time, status):
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    print(f"Volume: {volume_db:.2f} dB")  # Display the volume
-    print(signal_power)
+    # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+    # print(signal_power)
     if signal_power < POWER_THRESH:
       os.system('cls' if os.name=='nt' else 'clear')
       print("Closest note: ...")

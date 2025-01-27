@@ -31,7 +31,7 @@ class Songs:
         return "FINI" 
         
     def noteMatch(self, played_note):
-        print("Match")
+        print (self.CurrentNote.get("name"))
         if time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY:
                         #enough time has passed
             if played_note == self.CurrentNote.get("name"):
