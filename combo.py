@@ -167,7 +167,6 @@ if __name__ == '__main__':
       strip.colourWipe()
 
       note = songs.getCurrentNote()
-      print(led)
       led = NoteConversion.get(note)
       strip.startSeq(led)
 
