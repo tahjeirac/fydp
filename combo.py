@@ -202,7 +202,9 @@ if __name__ == '__main__':
     try:
       strip.colourWipe()
       note = NOTES[NOTE_INDEX]
+      print (note)
       led = NoteConversion.get(note)
+      print (led)
       strip.startSeq(led)
       print ("Starting Song!")
       with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
