@@ -185,7 +185,7 @@ if __name__ == '__main__':
       songs.setSong(song_name)
       strip.colourWipe()
 
-      note = songs.getCurrentNote()
+      note = songs.setCurrentNote()
       print(note)
       led = NoteConversion.get(note)
       print(led)
