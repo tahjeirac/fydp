@@ -71,7 +71,7 @@ class Strip:
             self.strip.setPixelColor(i, Color(0,0,0))
             self.strip.show()
 
-    def startSeq(self):
+    def startSeq(self, led):
         for i in range(self.strip.numPixels()):
             self.strip.setPixelColor(i, Color(0,0,0))
             self.strip.show()
@@ -80,7 +80,7 @@ class Strip:
         for i in range(self.strip.numPixels()):
             self.strip.setPixelColor(i, Color(0,0,0))
             self.strip.show()
-        self.startLED()
+        self.turnOnLED(led)
     
     def endSeq(self):
         self.rainbow()
