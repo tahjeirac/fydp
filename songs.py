@@ -30,35 +30,43 @@ class Songs:
         self.FINISHED = True
         return "FINI" 
         
-    def noteMatch(self):
+    def noteMatch(self, played_note):
         print("Match")
         if time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY:
-            #enough time has passed
+                        #enough time has passed
+            if played_note == self.currentNote:
+                print("Match")
+                if self.Start:
+                    #first match
+                    self.StartTime = time.time()
+                    self.Start = False
+                else:
+                    duration = time.time()  - self.StartTime
+                    print (duration)
+                    print(self.CurrentNote.get("duration"))
+                    if duration >= self.CurrentNote.get("duration"):
+                        #played long enough
+                        self.Start = True
+                        self.NOTE_INDEX = self.NOTE_INDEX+1
+                        self.LAST_MATCH_TIME = time.time() 
 
-            if self.Start:
-                #first match
-                self.StartTime = time.time()
-                self.Start = False
+                if (self.NOTE_INDEX < len(self.notes)):
+                    note_info = self.notes[self.NOTE_INDEX]
+                    note = note_info.get("name")
+                    led = self.NoteConversion.get(note)
+                    if led:
+                        return led
+                    
+                else:
+                    self.FINISHED = True
+                    return -1
+            
             else:
-                current_time = time.time()  # Get the current time
-                duration = current_time - self.StartTime
-                print (duration)
-                print(self.CurrentNote.get("duration"))
-                if duration >= self.CurrentNote.get("duration"):
-                    #played long enough
-                    self.Start = True
-                    self.NOTE_INDEX = self.NOTE_INDEX+1
-                    if (self.NOTE_INDEX < len(self.notes)):
-                        note_info = self.notes[self.NOTE_INDEX]
-                        note = note_info.get("name")
-                        led = self.NoteConversion.get(note)
-                        self.LAST_MATCH_TIME = current_time 
-                        if led:
-                            return led
-                        
-                    else:
-                        self.FINISHED = True
-                        return -1
-          
-   
+                print ("no match")
+                self.Start = True
+                note_info = self.notes[self.NOTE_INDEX]
+                note = note_info.get("name")
+                led = self.NoteConversion.get(note)
+                if led:
+                    return led
 

@@ -54,8 +54,6 @@ def callback(indata, frames, time, status):
   """
   Callback function of the InputStream method.
   """
-  currentNote = songs.getCurrentNote()
-
   # define static variables
   if not hasattr(callback, "window_samples"):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
@@ -127,12 +125,10 @@ def callback(indata, frames, time, status):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      print(currentNote)
-      if currentNote == closest_note:
-        led = songs.noteMatch()
-        if led and led!= -1:
-          print(f"displaying Note:{currentNote} on LED number:{led}")
-          strip.turnOnLED(led)
+      led = songs.noteMatch(closest_note)
+      if led and led!= -1:
+        print(f"displaying Note:{currentNote} on LED number:{led}")
+        strip.turnOnLED(led)
 
     else:
       print(f"Closest note: ...")
