@@ -31,7 +31,7 @@ ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 NoteConversion = {'C3':7, 'B3':1, 'A3':2, 'G3': 3, 'F3':4, 'E3': 5, 'D3':6}
 
 strip = Strip()
-songs = Songs("mary.json", MATCH_DELAY)
+songs = Songs("songs.json", MATCH_DELAY)
 
 
 def find_closest_note(pitch):

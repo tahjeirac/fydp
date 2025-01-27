@@ -11,7 +11,10 @@ class Songs:
         self.LAST_MATCH_TIME = 0  # Store the time of the last match
         self.MATCH_DELAY = MATCH_DELAY # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
         self.NoteConversion = {'C3':7, 'B3':1, 'A3':2, 'G3': 3, 'F3':4, 'E3': 5, 'D3':6}
-    
+        self.Start = True
+        self.CurrentNote = None
+        self.StartTime = None
+
     def setSong(self, name):
         with open(self.file_path, 'r') as file:
             data = json.load(file)
@@ -20,32 +23,42 @@ class Songs:
 
     def getCurrentNote(self):
         if (self.NOTE_INDEX < len(self.notes)):
-            print("hi")
             note_info = self.notes[self.NOTE_INDEX]
-            print(note_info)
             note = note_info.get("name")
-            print(note)
+            self.CurrentNote = note_info
             return note
         self.FINISHED = True
         return "FINI" 
         
     def noteMatch(self):
         print("Match")
-        current_time = time.time()  # Get the current time
-        if current_time - self.LAST_MATCH_TIME > self.MATCH_DELAY:
+        if time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY:
+            #enough time has passed
 
-            self.NOTE_INDEX = self.NOTE_INDEX+1
-            if (self.NOTE_INDEX < len(self.notes)):
-                note_info = self.notes[self.NOTE_INDEX]
-                note = note_info.get("name")
-                led = self.NoteConversion.get(note)
-                self.LAST_MATCH_TIME = current_time 
-                if led:
-                    return led
-                
+            if self.Start:
+                #first match
+                self.StartTime = time.time()
+                self.Start = False
             else:
-                self.FINISHED = True
-                return -1
+                current_time = time.time()  # Get the current time
+                duration = current_time - self.StartTime
+                print (duration)
+                print(self.CurrentNote.get("duration"))
+                if duration >= self.CurrentNote.get("duration"):
+                    #played long enough
+                    self.Start = True
+                    self.NOTE_INDEX = self.NOTE_INDEX+1
+                    if (self.NOTE_INDEX < len(self.notes)):
+                        note_info = self.notes[self.NOTE_INDEX]
+                        note = note_info.get("name")
+                        led = self.NoteConversion.get(note)
+                        self.LAST_MATCH_TIME = current_time 
+                        if led:
+                            return led
+                        
+                    else:
+                        self.FINISHED = True
+                        return -1
           
    
 
