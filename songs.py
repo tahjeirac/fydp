@@ -17,12 +17,14 @@ class Songs:
             data = json.load(file)
         print (name)
         self.notes  = data[name]["tracks"][0]["notes"]
-        print(self.notes)
 
     def getCurrentNote(self):
         if (self.NOTE_INDEX < len(self.notes)):
+            print("hi")
             note_info = self.notes[self.NOTE_INDEX]
+            print(note_info)
             note = note_info.get("name")
+            print(note)
             return note
         self.FINISHED = True
         return "FINI" 
