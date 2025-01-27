@@ -16,6 +16,10 @@ class Songs:
         self.CurrentNote = None
         self.StartTime = None
         self.strip = strip
+        self.SILENT = True
+
+    def setSilence(self, val=True):
+        self.SILENT = val
 
     def setSong(self, name):
         with open(self.file_path, 'r') as file:
@@ -34,8 +38,9 @@ class Songs:
         
     def noteMatch(self, played_note):
         print (self.CurrentNote.get("name"))
-        if time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY:
+        if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT:
                         #enough time has passed
+            self.setSilence(False)
             if played_note == self.CurrentNote.get("name"):
                 print("Match!")
                 if self.Start:

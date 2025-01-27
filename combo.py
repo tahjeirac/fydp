@@ -139,7 +139,7 @@ def callback(indata, frames, time, status):
     max_freq = round(max_freq, 1)
     closest_pitch = round(closest_pitch, 1)
 
-    callback.noteBuffer.insert(0, closest_note) # note that this is a ringbuffer
+    callback.noteBuffer.insert(0, closest_note) # ringbuffer
     callback.noteBuffer.pop()
 
     os.system('cls' if os.name=='nt' else 'clear')
@@ -149,6 +149,8 @@ def callback(indata, frames, time, status):
 
     else:
       print(f"Closest note: ...")
+      songs.setSilence(True)
+
 
   else:
     print('no input')
