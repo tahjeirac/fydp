@@ -50,7 +50,7 @@ class Songs:
                     duration = time.time()  - self.StartTime
                     print (duration)
                     print(self.CurrentNote.get("duration"))
-                    if duration >= self.CurrentNote.get("duration"):
+                    if duration >= 2*self.CurrentNote.get("duration"):
                         #played long enough
                         print("DONE")
                         self.Start = True
