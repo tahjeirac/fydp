@@ -8,7 +8,7 @@ import argparse
 import json
 
 from led_control import Strip
-
+from songs import Songs
 
 # General settings that can be changed by the user
 SAMPLE_FREQ = 48000 # sample frequency in Hz
@@ -24,52 +24,16 @@ SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
 DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE # frequency step width of the interpolated DFT
 OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
 
+
+MATCH_DELAY = 0.7 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 
 NoteConversion = {'C3':7, 'B3':1, 'A3':2, 'G3': 3, 'F3':4, 'E3': 5, 'D3':6}
 
-NOTES = ['E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'D4', 'D4', 'D4', 'E4', 'G4', 'G4', 'E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'E4', 'D4', 'D4', 'E4', 'D4', 'E4', 'C4']
-
 strip = Strip()
-
-file_path = "mary.json"  # Replace with the actual file path
-
-# Open the JSON file and load the data
-with open(file_path, 'r') as file:
-    data = json.load(file)
-
-MIDI_NOTES = data["tracks"][0]["notes"]
+songs = Songs("mary.json", MATCH_DELAY)
 
 
-NOTE_INDEX = 0
-FINISHED = False
-LAST_MATCH_TIME = 0  # Store the time of the last match
-MATCH_DELAY = 0.8 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
- 
-   
-
-def noteMatch():
-    print("Match")
-    global NOTE_INDEX
-    global NoteConversion
-    global FINISHED
-    global LAST_MATCH_TIME  # To track the last time a note was matched
-    current_time = time.time()  # Get the current time
-    if current_time - LAST_MATCH_TIME > MATCH_DELAY:
-
-        NOTE_INDEX = NOTE_INDEX+1
-        if (NOTE_INDEX < len(MIDI_NOTES                                                                                                                                                                              )):
-            note_info = MIDI_NOTES[NOTE_INDEX]
-            note = note_info.get("name")
-            led = NoteConversion.get(note)
-            LAST_MATCH_TIME = current_time 
-            if led:
-                print(f"displaying Note:{note} on LED number:{led}")
-                strip.turnOnLED(led)
-        else:
-            FINISHED = True
-          
-   
 def find_closest_note(pitch):
   """
   This function finds the closest note for a given pitch
@@ -84,25 +48,14 @@ def find_closest_note(pitch):
   closest_pitch = CONCERT_PITCH*2**(i/12)
   return closest_note, closest_pitch
 
-def getCurrentNote():
-    global FINISHED
-    if (NOTE_INDEX < len(MIDI_NOTES)):
-      note_info = MIDI_NOTES[NOTE_INDEX]
-      note = note_info.get("name")
-      return note
-    FINISHED = True
-    return "FINI"
 
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
   """
   Callback function of the InputStream method.
-  That's where the magic happens ;)
   """
-  global FINISHED
+  currentNote = songs.getCurrentNote()
 
-  currentNote = getCurrentNote()
-  
   # define static variables
   if not hasattr(callback, "window_samples"):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
@@ -175,10 +128,11 @@ def callback(indata, frames, time, status):
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       print(currentNote)
-      global NOTE_INDEX
-      print(NOTE_INDEX)
       if currentNote == closest_note:
-          noteMatch()
+        led = songs.noteMatch()
+        if led and led!= -1:
+          print(f"displaying Note:{currentNote} on LED number:{led}")
+          strip.turnOnLED(led)
 
     else:
       print(f"Closest note: ...")
@@ -188,8 +142,11 @@ def callback(indata, frames, time, status):
 
 if __name__ == '__main__':
     # Process arguments
+    print ("1 for mary 2 for twinkle")
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
+    parser.add_argument('-s', '--song', type=int, required=True, help='song name to display')
+
     args = parser.parse_args()
 
 
@@ -198,14 +155,22 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
 
     try:
+      if args.song == 1:
+        global MIDI_NOTES
+        song_name = "mary"
+        print ("Playing Mary Had a Little Lamb")
+      else:
+         song_name = "twinkle"
+         print ("Playing Twinkle Twinkle Little Star")
+      
+      songs.setSong(song_name)
       strip.colourWipe()
-      note_info = MIDI_NOTES[NOTE_INDEX]
-      note = note_info.get("name")
-      led = NoteConversion.get(note)
+
+      led = songs.getCurrentNote()
       strip.startSeq(led)
-      print ("Starting Song!")
+
       with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          while not FINISHED:
+          while not songs.FINISHED:
             time.sleep(0.5)
 
       strip.endSeq()
