@@ -200,11 +200,14 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
 
     try:
-  
-        with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-            while not FINISHED:
-              time.sleep(0.5)
+      strip.colourWipe()
+      strip.startSeq()
+      print ("Starting Song!")
+      with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          while not FINISHED:
+            time.sleep(0.5)
 
+      strip.endSeq()
     except KeyboardInterrupt:
         if args.clear:
             strip.colourWipe()
