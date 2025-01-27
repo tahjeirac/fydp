@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
       note = songs.setCurrentNote()
       print(note)
-      led = NoteConversion.get(note)
+      led = NoteConversion.get(note.get("name"))
       print(led)
       strip.startSeq(led)
 
