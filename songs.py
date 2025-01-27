@@ -19,6 +19,7 @@ class Songs:
         self.SILENT = True
 
     def setSilence(self, val=True):
+        print ("SILENCE")
         self.SILENT = val
 
     def setSong(self, name):
@@ -27,15 +28,33 @@ class Songs:
         print (name)
         self.notes  = data[name]["tracks"][0]["notes"]
 
-    def getCurrentNote(self):
+    def setCurrentNote(self):
         if (self.NOTE_INDEX < len(self.notes)):
             note_info = self.notes[self.NOTE_INDEX]
             note = note_info.get("name")
             self.CurrentNote = note_info
             return note
-        self.FINISHED = True
-        return "FINI" 
         
+        self.FINISHED = True
+        print("Lesson complete!")
+        return "FINI" 
+    
+    def nextNote(self):
+        self.NOTE_INDEX += 1
+        note = self.setCurrentNote()
+        note_name = note["name"]
+        print(note_name)
+        led = self.NoteConversion.get(note_name)
+        print(led)
+        if led:
+            if note.get("duration") > 0.31:
+                print("h")
+                self.strip.turnOnLED(led, "h")
+            else:
+                print("q")
+                self.strip.turnOnLED(led, "q")
+
+
     def noteMatch(self, played_note):
         print (self.CurrentNote.get("name"))
         if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT:
