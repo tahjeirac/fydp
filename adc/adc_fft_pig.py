@@ -52,6 +52,7 @@ def get_frequency(samples):
 
     # Get the magnitude of the FFT result
     magnitude = np.abs(fft_result)
+    magnitude[0] = 0
 
     print(f"Magnitude (First 10 bins): {magnitude[:10]}")
     print(f"Frequency bins (First 10): {fft_freqs[:10]}")
