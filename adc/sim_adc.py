@@ -97,7 +97,7 @@ try:
             plt.show()
             # Get the frequency of the signal in the collected samples
             dominant_frequency = get_frequency(samples)
-            real_f = dominant_frequency / 8.3
+            real_f = dominant_frequency / 16.6
             power = calculate_signal_power(samples)
             print(f"Signal Power: {power:.6f}")
             if power > POWER_THRESH:
