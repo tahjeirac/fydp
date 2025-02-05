@@ -18,6 +18,7 @@ SAMPLE_FREQ = 50000  # ADC sampling frequency (samples per second)
 WINDOW_SIZE = 2048   # Number of samples per FFT window
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
+POWER_THRESH = 9e-4 # tuning is activated if the signal power exceeds this threshold
 
 # Initialize SPI communication
 pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
@@ -95,8 +96,10 @@ try:
             real_f = dominant_frequency/8.3
             power = calculate_signal_power(samples)
             print(f"Signal Power: {power:.6f}")
-            print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
-            print(f" real_f: {real_f:.2f} Hz")
+            if power > POWER_THRESH:
+
+                print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+                print(f" real_f: {real_f:.2f} Hz")
 
             # Clear the sample window to collect the next set of data
             samples = []
