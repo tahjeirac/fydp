@@ -11,7 +11,6 @@ spi.max_speed_hz=1000000
 #define custom chip select
 #this is done so we can use dozens of SPI devices on 1 bus
 CS_ADC = 12
-GPIO.setup(CS_ADC, GPIO.OUT)
 
 
 
