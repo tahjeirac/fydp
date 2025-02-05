@@ -1,6 +1,6 @@
 import pigpio
 import time
-
+import numpy as np
 # Set up pigpio and configure SPI settings
 pi = pigpio.pi()  # Create an instance of pigpio
 if not pi.connected:
@@ -29,13 +29,18 @@ def read_adc(channel):
 def ConvertToVoltage(value, bitdepth, vref):
     return vref * (value / (2 ** bitdepth - 1))
 # Example: Read ADC value from channel 0
+
+def ConvertToDB(value, bitdepth):
+    return 20 * np.log10(value / (2 ** bitdepth - 1))
 try:
     while True:
         adc_value = read_adc(0)
         print(f"ADC Value: {adc_value}")
         voltage = ConvertToVoltage(adc_value, 12, 3.3)  # For MCP3208 at 3.3V
-        print (voltage)
-        time.sleep(0.5)
+        print(f"Voltage: {voltage} v")
+        db_value = ConvertToDB(adc_value, 12)
+        print(f"Volume in dB: {db_value} dB")
+        time.sleep(0.001)
 
 except KeyboardInterrupt:
     print("Program interrupted")
