@@ -68,7 +68,6 @@ try:
     samples = []
     while True:
         adc_value = read_adc(0)
-        print(f"ADC Value: {adc_value}")
         voltage = convert_to_voltage(adc_value)
         samples.append(voltage)
 
