@@ -87,8 +87,8 @@ try:
     freq = 0
     while freq < 3:
         adc_value = read_adc(0)
-        voltage = convert_to_voltage(adc_value)
-        samples.append(adc_value)
+        print(f"ADC Value: {adc_value}")
+        samples.append(adc_value*8.3)
 
         if len(samples) >= WINDOW_SIZE:
             # Get the frequency of the signal in the collected samples
