@@ -53,6 +53,9 @@ def get_frequency(samples):
     # Get the magnitude of the FFT result
     magnitude = np.abs(fft_result)
 
+    print(f"Magnitude (First 10 bins): {magnitude[:10]}")
+    print(f"Frequency bins (First 10): {fft_freqs[:10]}")
+
     # Find the index of the peak frequency
     peak_index = np.argmax(magnitude)
     peak_freq = np.abs(fft_freqs[peak_index])
