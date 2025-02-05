@@ -76,7 +76,6 @@ try:
             # Get the frequency of the signal in the collected samples
             dominant_frequency = get_frequency(samples)
             print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
-            print (samples)
             # Clear the sample window to collect the next set of data
             samples = []
             freq += 1
