@@ -38,8 +38,9 @@ try:
         print(f"ADC Value: {adc_value}")
         voltage = ConvertToVoltage(adc_value, 12, 3.3)  # For MCP3208 at 3.3V
         print(f"Voltage: {voltage} v")
-        db_value = ConvertToDB(adc_value, 12)
-        print(f"Volume in dB: {db_value} dB")
+        if (adc_value > 0): 
+            db_value = ConvertToDB(adc_value, 12)
+            print(f"Volume in dB: {db_value} dB")
         time.sleep(0.001)
 
 except KeyboardInterrupt:
