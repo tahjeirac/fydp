@@ -103,6 +103,7 @@ def process_audio():
         
         max_ind = np.argmax(hps_spec)
         max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE) / NUM_HPS
+        print (max_freq)
         closest_note, closest_pitch = find_closest_note(max_freq)
         
         note_buffer.insert(0, closest_note)
