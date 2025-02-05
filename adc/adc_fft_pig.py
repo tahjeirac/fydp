@@ -75,6 +75,11 @@ def get_frequency(samples):
 
     return peak_freq
 
+def calculate_signal_power(adc_samples):
+    """Calculate the power of the signal from ADC samples"""
+    # Square the ADC values and take the average (mean)
+    power = np.mean(np.square(adc_samples))
+    return power
 
 try:
     samples = []
@@ -88,6 +93,8 @@ try:
             # Get the frequency of the signal in the collected samples
             dominant_frequency = get_frequency(samples)
             real_f = dominant_frequency/8.3
+            power = calculate_signal_power(samples)
+            print(f"Signal Power: {power:.6f}")
             print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
             print(f" real_f: {real_f:.2f} Hz")
 
