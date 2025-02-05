@@ -102,6 +102,7 @@ try:
             if power > POWER_THRESH:
                 # print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
                 print(f" real_f: {real_f:.2f} Hz")
+                print (power)
 
             # Clear the sample window to collect the next set of data
             samples = []
