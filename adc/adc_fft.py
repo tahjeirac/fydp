@@ -62,39 +62,39 @@ def process_adc_data():
         print("Signal too weak, no note detected")
         return
 
-    # Calculate average energy per frequency for the octave bands
-    for j in range(len(OCTAVE_BANDS)-1):
-        ind_start = int(OCTAVE_BANDS[j] / DELTA_FREQ)
-        ind_end = int(OCTAVE_BANDS[j+1] / DELTA_FREQ)
-        ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
-        avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end - ind_start)
-        avg_energy_per_freq = avg_energy_per_freq**0.5
-        for i in range(ind_start, ind_end):
-            magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH * avg_energy_per_freq else 0
+    # # Calculate average energy per frequency for the octave bands
+    # for j in range(len(OCTAVE_BANDS)-1):
+    #     ind_start = int(OCTAVE_BANDS[j] / DELTA_FREQ)
+    #     ind_end = int(OCTAVE_BANDS[j+1] / DELTA_FREQ)
+    #     ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
+    #     avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end - ind_start)
+    #     avg_energy_per_freq = avg_energy_per_freq**0.5
+    #     for i in range(ind_start, ind_end):
+    #         magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH * avg_energy_per_freq else 0
 
-    # Harmonic Product Spectrum (HPS)
-    num_hps = 5  # Max number of harmonic products to use
-    mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1 / num_hps), np.arange(0, len(magnitude_spec)), magnitude_spec)
-    mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2)  # Normalize
+    # # Harmonic Product Spectrum (HPS)
+    # num_hps = 5  # Max number of harmonic products to use
+    # mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1 / num_hps), np.arange(0, len(magnitude_spec)), magnitude_spec)
+    # mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2)  # Normalize
 
-    hps_spec = mag_spec_ipol.copy()
+    # hps_spec = mag_spec_ipol.copy()
 
-    # Calculate the HPS
-    for i in range(num_hps):
-        tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol) / (i + 1)))], mag_spec_ipol[::(i + 1)])
-        if not any(tmp_hps_spec):
-            break
-        hps_spec = tmp_hps_spec
+    # # Calculate the HPS
+    # for i in range(num_hps):
+    #     tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol) / (i + 1)))], mag_spec_ipol[::(i + 1)])
+    #     if not any(tmp_hps_spec):
+    #         break
+    #     hps_spec = tmp_hps_spec
 
-    # Find the frequency with the highest power in the HPS
-    max_ind = np.argmax(hps_spec)
-    max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE) / num_hps
+    # # Find the frequency with the highest power in the HPS
+    # max_ind = np.argmax(hps_spec)
+    # max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE) / num_hps
 
-    # Get the closest note and pitch
-    closest_note, closest_pitch = find_closest_note(max_freq)
+    # # Get the closest note and pitch
+    # closest_note, closest_pitch = find_closest_note(max_freq)
 
-    # Output the closest note and frequency
-    print(f"Detected Note: {closest_note} at {max_freq:.1f} Hz (Pitch: {closest_pitch:.1f} Hz)")
+    # # Output the closest note and frequency
+    # print(f"Detected Note: {closest_note} at {max_freq:.1f} Hz (Pitch: {closest_pitch:.1f} Hz)")
 
 # Main loop to continuously process ADC data
 if __name__ == "__main__":
