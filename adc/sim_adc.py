@@ -16,7 +16,7 @@ SAMPLE_FREQ = 50000  # ADC sampling frequency (samples per second)
 WINDOW_SIZE = 2048   # Number of samples per FFT window
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
-POWER_THRESH = 9e-4  # Tuning is activated if the signal power exceeds this threshold
+POWER_THRESH = 20000  # Tuning is activated if the signal power exceeds this threshold
 NOISE_LEVEL = 0.02  # Noise level (0 to 1, where 1 is full scale)
 
 pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
