@@ -50,13 +50,13 @@ def get_frequency(samples):
     magnitude = np.abs(fft_result)
     magnitude[0] = 0
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(fft_freqs[:len(samples)//2], magnitude[:len(samples)//2])
-    plt.title('Magnitude Spectrum')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Magnitude')
-    plt.grid(True)
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(fft_freqs[:len(samples)//2], magnitude[:len(samples)//2])
+    # plt.title('Magnitude Spectrum')
+    # plt.xlabel('Frequency (Hz)')
+    # plt.ylabel('Magnitude')
+    # plt.grid(True)
+    # plt.show()
 
     # Find the index of the peak frequency
     peak_index = np.argmax(magnitude)
@@ -88,20 +88,19 @@ try:
         samples.append(adc_value)
 
         if len(samples) >= WINDOW_SIZE:
-            plt.figure(figsize=(10, 6))
-            plt.plot(samples[:100])  # Show first 100 samples
-            plt.title("First 100 ADC Values for Piano Middle C with Harmonics, ADSR Envelope, and Noise")
-            plt.xlabel("Sample Number")
-            plt.ylabel("ADC Value")
-            plt.grid(True)
-            plt.show()
+            # plt.figure(figsize=(10, 6))
+            # plt.plot(samples[:100])  # Show first 100 samples
+            # plt.title("First 100 ADC Values for Piano Middle C with Harmonics, ADSR Envelope, and Noise")
+            # plt.xlabel("Sample Number")
+            # plt.ylabel("ADC Value")
+            # plt.grid(True)
+            # plt.show()
             # Get the frequency of the signal in the collected samples
             dominant_frequency = get_frequency(samples)
             real_f = dominant_frequency / 16.6
             power = calculate_signal_power(samples)
-            print(f"Signal Power: {power:.6f}")
             if power > POWER_THRESH:
-                print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+                # print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
                 print(f" real_f: {real_f:.2f} Hz")
 
             # Clear the sample window to collect the next set of data
