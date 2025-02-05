@@ -3,6 +3,7 @@ import time
 import numpy as np
 import scipy.fftpack
 import time
+import matplotlib.pyplot as plt
 
 
 # Set up pigpio and configure SPI settings
@@ -54,8 +55,15 @@ def get_frequency(samples):
     magnitude = np.abs(fft_result)
     magnitude[0] = 0
 
-    print(f"Magnitude (First 10 bins): {magnitude[:10]}")
-    print(f"Frequency bins (First 10): {fft_freqs[:10]}")
+    plt.figure(figsize=(10, 6))
+    plt.plot(fft_freqs[:len(samples)//2], magnitude[:len(samples)//2])
+    plt.title('Magnitude Spectrum')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Magnitude')
+    plt.grid(True)
+    plt.show()
+   # print(f"Magnitude (First 10 bins): {magnitude[:10]}")
+   # print(f"Frequency bins (First 10): {fft_freqs[:10]}")
 
     # Find the index of the peak frequency
     peak_index = np.argmax(magnitude)
