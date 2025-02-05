@@ -87,7 +87,10 @@ try:
         if len(samples) >= WINDOW_SIZE:
             # Get the frequency of the signal in the collected samples
             dominant_frequency = get_frequency(samples)
+            real_f = dominant_frequency/8.3
             print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+            print(f" real_f: {real_f:.2f} Hz")
+
             # Clear the sample window to collect the next set of data
             samples = []
             freq += 1
