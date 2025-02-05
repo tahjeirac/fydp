@@ -66,7 +66,8 @@ def get_frequency(samples):
 
 try:
     samples = []
-    while True:
+    freq = 0
+    while freq < 3:
         adc_value = read_adc(0)
         voltage = convert_to_voltage(adc_value)
         samples.append(voltage)
@@ -75,9 +76,10 @@ try:
             # Get the frequency of the signal in the collected samples
             dominant_frequency = get_frequency(samples)
             print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
-
+            print (samples)
             # Clear the sample window to collect the next set of data
             samples = []
+            freq += 1
 
         time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
