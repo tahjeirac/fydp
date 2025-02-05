@@ -85,7 +85,7 @@ try:
         voltage = convert_to_voltage(adc_value)  # Convert raw ADC value to voltage
         # print(f"ADC Value: {adc_value}, Voltage: {voltage:.3f} V")
         
-        samples.append(adc_value *8.3)
+        samples.append(adc_value)
 
         if len(samples) >= WINDOW_SIZE:
             plt.figure(figsize=(10, 6))
