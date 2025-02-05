@@ -69,6 +69,8 @@ def process_audio():
         
         # Signal Power Check
         signal_power = np.linalg.norm(window_samples, ord=2)**2 / len(window_samples)
+        print("sig")
+        print(signal_power)
         if signal_power < POWER_THRESH:
             os.system('cls' if os.name == 'nt' else 'clear')
             print("Closest note: ...")
