@@ -125,14 +125,14 @@ if __name__ == '__main__':
     print(f"Playing {song_name.replace('_', ' ').title()}")
     
     songs.setSong(song_name)
-    strip.colourWipe()
+    # strip.colourWipe()
     note = songs.setCurrentNote()
     led = NoteConversion.get(note.get("name"))
-    strip.startSeq(led)
+    # strip.startSeq(led)
     
     try:
         process_audio()
-        strip.endSeq()
+        # strip.endSeq()
     except KeyboardInterrupt:
-        strip.colourWipe()
+        # strip.colourWipe()
         GPIO.cleanup()
