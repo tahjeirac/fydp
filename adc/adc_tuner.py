@@ -12,12 +12,19 @@ if not pi.connected:
 
 SPI_BUS = 0  # SPI bus (0 or 1)
 SPI_CS = 8   # Chip select GPIO pin (adjust as needed)
-SAMPLE_FREQ = 500000  # ADC sampling frequency (samples per second)
-WINDOW_SIZE = 2048   # Number of samples per FFT window
+# SAMPLE_FREQ = 500000  # ADC sampling frequency (samples per second)
+# WINDOW_SIZE = 2048   # Number of samples per FFT window
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
-POWER_THRESH = 20000  # Tuning is activated if the signal power exceeds this threshold
-NOISE_LEVEL = 0.02  # Noise level (0 to 1, where 1 is full scale)
+# POWER_THRESH = 20000  # Tuning is activated if the signal power exceeds this threshold
+# NOISE_LEVEL = 0.02  # Noise level (0 to 1, where 1 is full scale)
+
+SAMPLE_FREQ = 44100 # sample frequency in Hz
+WINDOW_SIZE = 44100 # window size of the DFT in samples
+WINDOW_STEP = 21050 # step size of window
+WINDOW_T_LEN = WINDOW_SIZE / SAMPLE_FREQ # length of the window in seconds
+SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
+windowSamples = [0 for _ in range(WINDOW_SIZE)]
 
 pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
 
