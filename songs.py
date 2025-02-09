@@ -14,6 +14,7 @@ class Songs:
         self.NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
         self.Start = True
         self.CurrentNote = None
+        self.WrongNoteName = None
         self.StartTime = None
         self.strip = strip
         self.SILENT = True
@@ -38,6 +39,19 @@ class Songs:
         self.FINISHED = True
         print("Lesson complete!")
         return "FINI" 
+    
+    def setWrongNote(self, played_note):
+        #turn off previous note if self.WrongNoteName != None & played_note != self.WrongNoteName 
+        if self.WrongNoteName != None & played_note != self.WrongNoteName:
+            led = self.NoteConversion.get(self.WrongNoteName)
+            self.strip.turnOnLED_SOLO(led, False)
+
+        self.WrongNoteName = played_note
+
+        if self.WrongNoteName != None:
+            led = self.NoteConversion.get(self.WrongNoteName)
+            self.strip.turnOnLED_SOLO(led, True)
+                
     
     def nextNote(self):
         self.NOTE_INDEX += 1

@@ -28,6 +28,7 @@ class NoteStateMachine:
             print("Still waiting...")
         else:
             print("Wrong note!")
+            self.transition("listening_wrong_note")
 
     def listening(self, played_note):
         current_note_name = self.song.CurrentNote.get("name")
@@ -42,10 +43,31 @@ class NoteStateMachine:
                 self.song.nextNote()
 
                 self.transition("idle")
-        else:
-            print("Wrong note or silence detected!")
+        elif played_note == "SILENCE":
+            print("Silence detected!")
             self.transition("waiting")
+        else:
+            print("Wrong note detected!")
+            self.transition("listening_wrong_note")
 
+    def listening_wrong_note(self, played_note):
+        current_note_name = self.song.CurrentNote.get("name")
+        current_wrong_note_name = self.song.WrongNote
+        print(f"Waiting for: {current_note_name}, Currently Playing: {played_note}")
+
+        if played_note != current_wrong_note_name:
+            if played_note == current_note_name:
+                self.song.setWrongNote(None)
+                self.start_time = time.time()  # Start timing the note
+                self.transition("listening")
+            elif played_note == "SILENCE":
+                self.song.setWrongNote(None)
+                print("Silence detected!")
+                self.transition("waiting")
+            else:
+                self.song.setWrongNote(played_note)
+        else:
+            print("Wrong note being held")
     
     def idle(self, played_note):
         if played_note == "SILENCE":
@@ -58,4 +80,5 @@ class NoteStateMachine:
             self.listening(played_note)
         elif self.state == "idle":
             self.idle(played_note)
-
+        elif self.state == "listening_wrong_note":
+            self.listening_wrong_note(played_note)

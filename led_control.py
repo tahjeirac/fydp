@@ -5,7 +5,7 @@ from rpi_ws281x import *
 # LED strip configuration:
 
 
-
+CLEAR = Color(0,0,0)
 RED = Color(255,0,0)
 ROSE = Color(255,0,128)
 MAGENTA = Color(255,0,255)
@@ -68,6 +68,13 @@ class Strip:
         self.strip.setPixelColor(led, c)
         self.strip.show()
         self.LED_ON = led
+
+    def turnOnLED_SOLO(self, led, set):
+        if set == True:
+            self.strip.setPixelColor(led, RED)
+        else:
+            self.strip.setPixelColor(led, CLEAR)
+        self.strip.show()
 
     def wheel(self, pos):
         """Generate rainbow colors across 0-255 positions."""
