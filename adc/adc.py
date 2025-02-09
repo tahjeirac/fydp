@@ -92,26 +92,26 @@ def calculate_signal_power(adc_samples):
 try:
     print("Starting ADC...")
     samples = []
-    freq = 261.63  # Frequency of Middle C (261.63 Hz)
 
-    # adc_value =  # Read from ADC channel 0     
-    samples.append( read_adc(channel=0))
+    while True:
+        # adc_value =  # Read from ADC channel 0     
+        samples.append( read_adc(channel=0))
 
-    if len(samples) >= WINDOW_SIZE:
-        print ("collected")
-        # Get the frequency of the signal in the collected samples
-        dominant_frequency = get_frequency(samples)
-        real_f = dominant_frequency / 16.6
-        power = calculate_signal_power(samples)
-        if power > POWER_THRESH:
-            # print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
-            print(f" real_f: {real_f:.2f} Hz")
-            print (power)
+        if len(samples) >= WINDOW_SIZE:
+            print ("collected")
+            # Get the frequency of the signal in the collected samples
+            dominant_frequency = get_frequency(samples)
+            real_f = dominant_frequency / 16.6
+            power = calculate_signal_power(samples)
+            if power > POWER_THRESH:
+                # print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+                print(f" real_f: {real_f:.2f} Hz")
+                print (power)
 
-        # Clear the sample window to collect the next set of data
-        samples = []
+            # Clear the sample window to collect the next set of data
+            samples = []
 
-    time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")
