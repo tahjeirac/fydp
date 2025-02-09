@@ -16,7 +16,7 @@ SPI_CS = 8   # Chip select GPIO pin (adjust as needed)
 # WINDOW_SIZE = 2048   # Number of samples per FFT window
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
-# POWER_THRESH = 20000  # Tuning is activated if the signal power exceeds this threshold
+POWER_THRESH = 20000  # Tuning is activated if the signal power exceeds this threshold
 # NOISE_LEVEL = 0.02  # Noise level (0 to 1, where 1 is full scale)
 
 SAMPLE_FREQ = 44100 # sample frequency in Hz
