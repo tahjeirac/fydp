@@ -34,6 +34,7 @@ start_time = time.time()
 for _ in range(SAMPLE_COUNT):
     adc_value = read_adc(channel=0)  # Read from channel 0
     adc_values.append(adc_value)
+    print (adc_value)
     timestamps.append(time.time() - start_time)
     time.sleep(1 / SAMPLE_FREQ)  # Maintain correct sampling rate
 
@@ -42,7 +43,7 @@ adc_voltages = [VREF * (val / (2**BIT_DEPTH - 1)) for val in adc_values]
 
 # Plot the ADC waveform
 plt.figure(figsize=(10, 6))
-plt.plot(timestamps, adc_voltages, label="Microphone Signal")
+plt.plot(timestamps, adc_value, label="Microphone Signal")
 plt.xlabel("Time (seconds)")
 plt.ylabel("Voltage (V)")
 plt.title("ADC Output Over Time")
