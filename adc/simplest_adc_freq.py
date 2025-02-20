@@ -74,7 +74,7 @@ try:
             print (power)
             if power > POWER_THRESH:
                 dominant_frequency = get_frequency(samples)
-                dominant_frequency_scale = dominant_frequency/72.5
+                dominant_frequency_scale = dominant_frequency/3.98
 
                 print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
                 print(f"Dominant frequency real: {dominant_frequency_scale:.2f} Hz")
