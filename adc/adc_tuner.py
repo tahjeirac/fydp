@@ -114,6 +114,7 @@ try:
             dominant_frequency = get_frequency(samples)
             real_f = dominant_frequency / 16.6
             power = calculate_signal_power(samples)
+            print (real_f)
             if power > POWER_THRESH:
                 # print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
                 print(f" real_f: {real_f:.2f} Hz")
