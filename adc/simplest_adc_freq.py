@@ -12,7 +12,7 @@ if not pi.connected:
 
 SPI_BUS = 0  # SPI bus (0 or 1)
 SAMPLE_FREQ = 20000  # ADC sampling frequency (samples per second)
-WINDOW_SIZE = 2048   # Number of samples per FFT window
+WINDOW_SIZE = 8192   # Number of samples per FFT window
 POWER_THRESH = 18000 # tuning is activated if the signal power exceeds this threshold
 
 SPI_SPEED = 500000  # 500 kHz SPI clock
@@ -34,11 +34,25 @@ def read_adc(channel):
     
     return value
 
+def read_adc1(channel):
+    """Reads a 12-bit value from MCP3208 ADC"""
+    if channel < 0 or channel > 7:
+        return -1
+
+    # MCP3208 uses 3-byte SPI transfer: 0b00000110 | (channel bits), second byte, third byte
+    cmd = [1, (8 + channel) << 4, 0]  
+    count, data = pi.spi_xfer(SPI_BUS, cmd)
+
+    if count == 3:
+        result = ((data[1] & 0x0F) << 8) | data[2]
+        return result
+    return -1
+
 def get_frequency(samples):
     """Get the dominant frequency from ADC samples using FFT"""
     # Perform FFT
-    fft_result = scipy.fftpack.fft(samples)
-    fft_freqs = scipy.fftpack.fftfreq(len(samples), d=1/SAMPLE_FREQ)
+    fft_result = np.fft.fft(samples)
+    fft_freqs = np.fft.fftfreq(len(samples), d=1/SAMPLE_FREQ)
 
     # Get the magnitude of the FFT result
     magnitude = np.abs(fft_result)
@@ -63,10 +77,10 @@ def calculate_signal_power(adc_samples):
 try:
     print("Starting ADC...")
     samples = []
+    last_time = time.time()
+
     while True:
-        adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
-        # print(f"ADC Value: {adc_value}, Voltage: {voltage:.3f} V")
-        
+        adc_value = read_adc1(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)        
         samples.append(adc_value)
 
         if len(samples) >= WINDOW_SIZE:
@@ -81,7 +95,11 @@ try:
             # Clear the sample window to collect the next set of data
             samples = []
 
-        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+        elapsed = time.time() - last_time
+        sleep_time = (1 / SAMPLE_FREQ) - elapsed
+        if sleep_time > 0:
+            time.sleep(sleep_time)
+        last_time = time.time()
 
 except KeyboardInterrupt:
     print("Program interrupted")
