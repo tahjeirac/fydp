@@ -13,6 +13,7 @@ if not pi.connected:
 SPI_BUS = 0  # SPI bus (0 or 1)
 SAMPLE_FREQ = 500000  # ADC sampling frequency (samples per second)
 WINDOW_SIZE = 2048   # Number of samples per FFT window
+POWER_THRESH = 9e-4 # tuning is activated if the signal power exceeds this threshold
 
 pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
 
@@ -49,6 +50,13 @@ def get_frequency(samples):
         peak_freq -= SAMPLE_FREQ
 
     return peak_freq
+
+def calculate_signal_power(adc_samples):
+    """Calculate the power of the signal from ADC samples"""
+    # Square the ADC values and take the average (mean)
+    power = np.mean(np.square(adc_samples))
+    return power
+
 try:
     print("Starting ADC...")
     samples = []
@@ -63,8 +71,9 @@ try:
             dominant_frequency_scale = dominant_frequency/72.5
 
             print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
-            print(f"Dominant frequency: {dominant_frequency_scale:.2f} Hz")
-
+            print(f"Dominant frequency real: {dominant_frequency_scale:.2f} Hz")
+            power = calculate_signal_power(samples)
+            print (power)
             # Clear the sample window to collect the next set of data
             samples = []
 
