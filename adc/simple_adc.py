@@ -42,7 +42,7 @@ try:
 
         if len(samples) >= WINDOW_SIZE:
             plt.figure(figsize=(10, 6))
-            plt.plot(samples[:100])  # Show first 100 samples
+            plt.plot(samples)  # Show first 100 samples
             plt.title("First 100 ADC Values for Piano Middle C with Harmonics, ADSR Envelope, and Noise")
             plt.xlabel("Sample Number")
             plt.ylabel("ADC Value")
