@@ -89,7 +89,7 @@ def callback(indata):
         
         if signal_power < POWER_THRESH:
             os.system('cls' if os.name=='nt' else 'clear')
-            print("Closest note: ...")
+            print("Closest note: ...1")
             return
 
         # Multiply with Hann window to avoid spectral leakage
@@ -132,7 +132,7 @@ def callback(indata):
         if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
             print(f"Closest note: {closest_note} {max_freq:.2f} Hz / {closest_pitch:.2f} Hz")
         else:
-            print(f"Closest note: ...")
+            print(f"Closest note: ...2")
 
 # Simulate the ADC signal for testing
 try:
