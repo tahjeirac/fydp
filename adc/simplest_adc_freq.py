@@ -11,11 +11,14 @@ if not pi.connected:
     exit()
 
 SPI_BUS = 0  # SPI bus (0 or 1)
-SAMPLE_FREQ = 500000  # ADC sampling frequency (samples per second)
+SAMPLE_FREQ = 20000  # ADC sampling frequency (samples per second)
 WINDOW_SIZE = 2048   # Number of samples per FFT window
-POWER_THRESH = 9e-4 # tuning is activated if the signal power exceeds this threshold
+POWER_THRESH = 18000 # tuning is activated if the signal power exceeds this threshold
 
-pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
+SPI_SPEED = 500000  # 500 kHz SPI clock
+SAMPLE_RATE = 20000  # Target 20 kHz
+
+pi.spi_open(SPI_BUS, SPI_SPEED, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
@@ -67,13 +70,14 @@ try:
         samples.append(adc_value)
 
         if len(samples) >= WINDOW_SIZE:
-            dominant_frequency = get_frequency(samples)
-            dominant_frequency_scale = dominant_frequency/72.5
-
-            print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
-            print(f"Dominant frequency real: {dominant_frequency_scale:.2f} Hz")
             power = calculate_signal_power(samples)
             print (power)
+            if power > POWER_THRESH:
+                dominant_frequency = get_frequency(samples)
+                dominant_frequency_scale = dominant_frequency/72.5
+
+                print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+                print(f"Dominant frequency real: {dominant_frequency_scale:.2f} Hz")
             # Clear the sample window to collect the next set of data
             samples = []
 
