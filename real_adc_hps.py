@@ -146,13 +146,13 @@ try:
         # Feed the ADC values to the callback in windows
         window.append(adc_value)
         if len(window) == WINDOW_SIZE:
-                plt.figure(figsize=(10, 6))
-                plt.plot(window)  # Show first 100 samples
-                plt.title("window samples")
-                plt.xlabel("Sample Number")
-                plt.ylabel("ADC Value")
-                plt.grid(True)
-                plt.show()
+                # plt.figure(figsize=(10, 6))
+                # plt.plot(window)  # Show first 100 samples
+                # plt.title("window samples")
+                # plt.xlabel("Sample Number")
+                # plt.ylabel("ADC Value")
+                # plt.grid(True)
+                # plt.show()
                 callback(np.array(window))  # Call callback once the window is filled
                 window = []  # Reset window for next batch of samples
         time.sleep(1 / SAMPLE_FREQ)  # Maintain sample rate
