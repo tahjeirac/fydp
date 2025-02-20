@@ -36,23 +36,11 @@ try:
     samples = []
     while True:
         adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
-        # print(f"ADC Value: {adc_value}, Voltage: {voltage:.3f} V")
+        print(f"ADC Value: {adc_value}")
         
-        samples.append(adc_value)
 
-        if len(samples) >= WINDOW_SIZE:
-            plt.figure(figsize=(10, 6))
-            plt.plot(samples)  # Show first 100 samples
-            plt.title("First 100 ADC Values for Piano Middle C with Harmonics, ADSR Envelope, and Noise")
-            plt.xlabel("Sample Number")
-            plt.ylabel("ADC Value")
-            plt.grid(True)
-            plt.show()
-     
-            # Clear the sample window to collect the next set of data
-            samples = []
 
-        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+        # time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")

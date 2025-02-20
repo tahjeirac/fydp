@@ -80,7 +80,7 @@ try:
             # Clear the sample window to collect the next set of data
             samples = []
 
-        # time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")
