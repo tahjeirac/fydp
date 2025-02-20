@@ -55,9 +55,13 @@ try:
             time.sleep(1 / SAMPLE_FREQ)  # Maintain sample rate
         
         power = calculate_signal_power(samples)
-        if power > POWER_THRESH:
-            dominant_frequency = get_frequency(samples)
-            print(f"Dominant Frequency: {dominant_frequency:.2f} Hz")
+        print (power)
+        dominant_frequency = get_frequency(samples)
+        print(f"Dominant Frequency: {dominant_frequency:.2f} Hz")
+        
+        # if power > POWER_THRESH:
+        #     dominant_frequency = get_frequency(samples)
+        #     print(f"Dominant Frequency: {dominant_frequency:.2f} Hz")
         
         # elapsed = time.time() - last_time
         # sleep_time = (1 / SAMPLE_FREQ) - elapsed
