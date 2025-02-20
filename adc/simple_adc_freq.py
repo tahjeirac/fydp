@@ -75,6 +75,7 @@ try:
             plt.grid(True)
             plt.show()
             dominant_frequency = get_frequency(samples)
+            print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
 
             # Clear the sample window to collect the next set of data
             samples = []
