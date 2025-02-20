@@ -60,7 +60,10 @@ try:
 
         if len(samples) >= WINDOW_SIZE:
             dominant_frequency = get_frequency(samples)
+            dominant_frequency_scale = dominant_frequency/72.5
+
             print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+            print(f"Dominant frequency: {dominant_frequency_scale:.2f} Hz")
 
             # Clear the sample window to collect the next set of data
             samples = []
