@@ -125,7 +125,7 @@ def callback(indata):
         max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE) / NUM_HPS
 
         closest_note, closest_pitch = find_closest_note(max_freq)
-        print(closest_note)
+        print(max_freq)
         callback.noteBuffer.insert(0, closest_note)  # Insert into noteBuffer
         callback.noteBuffer.pop()
 
