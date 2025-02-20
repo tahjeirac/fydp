@@ -36,7 +36,7 @@ try:
     samples = []
     while True:
         adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
-        print(f"ADC Value: {adc_value}")
+        print(f"ADC Valuee: {adc_value}")
         
 
 
