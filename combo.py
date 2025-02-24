@@ -35,25 +35,8 @@ NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 strip = Strip()
 songs = Songs("songs.json", MATCH_DELAY, strip)
 state_machine = NoteStateMachine(songs)
-
-wav_file = None
-
-def setup_wav_file(filename, channels=1, sample_width=2, frame_rate=SAMPLE_FREQ):
-    """
-    Sets up the WAV file for recording audio.
-    Parameters:
-        filename (str): Name of the WAV file to save.
-        channels (int): Number of audio channels.
-        sample_width (int): Width of each audio sample in bytes.
-        frame_rate (int): Sampling rate in Hz.
-    Returns:
-        wave.Wave_write: Open WAV file object.
-    """
-    wav_file = wave.open(filename, 'wb')
-    wav_file.setnchannels(channels)
-    wav_file.setsampwidth(sample_width)  # 2 bytes per sample for 16-bit audio
-    wav_file.setframerate(frame_rate)
-    return wav_file
+start_time = None
+played_notes = []
 
 
 def find_closest_note(pitch):
@@ -147,16 +130,43 @@ def callback(indata, frames, time, status):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      state_machine.handle_input(closest_note)
+      state_machine.handle_input("A4'")
 
     else:
       print(f"Closest note: ...")
       state_machine.handle_input("SILENCE")
 
-
   else:
     print('no input')
 
+def saveNote(note):
+   #save time
+   # note
+   time_played = time.time()   # Start timing the note
+   note_info = {"time_played":time_played, "note":  note}
+   played_notes.append(note_info)
+   return
+
+# def makeFeedback ():
+#    # Example input: list of dictionaries with time_played and note
+# # Convert to note-duration format
+#   note_durations = []
+
+#   for i in range(1, len(played_notes)):  # Start from second element
+#     prev = note_data[i - 1]
+#     curr = note_data[i]
+#     duration = curr["time_played"] - prev["time_played"]
+
+#     note_durations.append({"note": prev["note"], "duration": duration})
+
+#     # Add last note with unknown duration (optional: set to None or estimate)
+#     note_durations.append({"note": note_data[-1]["note"], "duration": None})
+
+#     # Output result
+#   print(note_durations)
+
+  # return
+   #block periods of same notes togeter and such
 if __name__ == '__main__':
     # Process arguments
     print ("1 for mary 2 for twinkle")
@@ -166,12 +176,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
-
-    wav_file = setup_wav_file("recorded_audio.wav")
 
     try:
       if args.song == 1:
@@ -190,7 +197,7 @@ if __name__ == '__main__':
       led = NoteConversion.get(note.get("name"))
       print(led)
       strip.startSeq(led)
-
+      start_time = time.time()
       with sd.InputStream(device=2, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
             time.sleep(0.5)
