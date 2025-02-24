@@ -15,7 +15,7 @@ if not pi.connected:
 # Open SPI connection (1 MHz SPI clock)
 spi_handle = pi.spi_open(SPI_BUS, 1000000, 0)
 
-SAMPLE_FREQ = 20000  # Target sample rate in Hz
+SAMPLE_FREQ = 48000  # Target sample rate in Hz
 VREF = 3.3  # Reference voltage
 BIT_DEPTH = 12  # MCP3208 is 12-bit
 DURATION = 10 / 1000  # 1 ms of data collection
@@ -64,7 +64,53 @@ pi.stop()
 # **Remove DC Offset**
 voltages -= np.mean(voltages)
 
-# **Plot the results**
+# **Calculate Signal Power**
+signal_power = np.sum(voltages**2) / len(voltages)
+threshold = 0.01  # Set a threshold for detection
+print (signal_power)
+# if signal_power < threshold:
+#     print("Signal power is below the threshold. No significant signal detected.")
+#     exit()
+
+# **Apply Hann Window to the Signal**
+window = np.hanning(SAMPLES)
+windowed_signal = voltages * window
+
+# **Calculate FFT**
+fft_result = np.abs(np.fft.fft(windowed_signal))
+fft_result /= np.max(fft_result)  # Normalize
+
+# **Frequency Calculation**
+frequencies = np.fft.fftfreq(SAMPLES, 1 / SAMPLE_FREQ)
+
+# **Suppress Unwanted Frequencies (e.g., mains hum at 50/60 Hz)**
+hum_frequency = 60  # Assume 60 Hz mains hum, adjust if needed
+fft_result[int(hum_frequency * SAMPLES / SAMPLE_FREQ)] = 0  # Set mains hum frequency to 0
+fft_result[int((SAMPLE_FREQ - hum_frequency) * SAMPLES / SAMPLE_FREQ)] = 0  # For negative frequency
+
+# **Interpolate Spectrum for Higher Frequency Resolution**
+interp_factor = 2  # Factor to interpolate spectrum
+interp_spectrum = np.interp(np.linspace(0, len(fft_result), len(fft_result) * interp_factor), 
+                            np.arange(len(fft_result)), fft_result)
+
+# **Apply Harmonic Product Spectrum (HPS)**
+def harmonic_product_spectrum(spectrum, num_harmonics=5):
+    hps = spectrum.copy()
+    for i in range(2, num_harmonics + 1):
+        shifted = np.roll(spectrum, i)
+        hps *= shifted
+    return hps
+
+hps_result = harmonic_product_spectrum(interp_spectrum)
+
+# **Detect the Peak Frequency**
+peak_index = np.argmax(hps_result)
+fundamental_freq = abs(np.fft.fftfreq(len(hps_result), 1 / (SAMPLE_FREQ * interp_factor))[peak_index])
+
+# **Print the Results**
+print(f"Detected Fundamental Frequency: {fundamental_freq:.2f} Hz")
+
+# **Plot the Results**
 plt.figure(figsize=(10, 6))
 
 # **Time-Domain Plot**
@@ -75,34 +121,24 @@ plt.ylabel("Voltage (V)")
 plt.title("Captured ADC Data (Sine Wave)")
 plt.grid(True)
 
-# **FFT Calculation**
-fft_result = np.abs(np.fft.fft(voltages))
-fft_result /= np.max(fft_result)  # Normalize
-frequencies = np.fft.fftfreq(SAMPLES, 1 / SAMPLE_FREQ)
-
-# **Keep only positive frequencies**
-positive_freqs = frequencies[:SAMPLES // 2]
-positive_fft = fft_result[:SAMPLES // 2]
-
 # **Frequency Spectrum Plot**
 plt.subplot(3, 1, 2)
-plt.plot(positive_freqs, positive_fft, 'b-')
-plt.xlabel("Frequency (Hz)")
-plt.ylabel("Amplitude")
-plt.title("Frequency Spectrum of ADC Input")
-plt.grid(True)
-
-# **Magnitude Spectrum Plot**
-fft_values = np.fft.fftshift(np.fft.fft(voltages))
-magnitude = np.fft.fftshift(np.abs(fft_values))
-# frequencies = np.fft.fftshift(np.fft.fftfreq(SAMPLES, 1 / SAMPLE_FREQ))
-
-plt.subplot(3, 1, 3)
-plt.plot(frequencies, magnitude, 'b-')
+plt.plot(frequencies[:SAMPLES // 2], fft_result[:SAMPLES // 2], 'b-')
 plt.title("Frequency Domain: Magnitude Spectrum")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Magnitude")
 plt.grid(True)
 plt.xlim(0, SAMPLE_FREQ / 2)  # Limit to Nyquist frequency
+
+# **HPS Plot**
+plt.subplot(3, 1, 3)
+plt.plot(np.fft.fftfreq(len(hps_result), 1 / (SAMPLE_FREQ * interp_factor))[:len(hps_result) // 2], 
+         hps_result[:len(hps_result) // 2], 'g-')
+plt.title("Harmonic Product Spectrum")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.grid(True)
+plt.xlim(0, SAMPLE_FREQ / 2)
+
 plt.tight_layout()
 plt.show()
