@@ -77,6 +77,5 @@ try:
 except KeyboardInterrupt:
     print("\nInterrupted by user.")
 finally:
-    pi.spi_close(adc_handle)
     pi.stop()
     print("Cleaned up resources.")
