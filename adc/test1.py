@@ -2,6 +2,9 @@ import time
 import numpy as np
 import pigpio
 import matplotlib.pyplot as plt
+import spidev # To communicate with SPI devices
+from time import sleep	# To add delay
+import RPi.GPIO as GPIO	# To use GPIO pins
 
 SPI_BUS = 0  # SPI bus (0 or 1)
 CHANNEL = 0  # ADC channel to read from
@@ -21,6 +24,11 @@ BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 DURATION = 1 / 1000  # 1 ms of data collection
 SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples
 
+spi = spidev.SpiDev()
+spi.open(0,0)
+spi.max_speed_hz=1000000
+
+GPIO.setmode(GPIO.BCM)
 # Function to read ADC data
 def read_adc(channel):
     """Reads a value from the ADC using SPI"""
@@ -28,6 +36,12 @@ def read_adc(channel):
     result = pi.spi_xfer(spi_handle, command)
     adc_value = ((result[1][1] & 0x0F) << 8) | result[1][2]
     return adc_value
+
+
+def ReadChannel3208(channel):
+  adc = spi.xfer2([6|(channel>>2),channel<<6,0]) #0000011x,xx000000,00000000
+  data = ((adc[1]&15) << 8) + adc[2]
+  return data
 
 def convert_to_voltage(adc_value):
     """Convert ADC value to voltage"""
@@ -40,7 +54,7 @@ voltages = np.zeros(SAMPLES)  # Placeholder for voltage values
 # **High-Precision Sampling Loop**
 start_time = time.perf_counter()
 for i in range(SAMPLES):
-    voltages[i] = convert_to_voltage(read_adc(CHANNEL))  # Read and store voltage
+    voltages[i] = convert_to_voltage(ReadChannel3208(CHANNEL))  # Read and store voltage
     
     # # High-precision timing
     # while (time.perf_counter() - start_time) < ((i + 1) / SAMPLE_FREQ):
