@@ -44,6 +44,6 @@ def test_one_channel(adc, channel: int, delay: float = DELAY):
 if __name__ == '__main__':
     
     try:
-        test_one_channel(adc_gzero, 1)
+        test_one_channel(adc_spidev, 1)
     except KeyboardInterrupt:
         print("Program interrupted")
