@@ -53,7 +53,7 @@ for i in range(SAMPLES):
 plt.figure(figsize=(10, 6))
 
 # Plot Voltage vs Time (Time-domain plot)
-plt.subplot(2, 1, 1)
+plt.subplot(3, 1, 1)
 plt.plot(times, voltages, 'r-')
 plt.xlabel("Time (s)")
 plt.ylabel("Voltage (V)")
@@ -69,7 +69,7 @@ positive_freqs = frequencies[:SAMPLES // 2]
 positive_fft = fft_result[:SAMPLES // 2]
 
 # Plot Frequency Spectrum (FFT plot)
-plt.subplot(2, 1, 2)
+plt.subplot(3, 1, 2)
 plt.plot(positive_freqs, positive_fft, 'b-')
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Amplitude")
@@ -88,7 +88,7 @@ frequencies = np.fft.fftfreq(len(voltages), 1 / SAMPLE_FREQ)
 frequencies = np.fft.fftshift(frequencies)  # Shift zero frequency to center
 magnitude = np.fft.fftshift(magnitude)  # Shift the corresponding magnitudes
 
-plt.subplot(2, 1, 3)
+plt.subplot(3, 1, 3)
 plt.plot(frequencies, magnitude, 'b-')
 plt.title("Frequency Domain: Magnitude Spectrum")
 plt.xlabel("Frequency (Hz)")
