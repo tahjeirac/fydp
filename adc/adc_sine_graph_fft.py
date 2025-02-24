@@ -16,9 +16,9 @@ SAMPLE_FREQ = 50000  # ADC sampling frequency (samples per second)
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
-SINE_WAVE_FREQ = 1000  # Frequency of sine wave (250 Hz)
-DURATION = 1 / SINE_WAVE_FREQ  # Plot duration to cover one sine wave period (in seconds)
-SAMPLES = 2 * int(SAMPLE_FREQ * DURATION)  # Number of samples to collect (based on duration)
+SINE_WAVE_FREQ = 1000  # Frequency of sine wave (1000 Hz)
+DURATION = 2e-3  # Record duration of 2 ms (0.002 seconds)
+SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples to collect for 2 ms duration
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
@@ -39,7 +39,7 @@ def convert_to_voltage(adc_value):
     return VREF * (adc_value / (2 ** BIT_DEPTH - 1))
 
 # Data storage
-times = np.linspace(0, DURATION, SAMPLES)  # Time array for one period
+times = np.linspace(0, DURATION, SAMPLES) * 1000  # Time array for 2 ms in ms
 voltages = np.zeros(SAMPLES)  # Placeholder for voltage values
 
 # Collect all data before plotting
@@ -55,7 +55,7 @@ plt.figure(figsize=(10, 6))
 # Plot Voltage vs Time (Time-domain plot)
 plt.subplot(3, 1, 1)
 plt.plot(times, voltages, 'r-')
-plt.xlabel("Time (s)")
+plt.xlabel("Time (ms)")
 plt.ylabel("Voltage (V)")
 plt.title("Captured ADC Data (Sine Wave)")
 plt.grid(True)
@@ -76,7 +76,6 @@ plt.ylabel("Amplitude")
 plt.title("Frequency Spectrum of ADC Input")
 plt.grid(True)
 
-
 # Apply FFT
 fft_values = np.fft.fft(voltages)
 
@@ -96,9 +95,6 @@ plt.ylabel("Magnitude")
 plt.grid(True)
 plt.xlim(0, SAMPLE_FREQ / 2)  # Limit the x-axis to Nyquist frequency
 plt.tight_layout()
-plt.show()
-# Show the plots
-plt.tight_layout()  # Adjust subplots for better fit
 plt.show()
 
 # Clean up
