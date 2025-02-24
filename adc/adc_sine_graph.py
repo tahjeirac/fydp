@@ -2,7 +2,6 @@ import time
 import numpy as np
 import pigpio
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 # Set up pigpio and configure SPI settings
 pi = pigpio.pi()  # Create an instance of pigpio
@@ -45,40 +44,22 @@ def convert_to_voltage(adc_value):
 times = np.linspace(0, DURATION, SAMPLES)  # Time array for one period
 voltages = np.zeros(SAMPLES)  # Placeholder for voltage values
 
-# Matplotlib Setup
-fig, ax = plt.subplots()
-ax.set_xlim(0, DURATION)  # Limit to one period of the sine wave
-ax.set_ylim(0, VREF)  # Limit voltage range
-ax.set_xlabel("Time (s)")
-ax.set_ylabel("Voltage (V)")
-ax.set_title("ADC Sine Wave Capture")
-
-line, = ax.plot([], [], 'r-')
-
-def update(frame):
-    """Update function for animation"""
-    global voltages
-    adc_value = read_adc(0)
+# Collect all data before plotting
+for i in range(SAMPLES):
+    adc_value = read_adc(0)  # Read ADC value from channel 0
     voltage = convert_to_voltage(adc_value)
-    
-    # Shift data left and insert new value
-    voltages[:-1] = voltages[1:]
-    voltages[-1] = voltage
+    voltages[i] = voltage
+    time.sleep(1 / SAMPLE_RATE)  # Ensure proper sample rate
 
-    # Update plot data
-    line.set_data(times, voltages)
-    return line,
+# Plot the data after collection
+plt.figure(figsize=(10, 6))
+plt.plot(times, voltages, 'r-')
+plt.xlabel("Time (s)")
+plt.ylabel("Voltage (V)")
+plt.title("Captured ADC Data (Sine Wave)")
+plt.grid(True)
+plt.show()
 
-# Use FuncAnimation to animate the plot
-ani = FuncAnimation(fig, update, frames=range(SAMPLES), interval=1000 / SAMPLE_RATE, blit=True)
-
-try:
-    print("Starting ADC...")
-    plt.show()
-
-except KeyboardInterrupt:
-    print("Program interrupted")
-
-finally:
-    pi.stop()  # Clean up pigpio connection
-    print("Cleaned up resources.")
+# Clean up
+pi.stop()  # Stop pigpio connection
+print("Cleaned up resources.")
