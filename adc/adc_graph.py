@@ -19,19 +19,20 @@ DURATION = 5  # Plot duration in seconds
 SAMPLES = SAMPLE_RATE * DURATION  # Total samples to collect
 
 # Open SPI connection
-adc_handle = pi.spi_open(SPI_BUS, SPI_SPEED, 0)
+# adc_handle = pi.spi_open(SPI_BUS, SPI_SPEED, 0)
+pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
 
 def read_adc(channel=0):
     """Reads a 12-bit ADC value from MCP3208 via SPI"""
-    cmd = [1, (8 + channel) << 4, 0]  # Start bit + single-ended mode + channel selection
-    (count, data) = pi.spi_xfer(adc_handle, cmd)
+    command = [0x06 | ((channel & 0x07) >> 2), ((channel & 0x03) << 6), 0x00]
+    # (count, data) = pi.spi_xfer(SPI_BUS, command)
     
-    if count != 3:
-        raise RuntimeError("SPI transfer failed")
+    result = pi.spi_xfer(SPI_BUS, command)
 
-    # Extract 12-bit ADC value
-    raw_value = ((data[1] & 0x0F) << 8) | data[2]
-    return raw_value
+    # Convert the result to 12-bit value
+    value = (result[1][1] & 0x0F) << 8 | result[1][2]
+    
+    return value
 
 def convert_to_voltage(adc_value):
     """Convert ADC value to voltage"""
