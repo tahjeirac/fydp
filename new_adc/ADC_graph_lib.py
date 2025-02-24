@@ -16,7 +16,7 @@ num_samples = int(duration * sample_rate)
 time_data = np.linspace(0, duration, num_samples)
 amplitude_data = []
 volts = []
-adc_gzero = MCP3208Gpiozero()
+adc_gzero = MCP3208Spidev()
 
 
 def convert_to_voltage(adc_value):
