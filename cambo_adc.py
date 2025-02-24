@@ -232,7 +232,7 @@ def callback(indata, frames, time, status):
     print('no input')
 
 # Step 2: Verify with ADC Mic (Runs in a Separate Thread)
-def verify_with_adc(duration=0.1, sample_rate=48000, channel=0):
+def verify_with_adc(duration=0.1, sample_rate=48000, channel=1):
     """Checks if the electret mic (ADC) also detects a note"""
     samples = []
     start_time = time.time()
