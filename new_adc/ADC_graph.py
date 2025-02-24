@@ -98,9 +98,7 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-# Show the plots
-plt.tight_layout()
-plt.show()
+
 
 # Close the SPI connection and pigpio
 pi.spi_close(SPI_CHANNEL)
