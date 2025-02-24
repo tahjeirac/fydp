@@ -15,6 +15,8 @@ SAMPLE_FREQ = 500000  # ADC sampling frequency (samples per second)
 WINDOW_SIZE = 2048   # Number of samples per FFT window
 
 pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
+VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
+BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
@@ -30,6 +32,9 @@ def read_adc(channel):
     
     return value
 
+def convert_to_voltage(adc_value):
+    """Convert ADC value to voltage"""
+    return VREF * (adc_value / (2 ** BIT_DEPTH - 1))
 
 try:
     print("Starting ADC...")
@@ -37,13 +42,16 @@ try:
     while True:
         adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
         print(f"ADC Valuee: {adc_value}")
-        
+        print(convert_to_voltage(adc_value))
 
 
-        # time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")
 
 finally:
     pi.stop()  # Clean up pigpio connection
+    # pi.spi_close(adc_handle)  # Close SPI connection
+    # pi.stop()  # Stop pigpio
+    print("Cleaned up resources.")
