@@ -17,8 +17,8 @@ VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
 SINE_WAVE_FREQ = 1000  # Frequency of sine wave (1000 Hz)
-DURATION = 2e-3  # Record duration of 2 ms (0.002 seconds)
-SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples to collect for 2 ms duration
+DURATION = 2 * (1 / SINE_WAVE_FREQ)  # 2 periods of sine wave, so duration is 2 ms
+SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples for 2 periods
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
@@ -76,7 +76,7 @@ plt.ylabel("Amplitude")
 plt.title("Frequency Spectrum of ADC Input")
 plt.grid(True)
 
-# Apply FFT
+# Apply FFT for magnitude spectrum plot
 fft_values = np.fft.fft(voltages)
 
 # Get the magnitude of the FFT
@@ -87,6 +87,7 @@ frequencies = np.fft.fftfreq(len(voltages), 1 / SAMPLE_FREQ)
 frequencies = np.fft.fftshift(frequencies)  # Shift zero frequency to center
 magnitude = np.fft.fftshift(magnitude)  # Shift the corresponding magnitudes
 
+# Plot the magnitude spectrum
 plt.subplot(3, 1, 3)
 plt.plot(frequencies, magnitude, 'b-')
 plt.title("Frequency Domain: Magnitude Spectrum")
