@@ -43,17 +43,49 @@ def convert_to_voltage(adc_value):
     return VREF * (adc_value / (2 ** BIT_DEPTH - 1))
 
 
+# Data storage
+times = np.linspace(0, DURATION, SAMPLES)  # Time array
+voltages = np.zeros(SAMPLES)
+
+# Matplotlib Setup
+fig, ax = plt.subplots()
+ax.set_xlim(0, DURATION)
+ax.set_ylim(0, VREF)
+ax.set_xlabel("Time (s)")
+ax.set_ylabel("Voltage (V)")
+ax.set_title("ADC Sine Wave Capture")
+
+line, = ax.plot([], [], 'r-')
+
+def update(frame):
+    """Update function for animation"""
+    global voltages
+    adc_value = read_adc(0)
+    voltage = convert_to_voltage(adc_value)
+    
+    # Shift data left and insert new value
+    voltages[:-1] = voltages[1:]
+    voltages[-1] = voltage
+
+    line.set_data(times, voltages)
+    return line,
+
+ani = FuncAnimation(fig, update, interval=1000 / SAMPLE_RATE, blit=True)
+
+
 try:
     print("Starting ADC...")
-    samples = []
-    while True:
-        adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
-        volt = convert_to_voltage(adc_value)
-        print(f"ADC Valuee: {adc_value}")
-        print(f"ADC voltage: {volt}")
+    plt.show()
+
+    # samples = []
+    # while True:
+    #     adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
+    #     volt = convert_to_voltage(adc_value)
+    #     print(f"ADC Valuee: {adc_value}")
+    #     print(f"ADC voltage: {volt}")
 
 
-        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+    #     time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")
