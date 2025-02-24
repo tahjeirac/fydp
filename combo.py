@@ -198,7 +198,8 @@ if __name__ == '__main__':
       print(led)
       strip.startSeq(led)
       start_time = time.time()
-      with sd.InputStream(device=2, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      #devvice num hanges?
+      with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
             time.sleep(0.5)
 
