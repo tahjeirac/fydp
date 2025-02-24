@@ -89,8 +89,8 @@ def adc_listener(channel=0, sample_rate=48000):
                 adc_frequency = None  # No valid note detected
 
 # Start the ADC listener in a separate thread
-adc_thread = threading.Thread(target=adc_listener, daemon=True)
-adc_thread.start()
+# adc_thread = threading.Thread(target=adc_listener, daemon=True)
+# adc_thread.start()
 
 # General settings that can be changed by the user
 SAMPLE_FREQ = 48000 # sample frequency in Hz
@@ -211,15 +211,15 @@ def callback(indata, frames, time, status):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
     #   print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      with adc_lock:
-        if adc_frequency is not None:
-            print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
+    #   with adc_lock:
+    #     if adc_frequency is not None:
+    #         print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
 
-            # Compare ADC frequency with I2S frequency
-            if abs(adc_frequency - max_freq) < 5:  # Allow small tolerance
-                print("ADC confirms the detected note!")
-            else:
-                print("Mismatch detected between ADC and I2S.")
+    #         # Compare ADC frequency with I2S frequency
+    #         if abs(adc_frequency - max_freq) < 5:  # Allow small tolerance
+    #             print("ADC confirms the detected note!")
+    #         else:
+    #             print("Mismatch detected between ADC and I2S.")
 
       state_machine.handle_input(closest_note)
 
