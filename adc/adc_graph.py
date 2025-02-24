@@ -60,7 +60,7 @@ try:
         elapsed_time = time.time() - start_time
         adc_value = read_adc()
         voltage = convert_to_voltage(adc_value)
-
+        print (voltage)
         times.append(elapsed_time)
         voltages.append(voltage)
 
