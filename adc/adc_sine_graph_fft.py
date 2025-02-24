@@ -18,8 +18,8 @@ VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
 SINE_WAVE_FREQ = 1000  # Frequency of sine wave (1000 Hz)
-DURATION = (1 / SINE_WAVE_FREQ)  # 2 periods of sine wave, so duration is 2 ms
-SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples for 2 periods
+DURATION = (1 / SINE_WAVE_FREQ)  # Duration of one period
+SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples for one period
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
@@ -40,7 +40,7 @@ def convert_to_voltage(adc_value):
     return VREF * (adc_value / (2 ** BIT_DEPTH - 1))
 
 # Data storage
-times = np.linspace(0, DURATION, SAMPLES) * 1000  # Time array for 2 ms in ms
+times = np.linspace(0, DURATION, SAMPLES) * 1000  # Time array for 1 ms in ms
 voltages = np.zeros(SAMPLES)  # Placeholder for voltage values
 
 # Collect all data before plotting
@@ -48,7 +48,10 @@ for i in range(SAMPLES):
     adc_value = read_adc(0)  # Read ADC value from channel 0
     voltage = convert_to_voltage(adc_value)
     voltages[i] = voltage
-    time.sleep(1 / SINE_WAVE_FREQ)  # Ensure proper sample rate
+    time.sleep(1 / SAMPLE_FREQ)  # Ensure proper sample rate
+
+# Remove DC offset (center the signal around 0)
+voltages = voltages - np.mean(voltages)
 
 # Plot the data after collection
 plt.figure(figsize=(10, 6))
@@ -63,6 +66,7 @@ plt.grid(True)
 
 # Apply FFT to the voltage signal
 fft_result = np.abs(np.fft.fft(voltages))  # FFT and take the magnitude
+fft_result = fft_result / np.max(fft_result)  # Normalize the FFT result
 frequencies = np.fft.fftfreq(SAMPLES, 1 / SAMPLE_FREQ)  # Frequency axis
 
 # Only keep the positive frequencies (the second half is redundant)
