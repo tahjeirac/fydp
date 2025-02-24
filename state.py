@@ -52,7 +52,7 @@ class NoteStateMachine:
 
     def listening_wrong_note(self, played_note):
         current_note_name = self.song.CurrentNote.get("name")
-        current_wrong_note_name = self.song.WrongNote
+        current_wrong_note_name = self.song.WrongNoteName
         print(f"Waiting for: {current_note_name}, Currently Playing: {played_note}")
 
         if played_note != current_wrong_note_name:

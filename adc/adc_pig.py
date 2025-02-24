@@ -33,6 +33,7 @@ def ConvertToVoltage(value, bitdepth, vref):
 def ConvertToDB(value, bitdepth):
     return 20 * np.log10(value / (2 ** bitdepth - 1))
 try:
+    
     while True:
         adc_value = read_adc(0)
         print(f"ADC Value: {adc_value}")

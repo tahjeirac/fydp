@@ -19,9 +19,9 @@ BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 POWER_THRESH = 20000  # Tuning is activated if the signal power exceeds this threshold
 # NOISE_LEVEL = 0.02  # Noise level (0 to 1, where 1 is full scale)
 
-SAMPLE_FREQ = 44100 # sample frequency in Hz
-WINDOW_SIZE = 44100 # window size of the DFT in samples
-WINDOW_STEP = 21050 # step size of window
+SAMPLE_FREQ = 22050 # sample frequency in Hz
+WINDOW_SIZE = 4096 # window size of the DFT in samples
+WINDOW_STEP = WINDOW_SIZE / 2
 WINDOW_T_LEN = WINDOW_SIZE / SAMPLE_FREQ # length of the window in seconds
 SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
 windowSamples = [0 for _ in range(WINDOW_SIZE)]
@@ -50,10 +50,6 @@ def read_adc(channel):
     
     return value
 
-def convert_to_voltage(adc_value):
-    """Convert ADC value to voltage"""
-    return VREF * (adc_value / (2 ** BIT_DEPTH - 1))
-
 
 def get_frequency(samples):
     """Get the dominant frequency from ADC samples using FFT"""
@@ -65,13 +61,13 @@ def get_frequency(samples):
     magnitude = np.abs(fft_result)
     magnitude[0] = 0
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(fft_freqs[:len(samples)//2], magnitude[:len(samples)//2])
-    plt.title('Magnitude Spectrum')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Magnitude')
-    plt.grid(True)
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(fft_freqs[:len(samples)//2], magnitude[:len(samples)//2])
+    # plt.title('Magnitude Spectrum')
+    # plt.xlabel('Frequency (Hz)')
+    # plt.ylabel('Magnitude')
+    # plt.grid(True)
+    # plt.show()
 
     # Find the index of the peak frequency
     peak_index = np.argmax(magnitude)
@@ -104,14 +100,14 @@ try:
             real_f = dominant_frequency / 16.6
             power = calculate_signal_power(samples)
             if power > POWER_THRESH:
-                # print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
+                print(f"Dominant frequency: {dominant_frequency:.2f} Hz")
                 print(f" real_f: {real_f:.2f} Hz")
                 print (power)
 
             # Clear the sample window to collect the next set of data
             samples = []
 
-        time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
+        # time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")
