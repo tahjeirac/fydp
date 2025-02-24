@@ -130,7 +130,7 @@ def callback(indata, frames, time, status):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      state_machine.handle_input("A4'")
+      state_machine.handle_input(closest_note)
 
     else:
       print(f"Closest note: ...")
