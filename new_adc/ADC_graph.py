@@ -6,7 +6,7 @@ from scipy.fftpack import fft
 
 # SPI parameters
 SPI_CHANNEL = 0  # SPI channel (0 or 1)
-SPI_SPEED = 1000000  # SPI speed (Hz)
+SPI_SPEED = 500000  # SPI speed (Hz)
 SPI_MODE = 0  # SPI mode (0, 1, 2, or 3)
 
 # Setup pigpio library

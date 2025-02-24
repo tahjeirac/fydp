@@ -6,7 +6,6 @@ from scipy.fftpack import fft
 with open("amplitude_data.txt", "r") as file:
     amplitude_data = [float(line.strip()) for line in file]
 
-print(amplitude_data)  # List of numbers
 sample_rate = 48000
 
 # Fourier Transform
@@ -26,7 +25,7 @@ magnitude = np.abs(fft_result)
 plt.figure(figsize=(10, 6))
 
 # Record data for 2 seconds
-duration = 0.005  # Record for 2 seconds
+duration = 0.01  # Record for 2 seconds
 sample_rate = 48000  # Number of samples per second (adjust this depending on your ADC)
 num_samples = int(duration * sample_rate)
 time_data = np.linspace(0, duration, num_samples)
@@ -45,3 +44,29 @@ plt.grid(True)
 # plt.grid(True)
 # plt.grid(True)
 plt.show()
+
+from scipy.signal import find_peaks
+
+def find_period(amplitudes, sample_rate):
+    # Find the indices of the peaks
+    peaks, _ = find_peaks(amplitudes, height=0)
+    
+    # Calculate the time array
+    duration = len(amplitudes) / sample_rate
+    time = np.linspace(0, duration, len(amplitudes), endpoint=False)
+    
+    # Calculate the time differences between consecutive peaks
+    peak_times = time[peaks]
+    periods = np.diff(peak_times)
+    
+    # Return the average period
+    average_period = np.mean(periods)
+    return average_period
+
+# # Example usage
+# t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+# amplitudes = 0.5 * np.sin(2 * np.pi * 440 * t)
+
+period = find_period(amplitude_data, sample_rate)
+print(f"Period: {period} seconds")
+print(f"frequency: {1/period} seconds")
