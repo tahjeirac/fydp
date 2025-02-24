@@ -3,21 +3,22 @@ import numpy as np
 import pigpio
 import matplotlib.pyplot as plt
 
+SPI_BUS = 0  # SPI bus (0 or 1)
+
 # Set up pigpio and configure SPI settings
 pi = pigpio.pi()  # Create an instance of pigpio
 if not pi.connected:
     print("Failed to connect to pigpio daemon!")
     exit()
-
-SPI_BUS = 0  # SPI bus (0 or 1)
-SAMPLE_FREQ = 500000  # ADC sampling frequency (samples per second)
-WINDOW_SIZE = 2048   # Number of samples per FFT window
-
 pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
+
+SAMPLE_FREQ = 50000# ADC sampling frequency (samples per second)
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
-SAMPLE_RATE = 1000  # Samples per second (Adjust for smooth plotting)
+# SAMPLE_RATE = 1000  # Samples per second (Adjust for smooth plotting)
+SAMPLE_RATE = 50000  # Samples per second (Adjust for smooth plotting)
+
 SINE_WAVE_FREQ = 250  # Frequency of sine wave (250 Hz)
 DURATION = 1 / SINE_WAVE_FREQ  # Plot duration to cover one sine wave period (in seconds)
 SAMPLES = 5*int(SAMPLE_RATE * DURATION)  # Number of samples to collect (based on duration)
