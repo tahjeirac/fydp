@@ -23,6 +23,8 @@ def convert_to_voltage(adc_value):
     """Convert ADC value to voltage"""
     return 3.3 * (adc_value / (2**12 - 1))
 # Read ADC data and store amplitude values
+
+print ("hi")
 start_time = time.time()
 while len(amplitude_data) < num_samples:
     adc_value = adc_gzero.read(1)  # Read from channel 0 (you can change the channel)
