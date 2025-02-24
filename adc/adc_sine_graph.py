@@ -20,7 +20,7 @@ BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 SAMPLE_RATE = 1000  # Samples per second (Adjust for smooth plotting)
 SINE_WAVE_FREQ = 250  # Frequency of sine wave (250 Hz)
 DURATION = 1 / SINE_WAVE_FREQ  # Plot duration to cover one sine wave period (in seconds)
-SAMPLES = int(SAMPLE_RATE * DURATION)  # Number of samples to collect (based on duration)
+SAMPLES = 3*int(SAMPLE_RATE * DURATION)  # Number of samples to collect (based on duration)
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
