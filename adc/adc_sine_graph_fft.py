@@ -76,6 +76,27 @@ plt.ylabel("Amplitude")
 plt.title("Frequency Spectrum of ADC Input")
 plt.grid(True)
 
+
+# Apply FFT
+fft_values = np.fft.fft(voltages)
+
+# Get the magnitude of the FFT
+magnitude = np.abs(fft_values)
+
+# Get the corresponding frequency values
+frequencies = np.fft.fftfreq(len(voltages), 1 / SAMPLE_FREQ)
+frequencies = np.fft.fftshift(frequencies)  # Shift zero frequency to center
+magnitude = np.fft.fftshift(magnitude)  # Shift the corresponding magnitudes
+
+plt.subplot(2, 1, 3)
+plt.plot(frequencies, magnitude, 'b-')
+plt.title("Frequency Domain: Magnitude Spectrum")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.grid(True)
+plt.xlim(0, SAMPLE_FREQ / 2)  # Limit the x-axis to Nyquist frequency
+plt.tight_layout()
+plt.show()
 # Show the plots
 plt.tight_layout()  # Adjust subplots for better fit
 plt.show()
