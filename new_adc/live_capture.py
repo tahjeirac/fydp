@@ -96,7 +96,7 @@ try:
         adc_value = read_adc(1)  # Read from channel 0 (you can change the channel)
         voltage = convert_to_voltage(adc_value)  # Convert raw ADC value to voltage
         samples.append(adc_value)
-
+        print (len(samples), WINDOW_SIZE)
         if len(samples) >= WINDOW_SIZE:
             dominant_frequency = get_frequency(samples)
             samples = []
