@@ -8,13 +8,20 @@ from time import sleep	# To add delay
 import RPi.GPIO as GPIO	# To use GPIO pins
 
 # Start SPI connection
-spi = spidev.SpiDev()  # Created an object
-spi.open(0, 0)  # Open SPI bus 0, device 0 (MCP3208)
+# spi = spidev.SpiDev()  # Created an object
+# spi.open(0, 0)  # Open SPI bus 0, device 0 (MCP3208)
+
+spi = spidev.SpiDev()
+spi.open(0,0)
+spi.max_speed_hz=1000000
 
 GPIO.setmode(GPIO.BCM)
 
 print("Python version: " + platform.python_version())
 print("matplotlib version: " + mpl.__version__)
+
+VREF = 3.3  # Reference voltage
+BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
 # Set up plot
 fig, ax = plt.subplots()
@@ -22,17 +29,14 @@ line, = ax.plot(np.random.rand(10))
 ax.set_ylim(0, 4095)  # MCP3208 is a 12-bit ADC, so max value is 4095
 xdata, ydata = [0]*100, [0]*100
 
-# Read MCP3208 data (12-bit ADC)
-def analogInput(channel):
-    # Send start bit, single-ended bit, and channel
-    # MCP3208 uses 3 bits for the channel (0 to 7), so we shift accordingly
-    spi.max_speed_hz = 1350000  # SPI clock rate
-    # Send 3-byte sequence to read data from the selected channel
-    adc = spi.xfer2([0x06 | ((channel & 0x07) >> 2), ((channel & 0x03) << 6), 0x00])
-    # The result is returned as a 12-bit number, combining the received bytes
-    data = ((adc[1] & 0x0F) << 8) | adc[2]
-    return data
+def ReadChannel3208(channel):
+  adc = spi.xfer2([6|(channel>>2),channel<<6,0]) #0000011x,xx000000,00000000
+  data = ((adc[1]&15) << 8) + adc[2]
+  return data
 
+def convert_to_voltage(adc_value):
+    """Convert ADC value to voltage"""
+    return VREF * (adc_value / (2**BIT_DEPTH - 1))
 # Update plot with new data
 def update(data):
     line.set_ydata(data)
@@ -62,9 +66,9 @@ def data_gen():
             x += 0.1
             
         try:
-            inRaw = analogInput(0)  # Reading from channel 0 (can change as needed)
+            inRaw = ReadChannel3208(0)  # Reading from channel 0 (can change as needed)
             sleep(0.02)  # Delay for sample rate control
-            inInt = int(inRaw)
+            inInt = int(convert_to_voltage(inRaw))
         except:
             inInt = 0
         
