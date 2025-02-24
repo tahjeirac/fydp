@@ -75,6 +75,8 @@ ani = FuncAnimation(fig, update, frames=SAMPLES, interval=1000 / SAMPLE_RATE, bl
 try:
     print("Starting ADC...")
     plt.show()
+    ani.event_source.stop()
+
 
 except KeyboardInterrupt:
     print("Program interrupted")
