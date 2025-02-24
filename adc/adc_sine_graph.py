@@ -25,7 +25,7 @@ SAMPLE_RATE = 1000  # Samples per second (Adjust for smooth plotting)
 
 SINE_WAVE_FREQ = 250  # Frequency of sine wave (250 Hz)
 DURATION = 1 / SINE_WAVE_FREQ  # Plot duration to cover one sine wave period (in seconds)
-SAMPLES = SAMPLE_RATE * DURATION  # Number of samples to collect (based on duration)
+SAMPLES = int(SAMPLE_RATE * DURATION)  # Number of samples to collect (based on duration)
 
 # SAMPLES = SAMPLE_RATE * DURATION  # Number of samples to collect
 
