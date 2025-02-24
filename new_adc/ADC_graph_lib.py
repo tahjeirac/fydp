@@ -9,7 +9,7 @@ from adc import MCP3208Gpiozero, MCP3208Spidev
 
 # Record data for 2 seconds
 duration = 0.01  # Record for 2 seconds
-sample_rate = 500000  # Number of samples per second (adjust this depending on your ADC)
+sample_rate = 48000  # Number of samples per second (adjust this depending on your ADC)
 num_samples = int(duration * sample_rate)
 
 # Store the readings
@@ -30,6 +30,7 @@ while len(amplitude_data) < num_samples:
     amplitude = (adc_value / 4095.0) * 3.3  # Assuming 12-bit ADC and 3.3V reference
     volts.append(convert_to_voltage(adc_value))
     amplitude_data.append(amplitude)
+    time.sleep(1/sample_rate)
 
 
 # Save amplitude data to a file
