@@ -75,7 +75,7 @@ def update(frame):
     line.set_data(times, voltages)
     return line,
 
-ani = FuncAnimation(fig, update, interval=1000 / SAMPLE_RATE, blit=True)
+ani = FuncAnimation(fig, update, frames=SAMPLES, interval=1000 / SAMPLE_RATE, blit=True)
 
 
 try:
