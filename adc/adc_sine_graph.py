@@ -1,10 +1,8 @@
 import time
 import numpy as np
-import scipy.fftpack
 import pigpio
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
 
 # Set up pigpio and configure SPI settings
 pi = pigpio.pi()  # Create an instance of pigpio
@@ -21,13 +19,9 @@ VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
 SAMPLE_RATE = 1000  # Samples per second (Adjust for smooth plotting)
-# DURATION = 2  # Plot duration in seconds
-
 SINE_WAVE_FREQ = 250  # Frequency of sine wave (250 Hz)
 DURATION = 1 / SINE_WAVE_FREQ  # Plot duration to cover one sine wave period (in seconds)
 SAMPLES = int(SAMPLE_RATE * DURATION)  # Number of samples to collect (based on duration)
-
-# SAMPLES = SAMPLE_RATE * DURATION  # Number of samples to collect
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
@@ -47,15 +41,14 @@ def convert_to_voltage(adc_value):
     """Convert ADC value to voltage"""
     return VREF * (adc_value / (2 ** BIT_DEPTH - 1))
 
-
 # Data storage
-times = np.linspace(0, DURATION, SAMPLES)  # Time array
-voltages = np.zeros(SAMPLES)
+times = np.linspace(0, DURATION, SAMPLES)  # Time array for one period
+voltages = np.zeros(SAMPLES)  # Placeholder for voltage values
 
 # Matplotlib Setup
 fig, ax = plt.subplots()
-ax.set_xlim(0, DURATION)
-ax.set_ylim(0, VREF)
+ax.set_xlim(0, DURATION)  # Limit to one period of the sine wave
+ax.set_ylim(0, VREF)  # Limit voltage range
 ax.set_xlabel("Time (s)")
 ax.set_ylabel("Voltage (V)")
 ax.set_title("ADC Sine Wave Capture")
@@ -72,31 +65,20 @@ def update(frame):
     voltages[:-1] = voltages[1:]
     voltages[-1] = voltage
 
+    # Update plot data
     line.set_data(times, voltages)
     return line,
 
+# Use FuncAnimation to animate the plot
 ani = FuncAnimation(fig, update, frames=SAMPLES, interval=1000 / SAMPLE_RATE, blit=True)
-
 
 try:
     print("Starting ADC...")
     plt.show()
-
-    # samples = []
-    # while True:
-    #     adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
-    #     volt = convert_to_voltage(adc_value)
-    #     print(f"ADC Valuee: {adc_value}")
-    #     print(f"ADC voltage: {volt}")
-
-
-    #     time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
 
 except KeyboardInterrupt:
     print("Program interrupted")
 
 finally:
     pi.stop()  # Clean up pigpio connection
-    # pi.spi_close(adc_handle)  # Close SPI connection
-    # pi.stop()  # Stop pigpio
     print("Cleaned up resources.")
