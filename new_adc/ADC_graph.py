@@ -50,6 +50,15 @@ while len(amplitude_data) < num_samples:
     amplitude_data.append(amplitude)
     time.sleep(1 / sample_rate)  # Wait for the next sample
 
+
+# Save amplitude data to a file
+with open("amplitude_data.txt", "w") as f:
+    for value in amplitude_data:
+        f.write(f"{value}\n")
+
+print("Amplitude data saved to amplitude_data.txt")
+
+
 plt.figure(figsize=(10, 6))
 plt.subplot(3, 1, 1)
 plt.plot(time_data, amplitude_data)
