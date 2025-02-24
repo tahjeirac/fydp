@@ -94,13 +94,13 @@ try:
         samples = []
 
         adc_value = read_adc(1)  # Read from channel 0 (you can change the channel)
-        print (adc_value)
         voltage = convert_to_voltage(adc_value)  # Convert raw ADC value to voltage
         samples.append(adc_value)
 
         if len(samples) >= WINDOW_SIZE:
             dominant_frequency = get_frequency(samples)
             samples = []
+            print("dom")
             print (dominant_frequency)
         time.sleep(1 / sample_rate)  # Wait for the next sample
         
