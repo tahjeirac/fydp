@@ -87,10 +87,11 @@ def process_audio_samples():
 
     # Skip if the signal power is too low to detect a note
     signal_power = (np.linalg.norm(process_audio_samples.window_samples, ord=2) ** 2) / len(process_audio_samples.window_samples)
-    if signal_power < POWER_THRESH:
-        os.system('cls' if os.name == 'nt' else 'clear')  # Clear screen for better readability
-        print("Closest note: ...")
-        return
+    print (signal_power)
+    # if signal_power < POWER_THRESH:
+    #     os.system('cls' if os.name == 'nt' else 'clear')  # Clear screen for better readability
+    #     print("Closest note: ...")
+    #     return
 
     # Apply the Hanning window to avoid spectral leakage and compute the FFT
     hann_samples = process_audio_samples.window_samples * HANN_WINDOW
@@ -129,6 +130,7 @@ def process_audio_samples():
     # Find the closest note and pitch corresponding to the detected frequency
     closest_note, closest_pitch = find_closest_note(max_freq)
     max_freq = round(max_freq, 1)
+    print (max_freq)
     closest_pitch = round(closest_pitch, 1)
 
     # Update the note buffer (ring buffer) and clear the console
