@@ -42,9 +42,9 @@ start_time = time.perf_counter()
 for i in range(SAMPLES):
     voltages[i] = convert_to_voltage(read_adc(CHANNEL))  # Read and store voltage
     
-    # High-precision timing
-    while (time.perf_counter() - start_time) < ((i + 1) / SAMPLE_FREQ):
-        pass  # Busy-wait to maintain exact sampling rate
+    # # High-precision timing
+    # while (time.perf_counter() - start_time) < ((i + 1) / SAMPLE_FREQ):
+    #     pass  # Busy-wait to maintain exact sampling rate
 
 # Stop SPI communication
 pi.spi_close(spi_handle)
