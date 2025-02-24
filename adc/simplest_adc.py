@@ -60,7 +60,7 @@ line, = ax.plot([], [], 'r-')
 def update(frame):
     """Update function for animation"""
     global voltages
-    adc_value = read_adc()
+    adc_value = read_adc(0)
     voltage = convert_to_voltage(adc_value)
     
     # Shift data left and insert new value
