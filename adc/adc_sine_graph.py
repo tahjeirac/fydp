@@ -70,13 +70,11 @@ def update(frame):
     return line,
 
 # Use FuncAnimation to animate the plot
-ani = FuncAnimation(fig, update, frames=SAMPLES, interval=1000 / SAMPLE_RATE, blit=True)
+ani = FuncAnimation(fig, update, frames=range(SAMPLES), interval=1000 / SAMPLE_RATE, blit=True)
 
 try:
     print("Starting ADC...")
     plt.show()
-    ani.event_source.stop()
-
 
 except KeyboardInterrupt:
     print("Program interrupted")
