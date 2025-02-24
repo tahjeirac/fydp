@@ -35,10 +35,15 @@ def test_all_channels(adc, delay: float = DELAY):
 def test_one_channel(adc, channel: int, delay: float = DELAY):
     print(adc.info)
     while True:
-        stdout.write("\r%s" % f"D{channel}:{adc.read(channel)}")
-        stdout.flush()
+        print(adc.read(channel))
+        # stdout.write("\r%s" % f"D{channel}:{adc.read(channel)}")
+        # stdout.flush()
         time.sleep(delay)
 
 
 if __name__ == '__main__':
-    test_all_channels(adc_gzero)
+    
+    try:
+        test_one_channel(adc_gzero, 1)
+    except KeyboardInterrupt:
+        print("Program interrupted")

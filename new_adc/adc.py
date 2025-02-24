@@ -62,7 +62,7 @@ class MCP3208Spidev:
     using built-in module spidev
     """
 
-    def __init__(self, port: int = 0, device: int = 0, speed: int = 1_000_000):
+    def __init__(self, port: int = 0, device: int = 0, speed: int = 500_000):
         # [skip pep8] ignore=E501
         # noinspection LongLine
         """
