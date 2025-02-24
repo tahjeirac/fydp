@@ -47,7 +47,7 @@ for i in range(SAMPLES):
     adc_value = read_adc(0)  # Read ADC value from channel 0
     voltage = convert_to_voltage(adc_value)
     voltages[i] = voltage
-    time.sleep(1 / SAMPLE_FREQ)  # Ensure proper sample rate
+    time.sleep(1 / SINE_WAVE_FREQ)  # Ensure proper sample rate
 
 # Plot the data after collection
 plt.figure(figsize=(10, 6))
