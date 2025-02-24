@@ -89,10 +89,12 @@ def get_frequency(samples):
 try:
     while True:
         # Collect samples
+        
         amplitude_data = []
         samples = []
 
         adc_value = read_adc(1)  # Read from channel 0 (you can change the channel)
+        print (adc_value)
         voltage = convert_to_voltage(adc_value)  # Convert raw ADC value to voltage
         samples.append(adc_value)
 
