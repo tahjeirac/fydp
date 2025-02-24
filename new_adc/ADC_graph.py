@@ -49,13 +49,29 @@ while len(amplitude_data) < num_samples:
     amplitude_data.append(amplitude)
     time.sleep(1 / sample_rate)  # Wait for the next sample
 
-# Plot the results
-plt.figure()
+plt.figure(figsize=(10, 6))
+plt.subplot(2, 1, 1)
 plt.plot(time_data, amplitude_data)
 plt.title('Amplitude vs Time')
 plt.xlabel('Time [s]')
 plt.ylabel('Amplitude [V]')
 plt.grid(True)
+
+# Perform FFT (Discrete Fourier Transform)
+fft_data = np.fft.fft(amplitude_data)  # Perform FFT on the amplitude data
+fft_freqs = np.fft.fftfreq(num_samples, 1 / sample_rate)  # Frequency bins for the FFT output
+fft_magnitude = np.abs(fft_data)  # Magnitude of the FFT results
+
+# Plot the FFT (Frequency vs Magnitude)
+plt.subplot(2, 1, 2)
+plt.plot(fft_freqs[:num_samples // 2], fft_magnitude[:num_samples // 2])  # Only plot the positive frequencies
+plt.title('FFT of Signal')
+plt.xlabel('Frequency [Hz]')
+plt.ylabel('Magnitude')
+plt.grid(True)
+
+# Show the plots
+plt.tight_layout()
 plt.show()
 
 # Close the SPI connection and pigpio
