@@ -40,7 +40,7 @@ pi.wave_clear()  # Clear any existing waveforms
 wave = []
 
 for i in range(SAMPLES):
-    wave.append(pigpio.pulse(1 << 4, 0, int(2e6 / SAMPLE_FREQ)))  # GPIO 4 as a dummy trigger
+    wave.append(pigpio.pulse(1 << 4, 0, int(5e6 / SAMPLE_FREQ)))  # GPIO 4 as a dummy trigger
 
 pi.wave_add_generic(wave)  # Add waveform
 wave_id = pi.wave_create()  # Create wave from pulses
