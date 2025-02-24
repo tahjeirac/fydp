@@ -18,7 +18,7 @@ spi_handle = pi.spi_open(SPI_BUS, 1000000, 0)
 SAMPLE_FREQ = 20000  # Target sample rate in Hz
 VREF = 3.3  # Reference voltage
 BIT_DEPTH = 12  # MCP3208 is 12-bit
-DURATION = 1 / 1000  # 1 ms of data collection
+DURATION = 1  # 1 ms of data collection
 SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples
 
 # Function to read ADC value
