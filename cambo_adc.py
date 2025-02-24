@@ -165,7 +165,6 @@ def callback(indata, frames, time, status):
       print("Closest note: ...")
       return
 
-    print ("start adc listening")
     # avoid spectral leakage by multiplying the signal with a hann window
     hann_samples = callback.window_samples * HANN_WINDOW
     magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
@@ -211,7 +210,7 @@ def callback(indata, frames, time, status):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+    #   print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       with adc_lock:
         if adc_frequency is not None:
             print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
