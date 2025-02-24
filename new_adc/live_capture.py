@@ -11,7 +11,7 @@ SPI_SPEED = 500000  # SPI speed (Hz)
 SPI_MODE = 0  # SPI mode (0, 1, 2, or 3)
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
-WINDOW_SIZE = 44100 # window size of the DFT in samples
+WINDOW_SIZE = 2048 # window size of the DFT in samples
 
 # Setup pigpio library
 pi = pigpio.pi()
