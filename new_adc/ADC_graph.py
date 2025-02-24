@@ -34,7 +34,7 @@ def read_adc(channel):
 
 # Record data for 2 seconds
 duration = 0.01  # Record for 2 seconds
-sample_rate = 1000  # Number of samples per second (adjust this depending on your ADC)
+sample_rate = 4000  # Number of samples per second (adjust this depending on your ADC)
 num_samples = int(duration * sample_rate)
 
 # Store the readings

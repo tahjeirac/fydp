@@ -18,7 +18,7 @@ if not pi.connected:
 # Open SPI connection (1 MHz SPI clock)
 spi_handle = pi.spi_open(SPI_BUS, 1000000, 0)
 
-SAMPLE_FREQ = 20000  # Sampling rate in Hz
+SAMPLE_FREQ = 10  # Sampling rate in Hz
 VREF = 3.3  # Reference voltage
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 DURATION = 1 / 1000  # 1 ms of data collection
@@ -56,9 +56,9 @@ start_time = time.perf_counter()
 for i in range(SAMPLES):
     voltages[i] = convert_to_voltage(ReadChannel3208(CHANNEL))  # Read and store voltage
     
-    # # High-precision timing
-    # while (time.perf_counter() - start_time) < ((i + 1) / SAMPLE_FREQ):
-    #     pass  # Busy-wait to maintain exact sampling rate
+    # High-precision timing
+    while (time.perf_counter() - start_time) < ((i + 1) / SAMPLE_FREQ):
+        pass  # Busy-wait to maintain exact sampling rate
 
 # Stop SPI communication
 pi.spi_close(spi_handle)
