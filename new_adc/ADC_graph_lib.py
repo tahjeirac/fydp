@@ -28,6 +28,7 @@ print ("hi")
 start_time = time.time()
 while len(amplitude_data) < num_samples:
     adc_value = adc_gzero.read(1)  # Read from channel 0 (you can change the channel)
+    print(adc_value)
     # Normalize the ADC value to a range (e.g., 0-3.3V for a 3.3V reference voltage)
     amplitude = (adc_value / 4095.0) * 3.3  # Assuming 12-bit ADC and 3.3V reference
     volts.append(convert_to_voltage(adc_value))
