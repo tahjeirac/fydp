@@ -50,7 +50,7 @@ while len(amplitude_data) < num_samples:
     time.sleep(1 / sample_rate)  # Wait for the next sample
 
 plt.figure(figsize=(10, 6))
-plt.subplot(2, 1, 1)
+plt.subplot(3, 1, 1)
 plt.plot(time_data, amplitude_data)
 plt.title('Amplitude vs Time')
 plt.xlabel('Time [s]')
@@ -63,12 +63,26 @@ fft_freqs = np.fft.fftfreq(num_samples, 1 / sample_rate)  # Frequency bins for t
 fft_magnitude = np.abs(fft_data)  # Magnitude of the FFT results
 
 # Plot the FFT (Frequency vs Magnitude)
-plt.subplot(2, 1, 2)
+plt.subplot(3, 1, 2)
 plt.plot(fft_freqs[:num_samples // 2], fft_magnitude[:num_samples // 2])  # Only plot the positive frequencies
 plt.title('FFT of Signal')
 plt.xlabel('Frequency [Hz]')
 plt.ylabel('Magnitude')
 plt.grid(True)
+
+fft_values = np.fft.fftshift(np.fft.fft(amplitude_data))
+magnitude = np.fft.fftshift(np.abs(fft_values))
+frequencies = np.fft.fftshift(np.fft.fftfreq(num_samples, 1 / sample_rate))
+
+plt.subplot(3, 1, 3)
+plt.plot(frequencies, magnitude, 'b-')
+plt.title("Frequency Domain: Magnitude Spectrum")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.grid(True)
+plt.xlim(0, sample_rate / 2)  # Limit to Nyquist frequency
+plt.tight_layout()
+plt.show()
 
 # Show the plots
 plt.tight_layout()
