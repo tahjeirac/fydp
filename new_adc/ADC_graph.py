@@ -2,6 +2,7 @@ import pigpio
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.fftpack import fft
 
 # SPI parameters
 SPI_CHANNEL = 0  # SPI channel (0 or 1)
@@ -70,17 +71,21 @@ plt.xlabel('Frequency [Hz]')
 plt.ylabel('Magnitude')
 plt.grid(True)
 
-fft_values = np.fft.fftshift(np.fft.fft(amplitude_data))
-magnitude = np.fft.fftshift(np.abs(fft_values))
-frequencies = np.fft.fftshift(np.fft.fftfreq(num_samples, 1 / sample_rate))
+# Convert to numpy array
+amplitude_data = np.array(amplitude_data)
+
+# Perform FFT
+absFreqSpectrum = np.abs(fft(amplitude_data))
+
+# Frequency axis
+timeX = np.linspace(0, sample_rate / 2, len(amplitude_data) // 2)  
 
 plt.subplot(3, 1, 3)
-plt.plot(frequencies, magnitude, 'b-')
-plt.title("Frequency Domain: Magnitude Spectrum")
-plt.xlabel("Frequency (Hz)")
-plt.ylabel("Magnitude")
+plt.plot(timeX, absFreqSpectrum[:len(amplitude_data) // 2])
+plt.xlabel("Frequency [Hz]")
+plt.ylabel("|X(n)|")
+plt.title("FFT Spectrum")
 plt.grid(True)
-plt.xlim(0, sample_rate / 2)  # Limit to Nyquist frequency
 plt.tight_layout()
 plt.show()
 
