@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 
 SPI_BUS = 0  # SPI bus (0 or 1)
-CHANNEL = 0  # ADC channel to read from
+CHANNEL = 1  # ADC channel to read from
 
 # Initialize pigpio and connect
 pi = pigpio.pi()
