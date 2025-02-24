@@ -41,8 +41,9 @@ try:
     samples = []
     while True:
         adc_value = read_adc(channel=0)  # Read from ADC channel 0 (you can change to the channel you need)
+        volt = convert_to_voltage(adc_value)
         print(f"ADC Valuee: {adc_value}")
-        print(convert_to_voltage(adc_value))
+        print(f"ADC voltage: {volt}")
 
 
         time.sleep(1 / SAMPLE_FREQ)  # Ensure the sampling rate is consistent
