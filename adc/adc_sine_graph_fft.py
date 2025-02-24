@@ -10,14 +10,14 @@ pi = pigpio.pi()  # Create an instance of pigpio
 if not pi.connected:
     print("Failed to connect to pigpio daemon!")
     exit()
-pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
-
+# pi.spi_open(SPI_BUS, 1000000, 0)  # SPI speed: 1 MHz, mode: 0 (CPOL = 0, CPHA = 0)
+pi.spi_open(SPI_BUS, 500000, 0)
 SAMPLE_FREQ = 50000  # ADC sampling frequency (samples per second)
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
 SINE_WAVE_FREQ = 1000  # Frequency of sine wave (1000 Hz)
-DURATION = 2 * (1 / SINE_WAVE_FREQ)  # 2 periods of sine wave, so duration is 2 ms
+DURATION = (1 / SINE_WAVE_FREQ)  # 2 periods of sine wave, so duration is 2 ms
 SAMPLES = int(SAMPLE_FREQ * DURATION)  # Number of samples for 2 periods
 
 # Function to read data from MCP3208 using pigpio SPI
