@@ -16,9 +16,9 @@ SAMPLE_FREQ = 50000  # ADC sampling frequency (samples per second)
 VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 
-SINE_WAVE_FREQ = 250  # Frequency of sine wave (250 Hz)
+SINE_WAVE_FREQ = 1000  # Frequency of sine wave (250 Hz)
 DURATION = 1 / SINE_WAVE_FREQ  # Plot duration to cover one sine wave period (in seconds)
-SAMPLES = 5 * int(SAMPLE_FREQ * DURATION)  # Number of samples to collect (based on duration)
+SAMPLES = 2 * int(SAMPLE_FREQ * DURATION)  # Number of samples to collect (based on duration)
 
 # Function to read data from MCP3208 using pigpio SPI
 def read_adc(channel):
