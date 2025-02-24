@@ -151,111 +151,90 @@ def callback(indata, frames, time, status):
     print(status)
     return
   if any(indata):
-    callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0])) # append new samples
-    callback.window_samples = callback.window_samples[len(indata[:, 0]):] # remove old samples
+    with adc_lock:
+        if adc_frequency is not None:
+            print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
 
-    # skip if signal power is too low
-    signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
-    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
+    
+    # callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0])) # append new samples
+    # callback.window_samples = callback.window_samples[len(indata[:, 0]):] # remove old samples
 
-    # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
-    # print(signal_power)
-    if signal_power < POWER_THRESH:
-      os.system('cls' if os.name=='nt' else 'clear')
-      print("Closest note: ...")
-      return
+    # # skip if signal power is too low
+    # signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
+    # volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    # avoid spectral leakage by multiplying the signal with a hann window
-    hann_samples = callback.window_samples * HANN_WINDOW
-    magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
+    # # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+    # # print(signal_power)
+    # if signal_power < POWER_THRESH:
+    #   os.system('cls' if os.name=='nt' else 'clear')
+    #   print("Closest note: ...")
+    #   return
 
-    # supress mains hum, set everything below 62Hz to zero
-    for i in range(int(62/DELTA_FREQ)):
-      magnitude_spec[i] = 0
+    # # avoid spectral leakage by multiplying the signal with a hann window
+    # hann_samples = callback.window_samples * HANN_WINDOW
+    # magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
 
-    # calculate average energy per frequency for the octave bands
-    # and suppress everything below it
-    for j in range(len(OCTAVE_BANDS)-1):
-      ind_start = int(OCTAVE_BANDS[j]/DELTA_FREQ)
-      ind_end = int(OCTAVE_BANDS[j+1]/DELTA_FREQ)
-      ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
-      avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end-ind_start)
-      avg_energy_per_freq = avg_energy_per_freq**0.5
-      for i in range(ind_start, ind_end):
-        magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH*avg_energy_per_freq else 0
+    # # supress mains hum, set everything below 62Hz to zero
+    # for i in range(int(62/DELTA_FREQ)):
+    #   magnitude_spec[i] = 0
 
-    # interpolate spectrum
-    mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1/NUM_HPS), np.arange(0, len(magnitude_spec)),
-                              magnitude_spec)
-    mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2) #normalize it
+    # # calculate average energy per frequency for the octave bands
+    # # and suppress everything below it
+    # for j in range(len(OCTAVE_BANDS)-1):
+    #   ind_start = int(OCTAVE_BANDS[j]/DELTA_FREQ)
+    #   ind_end = int(OCTAVE_BANDS[j+1]/DELTA_FREQ)
+    #   ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
+    #   avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end-ind_start)
+    #   avg_energy_per_freq = avg_energy_per_freq**0.5
+    #   for i in range(ind_start, ind_end):
+    #     magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH*avg_energy_per_freq else 0
 
-    hps_spec = copy.deepcopy(mag_spec_ipol)
+    # # interpolate spectrum
+    # mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1/NUM_HPS), np.arange(0, len(magnitude_spec)),
+    #                           magnitude_spec)
+    # mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2) #normalize it
 
-    # calculate the HPS
-    for i in range(NUM_HPS):
-      tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol)/(i+1)))], mag_spec_ipol[::(i+1)])
-      if not any(tmp_hps_spec):
-        break
-      hps_spec = tmp_hps_spec
+    # hps_spec = copy.deepcopy(mag_spec_ipol)
 
-    max_ind = np.argmax(hps_spec)
-    max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
+    # # calculate the HPS
+    # for i in range(NUM_HPS):
+    #   tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol)/(i+1)))], mag_spec_ipol[::(i+1)])
+    #   if not any(tmp_hps_spec):
+    #     break
+    #   hps_spec = tmp_hps_spec
 
-    closest_note, closest_pitch = find_closest_note(max_freq)
-    max_freq = round(max_freq, 1)
-    closest_pitch = round(closest_pitch, 1)
+    # max_ind = np.argmax(hps_spec)
+    # max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
 
-    callback.noteBuffer.insert(0, closest_note) # ringbuffer
-    callback.noteBuffer.pop()
+    # closest_note, closest_pitch = find_closest_note(max_freq)
+    # max_freq = round(max_freq, 1)
+    # closest_pitch = round(closest_pitch, 1)
 
-    os.system('cls' if os.name=='nt' else 'clear')
-    if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
+    # callback.noteBuffer.insert(0, closest_note) # ringbuffer
+    # callback.noteBuffer.pop()
+
+    # os.system('cls' if os.name=='nt' else 'clear')
+    # if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
     #   print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-    #   with adc_lock:
-    #     if adc_frequency is not None:
-    #         print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
+    # #   with adc_lock:
+    # #     if adc_frequency is not None:
+    # #         print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
 
-    #         # Compare ADC frequency with I2S frequency
-    #         if abs(adc_frequency - max_freq) < 5:  # Allow small tolerance
-    #             print("ADC confirms the detected note!")
-    #         else:
-    #             print("Mismatch detected between ADC and I2S.")
+    # #         # Compare ADC frequency with I2S frequency
+    # #         if abs(adc_frequency - max_freq) < 5:  # Allow small tolerance
+    # #             print("ADC confirms the detected note!")
+    # #         else:
+    # #             print("Mismatch detected between ADC and I2S.")
 
-      state_machine.handle_input(closest_note)
+    #   state_machine.handle_input(closest_note)
 
-    else:
-      print(f"Closest note: ...")
-      state_machine.handle_input("SILENCE")
+#     else:
+#       print(f"Closest note: ...")
+#       state_machine.handle_input("SILENCE")
 
-  else:
-    print('no input')
+#   else:
+#     print('no input')
 
-# Step 2: Verify with ADC Mic (Runs in a Separate Thread)
-def verify_with_adc(duration=0.1, sample_rate=48000, channel=1):
-    """Checks if the electret mic (ADC) also detects a note"""
-    samples = []
-    start_time = time.time()
-    
-    while time.time() - start_time < duration:
-        samples.append(read_adc(channel))
-        time.sleep(1 / sample_rate)
-    
-    # Convert to NumPy array and filter
-    samples = np.array(samples)
-    filtered_samples = highpass_filter(samples)
-    
-    # Compute ADC power level
-    adc_power = np.linalg.norm(filtered_samples, ord=2)**2 / len(filtered_samples)
-    
-    print(f"ADC Power Level: {adc_power}")
-    
-    if adc_power > 0:
-        print("Note confirmed by ADC mic! Performing frequency analysis...")
-        # Extract frequency using FFT (or Yin if implemented)
-        detected_freq = detect_pitch(filtered_samples)
-        print(f"Detected Note Frequency: {detected_freq} Hz")
-    else:
-        print("False positive detected by I2S mic, ignoring.")
 
 def saveNote(note):
    #save time
