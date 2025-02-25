@@ -24,7 +24,7 @@ VREF = 3.3  # Reference voltage (adjust based on your ADC and system)
 BIT_DEPTH = 12  # MCP3208 has a 12-bit resolution
 WINDOW_SIZE = 16384 # window size of the DFT in samples
 SAMPLE_RATE = 48000 # sample frequency in Hz
-
+ADC_PWER_THRESH = 0
 adc_frequency = None
 adc_power = 0
 adc_lock = threading.Lock()
@@ -39,12 +39,6 @@ if not pi.connected:
 spi_handle = pi.spi_open(SPI_CHANNEL, SPI_SPEED, SPI_MODE)
 
 def read_adc(channel):
-    """Read data from an ADC channel using SPI."""
-    # Send the start byte (1) + control bits for the channel to read
-    # For MCP3208, channel bits are set as follows:
-    # - Start bit: 1
-    # - SGL/Diff bit: 1 (single-ended mode)
-    # - D2, D1, D0 bits for the channel number (0-7)
     command = [0x06 | ((channel & 0x07) >> 2), ((channel & 0x03) << 6), 0x00]
     result = pi.spi_xfer(spi_handle, command)
     adc_value = ((result[1][1] & 0x0F) << 8) | result[1][2]
@@ -56,16 +50,12 @@ def highpass_filter(data, cutoff=60, fs=SAMPLE_RATE, order=5):
     b, a = butter(order, normal_cutoff, btype='high', analog=False)
     return filtfilt(b, a, data)
 
-
-# Frequency detection using FFT
 def detect_pitch(data):
-    """Perform FFT-based pitch detection"""
     fft_data = np.abs(np.fft.rfft(data))
     max_freq = np.argmax(fft_data) * (SAMPLE_RATE / len(data))
     return max_freq
 
 def adc_listener(channel=0, sample_rate=48000):
-    """ Continuously reads from the ADC and updates the global frequency variable. """
     global adc_frequency, adc_power
 
     while True:
@@ -79,14 +69,16 @@ def adc_listener(channel=0, sample_rate=48000):
 
         samples = np.array(samples)
         filtered_samples = highpass_filter(samples)
-        
+        adc_power = np.linalg.norm(filtered_samples, ord=2)**2 / len(filtered_samples)
+
         with adc_lock:
-            adc_power = np.linalg.norm(filtered_samples, ord=2)**2 / len(filtered_samples)
-            
-            if adc_power > 0:
-                adc_frequency = detect_pitch(filtered_samples)  # Update the detected frequency
+            if adc_power > ADC_PWER_THRESH:
+                adc_frequency = detect_pitch(filtered_samples)  
             else:
-                adc_frequency = None  # No valid note detected
+                adc_frequency = None  
+
+
+
 
 # Start the ADC listener in a separate thread
 # adc_thread = threading.Thread(target=adc_listener, daemon=True)
@@ -121,14 +113,6 @@ played_notes = []
 
 
 def find_closest_note(pitch):
-  """
-  This function finds the closest note for a given pitch
-  Parameters:
-    pitch (float): pitch given in hertz
-  Returns:
-    closest_note (str): e.g. a, g#, ..
-    closest_pitch (float): pitch of the closest note in hertz
-  """
   i = int(np.round(np.log2(pitch/CONCERT_PITCH)*12))
   closest_note = ALL_NOTES[i%12] + str(4 + (i + 9) // 12)
   closest_pitch = CONCERT_PITCH*2**(i/12)
@@ -137,103 +121,81 @@ def find_closest_note(pitch):
 
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
-  """
-  Callback function of the InputStream method.
-  """
-  # define static variables
+    #make attr
   if not hasattr(callback, "window_samples"):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
   if not hasattr(callback, "noteBuffer"):
     callback.noteBuffer = ["1","2"]
 
   if status:
-    print('s')
     print(status)
     return
   if any(indata):
-    with adc_lock:
+    callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0])) # append new samples
+    callback.window_samples = callback.window_samples[len(indata[:, 0]):] # remove old samples
+
+    signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
+    if signal_power < POWER_THRESH:
+      os.system('cls' if os.name=='nt' else 'clear')
+      print("Closest note: ...")
+      return
+
+    #signal power high enough, not background noise
+
+    hann_samples = callback.window_samples * HANN_WINDOW
+    magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
+
+    # set everything below 20hz to zero
+    for i in range(int(20/DELTA_FREQ)):
+      magnitude_spec[i] = 0
+
+    # avg energy per frequency for  octave bands
+    for j in range(len(OCTAVE_BANDS)-1):
+      ind_start = int(OCTAVE_BANDS[j]/DELTA_FREQ)
+      ind_end = int(OCTAVE_BANDS[j+1]/DELTA_FREQ)
+      ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
+      avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end-ind_start)
+      avg_energy_per_freq = avg_energy_per_freq**0.5
+      for i in range(ind_start, ind_end):
+        magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH*avg_energy_per_freq else 0
+
+    mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1/NUM_HPS), np.arange(0, len(magnitude_spec)),
+                              magnitude_spec)
+    mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2) #normalize it
+
+    hps_spec = copy.deepcopy(mag_spec_ipol)
+
+    # HPS
+    for i in range(NUM_HPS):
+      tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol)/(i+1)))], mag_spec_ipol[::(i+1)])
+      if not any(tmp_hps_spec):
+        break
+      hps_spec = tmp_hps_spec
+
+    max_ind = np.argmax(hps_spec)
+    max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
+
+    closest_note, closest_pitch = find_closest_note(max_freq)
+    max_freq = round(max_freq, 1)
+    closest_pitch = round(closest_pitch, 1)
+
+    callback.noteBuffer.insert(0, closest_note) 
+    callback.noteBuffer.pop()
+
+    os.system('cls' if os.name=='nt' else 'clear')
+    if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
+      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      with adc_lock:
         if adc_frequency is not None:
-            print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
-
-    
-    # callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0])) # append new samples
-    # callback.window_samples = callback.window_samples[len(indata[:, 0]):] # remove old samples
-
-    # # skip if signal power is too low
-    # signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
-    # volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
-
-    # # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
-    # # print(signal_power)
-    # if signal_power < POWER_THRESH:
-    #   os.system('cls' if os.name=='nt' else 'clear')
-    #   print("Closest note: ...")
-    #   return
-
-    # # avoid spectral leakage by multiplying the signal with a hann window
-    # hann_samples = callback.window_samples * HANN_WINDOW
-    # magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
-
-    # # supress mains hum, set everything below 62Hz to zero
-    # for i in range(int(62/DELTA_FREQ)):
-    #   magnitude_spec[i] = 0
-
-    # # calculate average energy per frequency for the octave bands
-    # # and suppress everything below it
-    # for j in range(len(OCTAVE_BANDS)-1):
-    #   ind_start = int(OCTAVE_BANDS[j]/DELTA_FREQ)
-    #   ind_end = int(OCTAVE_BANDS[j+1]/DELTA_FREQ)
-    #   ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
-    #   avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end-ind_start)
-    #   avg_energy_per_freq = avg_energy_per_freq**0.5
-    #   for i in range(ind_start, ind_end):
-    #     magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH*avg_energy_per_freq else 0
-
-    # # interpolate spectrum
-    # mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1/NUM_HPS), np.arange(0, len(magnitude_spec)),
-    #                           magnitude_spec)
-    # mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2) #normalize it
-
-    # hps_spec = copy.deepcopy(mag_spec_ipol)
-
-    # # calculate the HPS
-    # for i in range(NUM_HPS):
-    #   tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol)/(i+1)))], mag_spec_ipol[::(i+1)])
-    #   if not any(tmp_hps_spec):
-    #     break
-    #   hps_spec = tmp_hps_spec
-
-    # max_ind = np.argmax(hps_spec)
-    # max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
-
-    # closest_note, closest_pitch = find_closest_note(max_freq)
-    # max_freq = round(max_freq, 1)
-    # closest_pitch = round(closest_pitch, 1)
-
-    # callback.noteBuffer.insert(0, closest_note) # ringbuffer
-    # callback.noteBuffer.pop()
-
-    # os.system('cls' if os.name=='nt' else 'clear')
-    # if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-    #   print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-    # #   with adc_lock:
-    # #     if adc_frequency is not None:
-    # #         print(f"ADC Frequency: {adc_frequency:.1f} Hz, ADC Power: {adc_power:.2e}")
-
-    # #         # Compare ADC frequency with I2S frequency
-    # #         if abs(adc_frequency - max_freq) < 5:  # Allow small tolerance
-    # #             print("ADC confirms the detected note!")
-    # #         else:
-    # #             print("Mismatch detected between ADC and I2S.")
-
-    #   state_machine.handle_input(closest_note)
-
-#     else:
-#       print(f"Closest note: ...")
-#       state_machine.handle_input("SILENCE")
-
-#   else:
-#     print('no input')
+            if abs(adc_frequency - max_freq) < 50: 
+                state_machine.handle_input(closest_note) 
+            else:
+                state_machine.handle_input("SILENCE")
+    else:
+      print(f"Closest note: ...")
+      state_machine.handle_input("SILENCE")
+  else:
+    print('no input')
 
 
 def saveNote(note):
