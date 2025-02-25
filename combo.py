@@ -54,81 +54,116 @@ def find_closest_note(pitch):
   closest_pitch = CONCERT_PITCH*2**(i/12)
   return closest_note, closest_pitch
 
-
-HANN_WINDOW = np.hanning(WINDOW_SIZE)
-fig, (ax_time, ax_freq) = plt.subplots(2, 1, figsize=(10, 6))  # Create two subplots
-
-
-def setup_plots():
-    # Time-domain plot
-    ax_time.set_title('Time Domain Signal')
-    ax_time.set_xlabel('Time (s)')
-    ax_time.set_ylabel('Amplitude')
-    ax_time.set_xlim(0, WINDOW_T_LEN)  # Adjust time axis range
-    ax_time.set_ylim(-1, 1)  # Amplitude range
+def plot_waveform_and_spectrum(hann_samples, magnitude_spec):
+    # Plot the waveform in the time domain
+    plt.figure(figsize=(12, 6))
     
-    # Frequency-domain plot (DFT)
-    ax_freq.set_title('Magnitude Spectrum (DFT)')
-    ax_freq.set_xlabel('Frequency (Hz)')
-    ax_freq.set_ylabel('Magnitude')
-    ax_freq.set_xlim(0, SAMPLE_FREQ / 2)  # Limit x-axis to Nyquist frequency
-    ax_freq.set_ylim(0, 1)  # Magnitude range (normalized)
-
-    plt.tight_layout()  # Adjust subplots for clarity
-    plt.ion()  # Turn interactive mode on to update the plots dynamically
+    # Plot the waveform
+    plt.subplot(2, 1, 1)
+    time_vector = np.arange(len(hann_samples)) * SAMPLE_T_LENGTH
+    plt.plot(time_vector, hann_samples)
+    plt.title("Waveform")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Amplitude")
+    
+    # Plot the frequency spectrum (magnitude of FFT)
+    plt.subplot(2, 1, 2)
+    freqs = np.linspace(0, SAMPLE_FREQ / 2, len(magnitude_spec))
+    plt.plot(freqs, magnitude_spec)
+    plt.title("Frequency Spectrum")
+    plt.xlabel("Frequency [Hz]")
+    plt.ylabel("Magnitude")
+    
+    plt.tight_layout()
     plt.show()
 
-def update_plots(time_data, freq_data):
-    # Time-domain plot update
-    ax_time.clear()
-    ax_time.plot(np.linspace(0, len(time_data) * SAMPLE_T_LENGTH, len(time_data)), time_data)
-    
-    # Frequency-domain plot update (using magnitude of FFT)
-    ax_freq.clear()
-    ax_freq.plot(np.linspace(0, SAMPLE_FREQ / 2, len(freq_data)), freq_data)
-
-    plt.draw()  # Redraw the plots to update them
-    plt.pause(0.001)  # Pause briefly to allow for UI updates
-
+HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
-    """
-    Callback function for real-time audio processing.
-    """
-    global callback  # Make sure we're referring to the correct global callback function
+  """
+  Callback function of the InputStream method.
+  """
+  # define static variables
+  if not hasattr(callback, "window_samples"):
+    callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
+  if not hasattr(callback, "noteBuffer"):
+    callback.noteBuffer = ["1","2"]
 
-    if status:
-        print('Status:', status)
-        return
-    
-    if any(indata):  # Only process if there's audio data
-        # Prepare the time-domain signal
-        callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0]))  # Append new samples
-        callback.window_samples = callback.window_samples[len(indata[:, 0]):]  # Remove old samples
+  if status:
+    print('s')
+    print(status)
+    return
+  if any(indata):
+    callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0])) # append new samples
+    callback.window_samples = callback.window_samples[len(indata[:, 0]):] # remove old samples
 
-        # Signal power check
-        signal_power = np.linalg.norm(callback.window_samples, ord=2) ** 2 / len(callback.window_samples)
-        if signal_power < POWER_THRESH:
-            return
+    # skip if signal power is too low
+    signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
+    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-        # Apply Hanning window to avoid spectral leakage
-        hann_samples = callback.window_samples * HANN_WINDOW
+    # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+    # print(signal_power)
+    if signal_power < POWER_THRESH:
+      os.system('cls' if os.name=='nt' else 'clear')
+      print("Closest note: ...")
+      return
 
-        # Compute DFT (FFT)
-        magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples) // 2])
+    # avoid spectral leakage by multiplying the signal with a hann window
+    hann_samples = callback.window_samples * HANN_WINDOW
+    magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
 
-        # Update plots: time-domain and frequency-domain (DFT)
-        update_plots(callback.window_samples, magnitude_spec)
+    # supress mains hum, set everything below 62Hz to zero
+    for i in range(int(62/DELTA_FREQ)):
+      magnitude_spec[i] = 0
 
-        # Note detection (as per your original code)
-        max_ind = np.argmax(magnitude_spec)
-        max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE)
+    plot_waveform_and_spectrum(hann_samples, magnitude_spec)
 
-        closest_note, closest_pitch = find_closest_note(max_freq)
-        print(f"Closest note: {closest_note} at {max_freq:.2f} Hz")
+    # calculate average energy per frequency for the octave bands
+    # and suppress everything below it
+    for j in range(len(OCTAVE_BANDS)-1):
+      ind_start = int(OCTAVE_BANDS[j]/DELTA_FREQ)
+      ind_end = int(OCTAVE_BANDS[j+1]/DELTA_FREQ)
+      ind_end = ind_end if len(magnitude_spec) > ind_end else len(magnitude_spec)
+      avg_energy_per_freq = (np.linalg.norm(magnitude_spec[ind_start:ind_end], ord=2)**2) / (ind_end-ind_start)
+      avg_energy_per_freq = avg_energy_per_freq**0.5
+      for i in range(ind_start, ind_end):
+        magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH*avg_energy_per_freq else 0
 
-        # Optional: You can continue with your state machine logic or additional processing here
-        callback.noteBuffer.insert(0, closest_note)
-        callback.noteBuffer.pop()
+    # interpolate spectrum
+    mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1/NUM_HPS), np.arange(0, len(magnitude_spec)),
+                              magnitude_spec)
+    mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2) #normalize it
+
+    hps_spec = copy.deepcopy(mag_spec_ipol)
+
+    # calculate the HPS
+    for i in range(NUM_HPS):
+      tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol)/(i+1)))], mag_spec_ipol[::(i+1)])
+      if not any(tmp_hps_spec):
+        break
+      hps_spec = tmp_hps_spec
+
+    max_ind = np.argmax(hps_spec)
+    max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
+
+    closest_note, closest_pitch = find_closest_note(max_freq)
+    max_freq = round(max_freq, 1)
+    closest_pitch = round(closest_pitch, 1)
+
+    callback.noteBuffer.insert(0, closest_note) # ringbuffer
+    callback.noteBuffer.pop()
+
+    os.system('cls' if os.name=='nt' else 'clear')
+    if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
+      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      state_machine.handle_input(closest_note)
+
+    else:
+      print(f"Closest note: ...")
+      state_machine.handle_input("SILENCE")
+
+  else:
+    print('no input')
+
 def saveNote(note):
    #save time
    # note
