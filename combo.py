@@ -158,8 +158,8 @@ def callback(indata, frames, time, status):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       global hann
       global mag
-      hann = hann_samples
-      mag = magnitude_spec
+      hann.append(hann_samples)
+      mag.append(magnitude_spec)
 
       state_machine.handle_input(closest_note)
 
