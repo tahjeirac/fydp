@@ -77,6 +77,8 @@ def plot_waveform_and_spectrum(hann_samples, magnitude_spec):
     plt.tight_layout()
     plt.show()
 
+hann = []
+mag = []
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
   """
@@ -153,8 +155,12 @@ def callback(indata, frames, time, status):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      plot_waveform_and_spectrum(hann_samples, magnitude_spec)
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      global hann
+      global mag
+      hann = hann_samples
+      mag = magnitude_spec
+
       state_machine.handle_input(closest_note)
 
     else:
@@ -230,5 +236,7 @@ if __name__ == '__main__':
 
       strip.endSeq()
     except KeyboardInterrupt:
+        print ("graph")
+        plot_waveform_and_spectrum(hann, mag)
         if args.clear:
             strip.colourWipe()
