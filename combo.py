@@ -115,7 +115,6 @@ def callback(indata, frames, time, status):
     for i in range(int(62/DELTA_FREQ)):
       magnitude_spec[i] = 0
 
-    plot_waveform_and_spectrum(hann_samples, magnitude_spec)
 
     # calculate average energy per frequency for the octave bands
     # and suppress everything below it
@@ -154,6 +153,7 @@ def callback(indata, frames, time, status):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
+      plot_waveform_and_spectrum(hann_samples, magnitude_spec)
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       state_machine.handle_input(closest_note)
 
