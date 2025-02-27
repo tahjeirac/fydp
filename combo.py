@@ -176,10 +176,14 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     else:
       print(f"Closest note: ...")
-      print(signal_power)
+      #silence
+      global sig
+      global vol
+      sig.append(signal_power)
+      vol.append(volume_db)
+      mean_sig = np.mean(sig)  # Output: 30.0
+      mean_vol = np.mean(vol)  # Output: 30.0
       print(f"Volume: {volume_db:.2f} dB")  # Display the volume
-      print (mean_sig)
-      print(mean_vol)
       state_machine.handle_input("SILENCE")
 
   else:
