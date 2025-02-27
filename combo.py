@@ -210,9 +210,10 @@ if __name__ == '__main__':
       start_time = time.time()  # Start timing the note
       dur = 0
       with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          while dur <= 2.5:
+          while dur <= 15:
             dur = time.time() - start_time
-            time.sleep(0.05)
+            print(dur)
+            time.sleep(0.5)
       
       print(np.mean(sig))  # Output: 30.0
       print(np.mean(vol))  # Output: 30.0
