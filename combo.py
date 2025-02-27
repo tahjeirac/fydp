@@ -9,6 +9,7 @@ import json
 import wave
 import matplotlib.pyplot as plt
 from functools import partial
+from collections import deque
 
 from led_control import Strip
 from songs import Songs
@@ -56,7 +57,7 @@ def find_closest_note(pitch):
   closest_pitch = CONCERT_PITCH*2**(i/12)
   return closest_note, closest_pitch
 
-sig = []
+sig = deque(maxlen= 10)
 vol = []
 
 
@@ -113,7 +114,9 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     if signal_power < callback.mean_sig:
       os.system('cls' if os.name=='nt' else 'clear')
       print("TOO LOW, Closest note: ...")
-      
+      global sig #maybe make into circular buffer
+      sig.append(signal_power)
+      callback.mean_sig  = np.mean(sig)  # Output: 30.0
       print (callback.mean_sig )
       print(signal_power)
       return
