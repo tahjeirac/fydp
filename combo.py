@@ -54,6 +54,8 @@ def find_closest_note(pitch):
   closest_pitch = CONCERT_PITCH*2**(i/12)
   return closest_note, closest_pitch
 
+sig = []
+vol = []
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
   """
@@ -78,7 +80,10 @@ def callback(indata, frames, time, status):
     print(signal_power)
     print (volume_db)
     print(f"Volume: {volume_db:.2f} dB")  # Display the volume
-    time.sleep(1)
+    global sig
+    global vol
+    sig.append(signal_power)
+    vol.append(volume_db)
 
     # print(signal_power)
     if signal_power < POWER_THRESH:
@@ -208,6 +213,7 @@ if __name__ == '__main__':
 
       strip.endSeq()
     except KeyboardInterrupt:
-        print ("graph")
+        print (sig[:50])
+        print (vol[:50])
         if args.clear:
             strip.colourWipe()
