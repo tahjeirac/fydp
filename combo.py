@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from led_control import Strip
 from songs import Songs
 from state import NoteStateMachine
-# General settings that can be changed by the user
+
 SAMPLE_FREQ = 48000 # sample frequency in Hz
 WINDOW_SIZE = 48000 # window size of the DFT in samples
 WINDOW_STEP = 12000 # step size of window
@@ -54,31 +54,6 @@ def find_closest_note(pitch):
   closest_pitch = CONCERT_PITCH*2**(i/12)
   return closest_note, closest_pitch
 
-def plot_waveform_and_spectrum(hann_samples, magnitude_spec):
-    # Plot the waveform in the time domain
-    plt.figure(figsize=(12, 6))
-    
-    # Plot the waveform
-    plt.subplot(2, 1, 1)
-    time_vector = np.arange(len(hann_samples)) * SAMPLE_T_LENGTH
-    plt.plot(time_vector, hann_samples)
-    plt.title("Waveform")
-    plt.xlabel("Time [s]")
-    plt.ylabel("Amplitude")
-    
-    # Plot the frequency spectrum (magnitude of FFT)
-    plt.subplot(2, 1, 2)
-    freqs = np.linspace(0, SAMPLE_FREQ / 2, len(magnitude_spec))
-    plt.plot(freqs, magnitude_spec)
-    plt.title("Frequency Spectrum")
-    plt.xlabel("Frequency [Hz]")
-    plt.ylabel("Magnitude")
-    
-    plt.tight_layout()
-    plt.show()
-
-hann = []
-mag = []
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
   """
@@ -102,7 +77,7 @@ def callback(indata, frames, time, status):
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+    print(f"Volume: {volume_db:.2f} dB")  # Display the volume
     # print(signal_power)
     if signal_power < POWER_THRESH:
       os.system('cls' if os.name=='nt' else 'clear')
@@ -160,7 +135,6 @@ def callback(indata, frames, time, status):
       global mag
       hann.append(hann_samples)
       mag.append(magnitude_spec)
-
       state_machine.handle_input(closest_note)
 
     else:
@@ -237,6 +211,5 @@ if __name__ == '__main__':
       strip.endSeq()
     except KeyboardInterrupt:
         print ("graph")
-        plot_waveform_and_spectrum(hann, mag)
         if args.clear:
             strip.colourWipe()

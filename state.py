@@ -28,6 +28,7 @@ class NoteStateMachine:
             print("Still waiting...")
         else:
             print("Wrong note!")
+            self.transition("listening_wrong_note")
 
     def listening(self, played_note):
         current_note_name = self.song.CurrentNote.get("name")
@@ -47,7 +48,7 @@ class NoteStateMachine:
             self.transition("waiting")
         else:
             print("Wrong note detected!")
-            self.transition("waiting")
+            self.transition("listening_wrong_note")
 
     def listening_wrong_note(self, played_note):
         current_note_name = self.song.CurrentNote.get("name")
