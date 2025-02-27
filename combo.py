@@ -115,41 +115,7 @@ def has_valid_harmonics(magnitude_spec, fundamental_index, min_harmonics=2, harm
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 MINIMUM_SILENCE_DURATION = 5
 
-def silence_check(indata, frames, time, status, silent):
-  """
-  Callback function of the InputStream method.
-  """
-  # define static variables
-  if not hasattr(callback, "window_samples"):
-    silence_check.window_samples = [0 for _ in range(WINDOW_SIZE)]
-  
-  if not hasattr(callback, "start_time"):
-    silence_check.start_time = time.time()
-  
-  if not hasattr(callback, "duration"):
-    silence_check.duration = 0
 
-  if status:
-    print(status)
-    return
-  if any(indata):
-    silence_check.window_samples = np.concatenate((silence_check.window_samples, indata[:, 0])) # append new samples
-    silence_check.window_samples = silence_check.window_samples[len(indata[:, 0]):] # remove old samples
-
-    # skip if signal power is too low
-    signal_power = (np.linalg.norm(silence_check.window_samples, ord=2)**2) / len(callback.window_samples)
-    signal_power = signal_power * 1000
-
-    if signal_power < POWER_THRESH:
-      os.system('cls' if os.name=='nt' else 'clear')
-      state_machine.handle_input("SILENCE")
-      silence_check.duration = time.time() - silence_check.start_time
-      if silence_check.duration > MINIMUM_SILENCE_DURATION:
-        silent = True
-      return
-
-    else:
-      silence_check.start_time = time.time() 
 
 def callback(indata, frames, time, status):
   """
@@ -164,10 +130,6 @@ def callback(indata, frames, time, status):
     callback.mean_sig = 0
   if not hasattr(callback, "sig_buffer"):
     callback.sig_buffer = deque(maxlen= 10)
-  if not hasattr(callback, "start_time"):
-    callback.start_time = time.time() 
-  if not hasattr(callback, "silence_duration"):
-    callback.silence_duration = 0
 
   print(songs.CurrentNote.get("name"))
   if status:
