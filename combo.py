@@ -117,7 +117,7 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
       global sig #maybe make into circular buffer
       sig.append(signal_power)
       callback.mean_sig  = np.mean(sig)  # Output: 30.0
-      print (callback.mean_sig )
+      print ("Mean", callback.mean_sig )
       print(signal_power)
       return
 
