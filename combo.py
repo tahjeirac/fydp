@@ -109,14 +109,15 @@ def callback(indata, frames, time, status):
     signal_power = signal_power * 1000
     volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    print (mean_sig)
-    print(signal_power)
-    print("____")
-    print(mean_vol)
-    print(volume_db)
     if signal_power < mean_sig or volume_db < mean_vol:
       os.system('cls' if os.name=='nt' else 'clear')
       print("Closest note: ...")
+      
+      print (mean_sig)
+      print(signal_power)
+      print("____")
+      print(mean_vol)
+      print(volume_db)
       return
 
     # avoid spectral leakage by multiplying the signal with a hann window
@@ -168,12 +169,17 @@ def callback(indata, frames, time, status):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       print(signal_power)
       print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+      
+      print (mean_sig)
+      print(mean_vol)
       state_machine.handle_input(closest_note)
 
     else:
       print(f"Closest note: ...")
       print(signal_power)
       print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+      print (mean_sig)
+      print(mean_vol)
       state_machine.handle_input("SILENCE")
 
   else:
