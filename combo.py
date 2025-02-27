@@ -79,7 +79,7 @@ def callback_start(indata, frames, time, status):
 
     global sig
     global vol
-    sig.append({signal_power})
+    sig.append(signal_power)
     vol.append(volume_db)
 
    
