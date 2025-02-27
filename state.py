@@ -5,12 +5,13 @@ import json
 class NoteStateMachine:
     def __init__(self, song, feedback):
         self.song = song
-        self.state = "waiting"  # Initial state
+        self.state = "starting"  # Initial state
         self.current_duration = 0  # Tracks how long a note has been sustained
         self.start_time = None
         self.last_match_time = None
         self.feedback = feedback
         self.duaration_met = False
+        self.minimum_silence = 5
 
 
     def transition(self, new_state):
@@ -18,6 +19,24 @@ class NoteStateMachine:
         self.state = new_state
 
     
+    def starting(self, played_note):
+        self.start_time = time.time()  # Start timing the note
+        if played_note == "SILENCE":
+            print(" WAITING FOR 10S OF SILENCE...")
+            self.transition("silent_start")
+    
+    def silent_start(self, played_note):
+        if played_note == "SILENCE":
+            print("WAITING FOR 5S OF SILENCE...")
+            silence_duration = time.time() - self.start_time
+            if silence_duration < self.minimum_silence:
+                print(" Good to start")
+                self.song.start()
+                self.transition("waiting")
+        else:
+            self.transition("starting")
+
+
     def waiting(self, played_note):
         current_note_name = self.song.CurrentNote.get("name")
         print(f"Waiting for: {current_note_name}, Received: {played_note}")
@@ -99,7 +118,11 @@ class NoteStateMachine:
             self.transition("waiting")
 
     def handle_input(self, played_note):
-        if self.state == "waiting":
+        if self.state == "starting":
+            self.starting(played_note)
+        elif self.state == "silent_start":
+            self.silent_start(played_note)
+        elif self.state == "waiting":
             self.waiting(played_note)
         elif self.state == "listening":
             self.listening(played_note)

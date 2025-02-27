@@ -113,7 +113,45 @@ def has_valid_harmonics(magnitude_spec, fundamental_index, min_harmonics=2, harm
     return False
 
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
-def callback(indata, frames, time, status, mean_vol, mean_sig):
+MINIMUM_SILENCE_DURATION = 5
+
+def silence_check(indata, frames, time, status, silent):
+  """
+  Callback function of the InputStream method.
+  """
+  # define static variables
+  if not hasattr(callback, "window_samples"):
+    silence_check.window_samples = [0 for _ in range(WINDOW_SIZE)]
+  
+  if not hasattr(callback, "start_time"):
+    silence_check.start_time = time.time()
+  
+  if not hasattr(callback, "duration"):
+    silence_check.duration = 0
+
+  if status:
+    print(status)
+    return
+  if any(indata):
+    silence_check.window_samples = np.concatenate((silence_check.window_samples, indata[:, 0])) # append new samples
+    silence_check.window_samples = silence_check.window_samples[len(indata[:, 0]):] # remove old samples
+
+    # skip if signal power is too low
+    signal_power = (np.linalg.norm(silence_check.window_samples, ord=2)**2) / len(callback.window_samples)
+    signal_power = signal_power * 1000
+
+    if signal_power < POWER_THRESH:
+      os.system('cls' if os.name=='nt' else 'clear')
+      state_machine.handle_input("SILENCE")
+      silence_check.duration = time.time() - silence_check.start_time
+      if silence_check.duration > MINIMUM_SILENCE_DURATION:
+        silent = True
+      return
+
+    else:
+      silence_check.start_time = time.time() 
+
+def callback(indata, frames, time, status):
   """
   Callback function of the InputStream method.
   """
@@ -126,6 +164,11 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     callback.mean_sig = 0
   if not hasattr(callback, "sig_buffer"):
     callback.sig_buffer = deque(maxlen= 10)
+  if not hasattr(callback, "start_time"):
+    callback.start_time = time.time() 
+  if not hasattr(callback, "silence_duration"):
+    callback.silence_duration = 0
+
   print(songs.CurrentNote.get("name"))
   if status:
     print(status)
@@ -141,7 +184,6 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     if signal_power < callback.mean_sig - SIG_TOLERANCE:
       os.system('cls' if os.name=='nt' else 'clear')
-      # print("TOO LOW, Closest note: ...")
       callback.sig_buffer.append(signal_power)
       callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
       state_machine.handle_input("SILENCE")
@@ -245,17 +287,18 @@ if __name__ == '__main__':
       start_time = time.time()  # Start timing the note
       dur = 0
 
-      note = songs.setCurrentNote()
-      print(note)
-      led = NoteConversion.get(note.get("name"))
-      print(led)
-      strip.startSeq(led)
-      start_time = time.time()
-     
+      # note = songs.setCurrentNote()
+      # print(note)
+      # led = NoteConversion.get(note.get("name"))
+      # print(led)
+ 
+      # strip.startSeq(led)
+      # start_time = time.time()
+
       #devvice num hanges?
-      with sd.InputStream(device=1, channels=1, callback=partial(callback, mean_vol=0, mean_sig = 0), blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
-            time.sleep(0.5)
+            time.sleep(0.25)
 
       strip.endSeq()
 

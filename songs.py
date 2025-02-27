@@ -53,6 +53,13 @@ class Songs:
             self.strip.turnOnLED_SOLO(led, True)
                 
     
+    def start(self):
+        note = self.setCurrentNote()
+        print(note)
+        led = self.NoteConversion.get(note.get("name"))
+        print(led)
+        self.strip.startSeq(led)
+    
     def nextNote(self):
         self.NOTE_INDEX += 1
         if (self.NOTE_INDEX < len(self.notes)):
