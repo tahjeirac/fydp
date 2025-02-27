@@ -110,7 +110,8 @@ class NoteStateMachine:
         
     def record_feedback(self, played_note):
         print ("recording feedback", played_note)
-        self.feedback.append({played_note:self.current_duration})
+        if played_note:
+            self.feedback.append({played_note:self.current_duration})
 
     def idle(self, played_note):
         if played_note == "SILENCE":
