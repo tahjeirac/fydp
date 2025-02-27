@@ -99,6 +99,9 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     callback.noteBuffer = ["1","2"]
   if not hasattr(callback, "mean_sig"):
     callback.mean_sig = 0
+  if not hasattr(callback, "sig_buffer"):
+    callback.sig_buffer = deque(maxlen= 10)
+  
   if status:
     print(status)
     return
@@ -114,9 +117,8 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     if signal_power < callback.mean_sig:
       os.system('cls' if os.name=='nt' else 'clear')
       print("TOO LOW, Closest note: ...")
-      global sig #maybe make into circular buffer
-      sig.append(signal_power)
-      callback.mean_sig  = np.mean(sig)  # Output: 30.0
+      callback.sig_buffer.append(signal_power)
+      callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
       print ("Mean", callback.mean_sig )
       print(signal_power)
       return
@@ -174,10 +176,8 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     else:
       print(f"Closest note: ...")
-      #silence
-      global sig #maybe make into circular buffer
-      sig.append(signal_power)
-      callback.mean_sig  = np.mean(sig)  # Output: 30.0
+      callback.sig_buffer.append(signal_power)
+      callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
       print(f"Signal: {signal_power} dB")  # Display the volume
       state_machine.handle_input("SILENCE")
 
