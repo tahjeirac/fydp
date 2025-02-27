@@ -76,6 +76,7 @@ def callback(indata, frames, time, status):
 
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
+    signal_power = signal_power * 1000
     volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
     global sig
