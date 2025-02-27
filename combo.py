@@ -258,9 +258,18 @@ if __name__ == '__main__':
             time.sleep(0.5)
 
       strip.endSeq()
+
+      file_path = "feedback.json"
+
+      # Write the array to a file
+      with open(file_path, 'w') as file:
+          json.dump(feedback, file, indent=4)
+
+      print(f"Data has been written to {file_path}")
     except KeyboardInterrupt:
         # print (sig[:50])
         # print (vol[:50])
+        
         print(feedback)
         if args.clear:
             strip.colourWipe()

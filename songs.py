@@ -54,8 +54,8 @@ class Songs:
                 
     
     def nextNote(self):
+        self.NOTE_INDEX += 1
         if (self.NOTE_INDEX < len(self.notes)):
-            self.NOTE_INDEX += 1
             note = self.setCurrentNote()
             note_name = note["name"]
             print(note_name)
