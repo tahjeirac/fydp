@@ -131,7 +131,6 @@ def callback(indata, frames, time, status):
   if not hasattr(callback, "sig_buffer"):
     callback.sig_buffer = deque(maxlen= 10)
 
-  print(songs.CurrentNote.get("name"))
   if status:
     print(status)
     return
