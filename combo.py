@@ -8,6 +8,7 @@ import argparse
 import json
 import wave
 import matplotlib.pyplot as plt
+from functools import partial
 
 from led_control import Strip
 from songs import Songs
@@ -57,8 +58,7 @@ def find_closest_note(pitch):
 
 sig = []
 vol = []
-mean_sig = 0
-mean_vol = 0
+
 
 def callback_start(indata, frames, time, status):
   """
@@ -87,7 +87,7 @@ def callback_start(indata, frames, time, status):
    
 
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
-def callback(indata, frames, time, status):
+def callback(indata, frames, time, status, mean_vol, mean_sig):
   """
   Callback function of the InputStream method.
   """
@@ -222,6 +222,9 @@ if __name__ == '__main__':
       print(np.mean(sig))  # Output: 30.0
       print(np.mean(vol))  # Output: 30.0
       time.sleep(2)
+
+      mean_sig = np.mean(sig)
+      mean_vol = np.mean(vol)
       note = songs.setCurrentNote()
       print(note)
       led = NoteConversion.get(note.get("name"))
@@ -229,7 +232,7 @@ if __name__ == '__main__':
       strip.startSeq(led)
       start_time = time.time()
       #devvice num hanges?
-      with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      with sd.InputStream(device=1, channels=1, callback=partial(callback, mean_vol=mean_vol, mean_sig = mean_sig), blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
             time.sleep(0.5)
 
