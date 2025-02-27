@@ -96,7 +96,8 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
   if not hasattr(callback, "noteBuffer"):
     callback.noteBuffer = ["1","2"]
-
+  if not hasattr(callback, "mean_sig"):
+    callback.mean_sig = 0
   if status:
     print(status)
     return
@@ -107,17 +108,14 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     signal_power = signal_power * 1000
-    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
+    # volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    if signal_power < mean_sig or volume_db < mean_vol:
+    if signal_power < callback.mean_sig:
       os.system('cls' if os.name=='nt' else 'clear')
-      print("Closest note: ...")
+      print("TOO LOW, Closest note: ...")
       
-      print (mean_sig)
+      print (callback.mean_sig )
       print(signal_power)
-      print("____")
-      print(mean_vol)
-      print(volume_db)
       return
 
     # avoid spectral leakage by multiplying the signal with a hann window
@@ -167,23 +165,17 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      print(signal_power)
-      print(f"Volume: {volume_db:.2f} dB")  # Display the volume
-      
-      print (mean_sig)
-      print(mean_vol)
+      print(f"Signal: {signal_power} dB")  # Display the volume
+      print (callback.mean_sig)
       state_machine.handle_input(closest_note)
 
     else:
       print(f"Closest note: ...")
       #silence
-      global sig
-      global vol
+      global sig #maybe make into circular buffer
       sig.append(signal_power)
-      vol.append(volume_db)
-      mean_sig = np.mean(sig)  # Output: 30.0
-      mean_vol = np.mean(vol)  # Output: 30.0
-      print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+      callback.mean_sig  = np.mean(sig)  # Output: 30.0
+      print(f"Signal: {signal_power} dB")  # Display the volume
       state_machine.handle_input("SILENCE")
 
   else:
