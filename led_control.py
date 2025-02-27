@@ -71,11 +71,12 @@ class Strip:
 
     def turnOnLED_SOLO(self, led, set):
         #TO DO
-        # if set == True:
-        #     self.strip.setPixelColor(led, RED)
-        # else:
-        #     self.strip.setPixelColor(led, CLEAR)
-        # self.strip.show()
+        if led:
+            if set == True:
+                self.strip.setPixelColor(led, RED)
+            else:
+                self.strip.setPixelColor(led, CLEAR)
+            self.strip.show()
         print("turn red")
 
     def wheel(self, pos):
