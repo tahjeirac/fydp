@@ -28,6 +28,7 @@ SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
 DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE # frequency step width of the interpolated DFT
 OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
 
+SIG_TOLERANCE = 0.05
 
 MATCH_DELAY = 0.7 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
@@ -114,7 +115,7 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
     signal_power = signal_power * 1000
     # volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    if signal_power < callback.mean_sig:
+    if signal_power < callback.mean_sig - SIG_TOLERANCE:
       os.system('cls' if os.name=='nt' else 'clear')
       print("TOO LOW, Closest note: ...")
       callback.sig_buffer.append(signal_power)
