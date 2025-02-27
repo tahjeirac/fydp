@@ -54,24 +54,29 @@ class Songs:
                 
     
     def nextNote(self):
-        self.NOTE_INDEX += 1
-        note = self.setCurrentNote()
-        note_name = note["name"]
-        print(note_name)
-        led = self.NoteConversion.get(note_name)
-        print(led)
-        if led:
-            if note.get("duration") > 0.31:
-                print("h")
-                self.strip.turnOnLED(led, "h")
-            else:
-                print("q")
-                self.strip.turnOnLED(led, "q")
+        if (self.NOTE_INDEX < len(self.notes)):
+            self.NOTE_INDEX += 1
+            note = self.setCurrentNote()
+            note_name = note["name"]
+            print(note_name)
+            led = self.NoteConversion.get(note_name)
+            print(led)
+            if led:
+                if note.get("duration") > 0.31:
+                    print("h")
+                    self.strip.turnOnLED(led, "h")
+                else:
+                    print("q")
+                    self.strip.turnOnLED(led, "q")
+        else:
+            self.FINISHED = True
+            print("Lesson complete!")
+            return "FINI" 
 
 
     def noteMatch(self, played_note):
         print (self.CurrentNote.get("name"))
-        if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT:
+        if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT: #need this?
                         #enough time has passed
             if played_note == self.CurrentNote.get("name"):
                 print("Match!")
