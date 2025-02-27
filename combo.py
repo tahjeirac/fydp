@@ -78,6 +78,8 @@ def callback(indata, frames, time, status):
     print(signal_power)
     print (volume_db)
     print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+    time.sleep(1)
+
     # print(signal_power)
     if signal_power < POWER_THRESH:
       os.system('cls' if os.name=='nt' else 'clear')
