@@ -206,6 +206,7 @@ if __name__ == '__main__':
 
       print ("recording background")
       start_time = time.time()  # Start timing the note
+      dur = 0
       with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while dur <= 2.5:
             dur = time.time() - start_time
@@ -213,7 +214,7 @@ if __name__ == '__main__':
       
       print(np.mean(sig))  # Output: 30.0
       print(np.mean(vol))  # Output: 30.0
-
+      time.sleep(2)
       note = songs.setCurrentNote()
       print(note)
       led = NoteConversion.get(note.get("name"))
