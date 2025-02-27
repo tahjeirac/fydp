@@ -218,17 +218,17 @@ if __name__ == '__main__':
       print ("recording background")
       start_time = time.time()  # Start timing the note
       dur = 0
-      with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          while dur <= 15:
-            dur = time.time() - start_time
-            time.sleep(0.5)
+      # with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      #     while dur <= 15:
+      #       dur = time.time() - start_time
+      #       time.sleep(0.5)
       
-      print(np.mean(sig))  # Output: 30.0
-      print(np.mean(vol))  # Output: 30.0
-      time.sleep(2)
+      # print(np.mean(sig))  # Output: 30.0
+      # print(np.mean(vol))  # Output: 30.0
+      # time.sleep(2)
 
-      mean_sig = np.mean(sig)
-      mean_vol = np.mean(vol)
+      # mean_sig = np.mean(sig)
+      # mean_vol = np.mean(vol)
       note = songs.setCurrentNote()
       print(note)
       led = NoteConversion.get(note.get("name"))
@@ -236,7 +236,7 @@ if __name__ == '__main__':
       strip.startSeq(led)
       start_time = time.time()
       #devvice num hanges?
-      with sd.InputStream(device=1, channels=1, callback=partial(callback, mean_vol=mean_vol, mean_sig = mean_sig), blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      with sd.InputStream(device=1, channels=1, callback=partial(callback, mean_vol=0, mean_sig = 0), blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
             time.sleep(0.5)
 
