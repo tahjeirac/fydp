@@ -109,12 +109,11 @@ def callback(indata, frames, time, status):
     signal_power = signal_power * 1000
     volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    global sig
-    global vol
-    sig.append({signal_power})
-    vol.append(volume_db)
-
-    # print(signal_power)
+    print (mean_sig)
+    print(signal_power)
+    print("____")
+    print(mean_vol)
+    print(volume_db)
     if signal_power < mean_sig or volume_db < mean_vol:
       os.system('cls' if os.name=='nt' else 'clear')
       print("Closest note: ...")
@@ -212,7 +211,6 @@ if __name__ == '__main__':
       with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while dur <= 15:
             dur = time.time() - start_time
-            print(dur)
             time.sleep(0.5)
       
       print(np.mean(sig))  # Output: 30.0
