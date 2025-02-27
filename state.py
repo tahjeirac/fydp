@@ -47,16 +47,17 @@ class NoteStateMachine:
                 print("Silence detected! and note not held for right time")
                 self.record_feedback(current_note_name)
                 self.transition("waiting")
-            elif self.current_duration <= 3 * intended_duration: #played long enogu change times
+            # elif self.current_duration <= 3 * intended_duration: #played long enogu change times
+            else:
                 print("Silence detected! and note held for right time")
                 self.record_feedback(current_note_name)
                 self.song.nextNote() #set to next note
                 self.transition("waiting") 
-            else: #turn red maybe? flash? played too long
-                #flash
-                self.record_feedback(current_note_name)
-                print("Silence detected! and note held for too long")
-                self.transition("waiting") 
+            # else: #turn red maybe? flash? played too long
+            #     #flash
+            #     self.record_feedback(current_note_name)
+            #     print("Silence detected! and note held for too long")
+            #     self.transition("waiting") 
         else:
             print("Wrong note detected!")
             self.song.setWrongNote(played_note)
