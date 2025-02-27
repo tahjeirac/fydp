@@ -28,7 +28,7 @@ SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
 DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE # frequency step width of the interpolated DFT
 OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
 
-SIG_TOLERANCE = 0.05
+SIG_TOLERANCE = 0.0005
 
 MATCH_DELAY = 0.7 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
