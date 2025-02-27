@@ -35,7 +35,8 @@ NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 strip = Strip()
 songs = Songs("songs.json", MATCH_DELAY, strip)
-state_machine = NoteStateMachine(songs)
+feedback = []
+state_machine = NoteStateMachine(songs, feedback)
 start_time = None
 played_notes = []
 
@@ -150,34 +151,6 @@ def callback(indata, frames, time, status):
   else:
     print('no input')
 
-def saveNote(note):
-   #save time
-   # note
-   time_played = time.time()   # Start timing the note
-   note_info = {"time_played":time_played, "note":  note}
-   played_notes.append(note_info)
-   return
-
-# def makeFeedback ():
-#    # Example input: list of dictionaries with time_played and note
-# # Convert to note-duration format
-#   note_durations = []
-
-#   for i in range(1, len(played_notes)):  # Start from second element
-#     prev = note_data[i - 1]
-#     curr = note_data[i]
-#     duration = curr["time_played"] - prev["time_played"]
-
-#     note_durations.append({"note": prev["note"], "duration": duration})
-
-#     # Add last note with unknown duration (optional: set to None or estimate)
-#     note_durations.append({"note": note_data[-1]["note"], "duration": None})
-
-#     # Output result
-#   print(note_durations)
-
-  # return
-   #block periods of same notes togeter and such
 if __name__ == '__main__':
     # Process arguments
     print ("1 for mary 2 for twinkle")
@@ -216,7 +189,8 @@ if __name__ == '__main__':
 
       strip.endSeq()
     except KeyboardInterrupt:
-        print (sig[:50])
-        print (vol[:50])
+        # print (sig[:50])
+        # print (vol[:50])
+        print(feedback)
         if args.clear:
             strip.colourWipe()
