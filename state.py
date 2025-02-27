@@ -39,7 +39,7 @@ class NoteStateMachine:
 
         if played_note == current_note_name:
             self.current_duration = time.time() - self.start_time
-            print(f"Listening: {played_note} for {self.current_duration:.2f}s out of {self.intended_duration:.2f}s")
+            print(f"Listening: {played_note} for {self.current_duration:.2f}s out of {intended_duration:.2f}s")
 
         elif played_note == "SILENCE":
             #check if long enoguh
