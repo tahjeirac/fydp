@@ -70,11 +70,12 @@ class Strip:
         self.LED_ON = led
 
     def turnOnLED_SOLO(self, led, set):
-        if set == True:
-            self.strip.setPixelColor(led, RED)
-        else:
-            self.strip.setPixelColor(led, CLEAR)
-        self.strip.show()
+        # if set == True:
+        #     self.strip.setPixelColor(led, RED)
+        # else:
+        #     self.strip.setPixelColor(led, CLEAR)
+        # self.strip.show()
+        print("turn red")
 
     def wheel(self, pos):
         """Generate rainbow colors across 0-255 positions."""
