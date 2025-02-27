@@ -42,7 +42,7 @@ class Songs:
     
     def setWrongNote(self, played_note):
         #turn off previous note if self.WrongNoteName != None & played_note != self.WrongNoteName 
-        if self.WrongNoteName != None & played_note != self.WrongNoteName:
+        if self.WrongNoteName != None and played_note != self.WrongNoteName:
             led = self.NoteConversion.get(self.WrongNoteName)
             self.strip.turnOnLED_SOLO(led, False)
 
