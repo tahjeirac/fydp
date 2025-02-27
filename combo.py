@@ -57,6 +57,33 @@ def find_closest_note(pitch):
 
 sig = []
 vol = []
+
+def callback_start(indata, frames, time, status):
+  """
+  Callback function of the InputStream method.
+  """
+  # define static variables
+  if not hasattr(callback_start, "window_samples"):
+    callback_start.window_samples = [0 for _ in range(WINDOW_SIZE)]
+
+  if status:
+    print(status)
+    return
+  if any(indata):
+    callback_start.window_samples = np.concatenate((callback_start.window_samples, indata[:, 0])) # append new samples
+    callback_start.window_samples = callback_start.window_samples[len(indata[:, 0]):] # remove old samples
+
+    signal_power = (np.linalg.norm(callback_start.window_samples, ord=2)**2) / len(callback_start.window_samples)
+    signal_power = signal_power * 1000
+    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
+
+    global sig
+    global vol
+    sig.append({signal_power})
+    vol.append(volume_db)
+
+   
+
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status):
   """
@@ -175,6 +202,17 @@ if __name__ == '__main__':
       
       songs.setSong(song_name)
       strip.colourWipe()
+
+
+      print ("recording background")
+      start_time = time.time()  # Start timing the note
+      with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          while dur <= 2.5:
+            dur = time.time() - start_time
+            time.sleep(0.05)
+      
+      print(np.mean(sig))  # Output: 30.0
+      print(np.mean(vol))  # Output: 30.0
 
       note = songs.setCurrentNote()
       print(note)
