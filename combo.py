@@ -88,6 +88,30 @@ def callback_start(indata, frames, time, status):
 
    
 
+def has_valid_harmonics(magnitude_spec, fundamental_index, min_harmonics=2, harmonic_thresh=0.1):
+    """
+    Ensure that a fundamental frequency has at least `min_harmonics` harmonics.
+    Parameters:
+        magnitude_spec (np.array): Magnitude spectrum from FFT.
+        fundamental_index (int): Index of detected fundamental frequency.
+        min_harmonics (int): Minimum number of harmonics required.
+        harmonic_thresh (float): Threshold relative to fundamental magnitude.
+    Returns:
+        bool: True if enough harmonics are found, False otherwise.
+    """
+    fundamental_mag = magnitude_spec[fundamental_index]
+    harmonic_count = 0
+
+    # Check harmonics (2f, 3f, ...)
+    for h in range(2, NUM_HPS + 1):
+        harmonic_index = fundamental_index * h
+        if harmonic_index < len(magnitude_spec) and magnitude_spec[harmonic_index] > harmonic_thresh * fundamental_mag:
+            harmonic_count += 1
+        if harmonic_count >= min_harmonics:
+            return True
+
+    return False
+
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 def callback(indata, frames, time, status, mean_vol, mean_sig):
   """
@@ -162,7 +186,7 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     max_ind = np.argmax(hps_spec)
     max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
-
+    print(has_valid_harmonics(magnitude_spec, max_ind, min_harmonics=2))
     closest_note, closest_pitch = find_closest_note(max_freq)
     max_freq = round(max_freq, 1)
     closest_pitch = round(closest_pitch, 1)
