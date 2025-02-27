@@ -117,11 +117,11 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     if signal_power < callback.mean_sig - SIG_TOLERANCE:
       os.system('cls' if os.name=='nt' else 'clear')
-      print("TOO LOW, Closest note: ...")
+      # print("TOO LOW, Closest note: ...")
       callback.sig_buffer.append(signal_power)
       callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
-      print ("Mean", callback.mean_sig )
-      print(signal_power)
+      # print ("Mean", callback.mean_sig )
+      # print(signal_power)
       return
 
     # avoid spectral leakage by multiplying the signal with a hann window
@@ -170,16 +170,16 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      print(f"Signal: {signal_power} dB")  # Display the volume
-      print (callback.mean_sig)
+      # print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      # print(f"Signal: {signal_power} dB")  # Display the volume
+      # print (callback.mean_sig)
       state_machine.handle_input(closest_note)
 
     else:
       print(f"Closest note: ...")
       callback.sig_buffer.append(signal_power)
       callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
-      print(f"Signal: {signal_power} dB")  # Display the volume
+      # print(f"Signal: {signal_power} dB")  # Display the volume
       state_machine.handle_input("SILENCE")
 
   else:
@@ -211,26 +211,16 @@ if __name__ == '__main__':
       strip.colourWipe()
 
 
-      print ("recording background")
       start_time = time.time()  # Start timing the note
       dur = 0
-      # with sd.InputStream(device=1, channels=1, callback=callback_start, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-      #     while dur <= 15:
-      #       dur = time.time() - start_time
-      #       time.sleep(0.5)
-      
-      # print(np.mean(sig))  # Output: 30.0
-      # print(np.mean(vol))  # Output: 30.0
-      # time.sleep(2)
 
-      # mean_sig = np.mean(sig)
-      # mean_vol = np.mean(vol)
       note = songs.setCurrentNote()
       print(note)
       led = NoteConversion.get(note.get("name"))
       print(led)
       strip.startSeq(led)
       start_time = time.time()
+     
       #devvice num hanges?
       with sd.InputStream(device=1, channels=1, callback=partial(callback, mean_vol=0, mean_sig = 0), blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:

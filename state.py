@@ -59,6 +59,7 @@ class NoteStateMachine:
                 self.transition("waiting") 
         else:
             print("Wrong note detected!")
+            self.song.setWrongNote(played_note)
             self.record_feedback(current_note_name)
             self.start_time = time.time()  # Start timing the note
             self.transition("listening_wrong_note")
@@ -88,7 +89,7 @@ class NoteStateMachine:
             self.song.setWrongNote(played_note)
         
     def record_feedback(self, played_note):
-        print ("recording feedback")
+        print ("recording feedback", played_note)
         self.feedback.append({played_note:self.current_duration})
 
     def idle(self, played_note):
