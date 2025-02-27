@@ -43,7 +43,7 @@ class NoteStateMachine:
 
         elif played_note == "SILENCE":
             #check if long enoguh
-            if self.current_duration <= 2 * intended_duration: #played too short
+            if self.current_duration <= 1 * intended_duration: #played too short
                 print("Silence detected! and note not held for right time")
                 self.record_feedback(current_note_name)
                 self.transition("waiting")

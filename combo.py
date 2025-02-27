@@ -195,12 +195,16 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      print(has_valid_harmonics(magnitude_spec, max_ind, min_harmonics=2))
-
+      # print(has_valid_harmonics(magnitude_spec, max_ind, min_harmonics=2))
+      #B2 HUM
+      if closest_note != "B2":
       # print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
       # print(f"Signal: {signal_power} dB")  # Display the volume
       # print (callback.mean_sig)
-      state_machine.handle_input(closest_note)
+        state_machine.handle_input(closest_note)
+      else:
+        state_machine.handle_input("SILENCE")
+
 
     else:
       print(f"Closest note: ...")
