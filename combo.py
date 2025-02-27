@@ -120,6 +120,8 @@ def callback(indata, frames, time, status, mean_vol, mean_sig):
       # print("TOO LOW, Closest note: ...")
       callback.sig_buffer.append(signal_power)
       callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
+      state_machine.handle_input("SILENCE")
+
       # print ("Mean", callback.mean_sig )
       # print(signal_power)
       return
