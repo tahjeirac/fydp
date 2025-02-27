@@ -57,6 +57,8 @@ def find_closest_note(pitch):
 
 sig = []
 vol = []
+mean_sig = 0
+mean_vol = 0
 
 def callback_start(indata, frames, time, status):
   """
@@ -113,7 +115,7 @@ def callback(indata, frames, time, status):
     vol.append(volume_db)
 
     # print(signal_power)
-    if signal_power < POWER_THRESH:
+    if signal_power < mean_sig or volume_db < mean_vol:
       os.system('cls' if os.name=='nt' else 'clear')
       print("Closest note: ...")
       return
