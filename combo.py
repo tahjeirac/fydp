@@ -77,12 +77,10 @@ def callback(indata, frames, time, status):
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
-    print(signal_power)
-    print (volume_db)
-    print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+
     global sig
     global vol
-    sig.append(signal_power)
+    sig.append({signal_power})
     vol.append(volume_db)
 
     # print(signal_power)
@@ -138,10 +136,14 @@ def callback(indata, frames, time, status):
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      print(signal_power)
+      print(f"Volume: {volume_db:.2f} dB")  # Display the volume
       state_machine.handle_input(closest_note)
 
     else:
       print(f"Closest note: ...")
+      print(signal_power)
+      print(f"Volume: {volume_db:.2f} dB")  # Display the volume
       state_machine.handle_input("SILENCE")
 
   else:
