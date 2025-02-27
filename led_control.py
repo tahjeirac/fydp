@@ -70,6 +70,7 @@ class Strip:
         self.LED_ON = led
 
     def turnOnLED_SOLO(self, led, set):
+        #TO DO
         # if set == True:
         #     self.strip.setPixelColor(led, RED)
         # else:
