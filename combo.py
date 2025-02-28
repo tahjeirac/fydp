@@ -57,7 +57,8 @@ def fetch_song():
           if response.status_code == 200:
               data_recv = True
               song_data = response.json()
-              songs.setSong(song_data)  # Pass JSON data to Songs.py
+              print(song_data)
+              #songs.setSong(song_data)  # Pass JSON data to Songs.py
               print("Song loaded successfully!")
       except Exception as e:
           print(f"Error fetching song: {e}")
