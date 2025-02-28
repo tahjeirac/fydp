@@ -65,15 +65,21 @@ def send_data():
     timeout = 20  # maximum wait time
     interval = 1  # how often to check
     elapsed_time = 0
+    with open("feed.txt", "a") as file:
+        file.write("This is an additional line.\n")
 
     while elapsed_time < timeout:
-        logging.debug("LOOKING FOR FILE!!!!!!")
+ 
         # Check if the feedback.json file exists and is not blank
         if os.path.exists(FEEDBACK_FILE_PATH): 
-            logging.debug("FOUND FILE!!!!!!!!")
+            with open("feed.txt", "a") as file:
+                file.write("path exist.\n")
             if os.path.getsize(FEEDBACK_FILE_PATH) > 0:
                 print("Blah", file=sys.stdout, flush=True)
+                with open("feed.txt", "a") as file:
+                    file.write("path not emoty.\n")
                 with open(FEEDBACK_FILE_PATH, 'r') as file:
+
                     feedback_data = json.load(file)
                 
                 # Send the data as a response
@@ -85,6 +91,8 @@ def send_data():
 
                 return response, 200
         else:
+            with open("feed.txt", "a") as file:
+                file.write("not found .\n")
             logging.debug("FOUND FILE!!!!!!!! NOTTTTT NOT NOT")
         # Wait for the file to be populated
         time.sleep(interval)
