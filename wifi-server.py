@@ -93,14 +93,9 @@ def receive_feedback():
         return jsonify({"status": "success", "message": "Feedback received"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
-    
-
-signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
     disable_hotspot()
-    setup_hotspot()  # Start the hotspot
-    try:
-        app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
-    finally:
-        disable_hotspot()
+    setup_hotspot()  # Start the hotspots
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    
