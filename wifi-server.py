@@ -22,6 +22,13 @@ def setup_hotspot():
     except subprocess.CalledProcessError as e:
         print(f"Error setting up hotspot: {e}")
 
+
+def disable_hotspot():
+    print("Shutting down hotspot...")
+    subprocess.run(["sudo", "systemctl", "stop", "hostapd", "dnsmasq"], check=True)
+    subprocess.run(["sudo", "ip", "addr", "flush", "dev", "wlan0"], check=True)
+    print("Hotspot has been disabled.")
+
 # Call the function on startup
 setup_hotspot()
 
@@ -84,5 +91,11 @@ def receive_feedback():
         return jsonify({"status": "error", "message": str(e)}), 400
     
 
-if __name__ == '__main__': 
-        app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+signal.signal(signal.SIGINT, signal_handler)
+
+if __name__ == '__main__':
+    setup_hotspot()  # Start the hotspot
+    try:
+        app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    finally:
+        disable_hotspot()
