@@ -34,7 +34,7 @@ class Songs:
     def setSong(self, song_data): #song_data: json
         print("song", song_data.get('title'))
         print("song", song_data.get('notes'))
-        
+
         print( song_data["notes"])
         print(f"Setting song: {song_data.get('title')}")
         self.notes = song_data["notes"]  # Directly use the "notes" array
@@ -101,7 +101,7 @@ class Songs:
                     duration = time.time()  - self.StartTime
                     print (duration)
                     print(self.CurrentNote.get("duration"))
-                    if duration >= 2*self.CurrentNote.get("duration"):
+                    if duration >= self.CurrentNote.get("duration"):
                         #played long enough
                         print("DONE")
                         self.Start = True
@@ -116,11 +116,15 @@ class Songs:
                             led = self.NoteConversion.get(note)
                             print(led)
                             if led:
-                                if self.CurrentNote.get("duration") > 480:
-                                    print("h")
+                                note_duration = self.CurrentNote.get("duration")
+                                if note_duration >= 0.96:
+                                    print("w")  # Whole note
+                                    self.strip.turnOnLED(led, "w")
+                                elif note_duration >= 0.48:
+                                    print("h")  # Half note
                                     self.strip.turnOnLED(led, "h")
                                 else:
-                                    print("q")
+                                    print("q")  # Quarter note
                                     self.strip.turnOnLED(led, "q")
                         else:
                             self.FINISHED = True
