@@ -266,6 +266,7 @@ def callback(indata, frames, time, status):
 
 if __name__ == '__main__':
     # Process arguments
+    strip.rainbow()
     clear_file(file_path)
     clear_file("feedback.json")
 
@@ -292,7 +293,7 @@ if __name__ == '__main__':
 
       print(f"Data has been written to {file_path}")
 
-      
+
     except KeyboardInterrupt:
         # print (sig[:50])
         # print (vol[:50])
