@@ -257,7 +257,7 @@ if __name__ == '__main__':
       # start_time = time.time()
 
       #devvice num hanges?
-      with sd.InputStream(device=1, channels=2, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      with sd.InputStream(device=2, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
             time.sleep(0.25)
 
