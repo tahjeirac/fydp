@@ -116,6 +116,12 @@ HANN_WINDOW = np.hanning(WINDOW_SIZE)
 MINIMUM_SILENCE_DURATION = 5
 
 
+def get_rpi_device():
+    devices = sd.query_devices()
+    for i, device in enumerate(devices):
+        if "snd_rpi" in device["name"].lower() and device["max_input_channels"] > 0:
+            return i  # Return the index of the Raspberry Pi audio input device
+    return None  # Return None if not found
 
 def callback(indata, frames, time, status):
   """
@@ -258,7 +264,9 @@ if __name__ == '__main__':
 
       #devvice num hanges?
       print (sd.query_devices())
-      with sd.InputStream(device=1, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      rpi_device = get_rpi_device()
+      print(f"Raspberry Pi audio device number: {rpi_device}")
+      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
             time.sleep(0.25)
 
