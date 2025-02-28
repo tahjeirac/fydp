@@ -34,9 +34,7 @@ class Songs:
     def setSong(self, song_data): #song_data: json
         print("song", song_data.get('title'))
         print("song", song_data.get('notes'))
-
-        for note in song_data["notes"]:
-            note['duration'] = note['duration'] / 1000  # Convert ms to seconds
+        
         print( song_data["notes"])
         print(f"Setting song: {song_data.get('title')}")
         self.notes = song_data["notes"]  # Directly use the "notes" array
@@ -76,13 +74,13 @@ class Songs:
         led = self.NoteConversion.get(note_name)
         print(led)
         if led:
-            if note.get("duration") == 0.48:
+            if note.get("duration") == 0.24:
                 print("q")
                 self.strip.turnOnLED(led, "q")
-            elif note.get("duration") == 0.96:
+            elif note.get("duration") == 0.48:
                 print("h")
                 self.strip.turnOnLED(led, "h")
-            elif note.get("duration") == 1.92:
+            elif note.get("duration") == 0.96:
                 print("w")
                 self.strip.turnOnLED(led, "w")
             else:
