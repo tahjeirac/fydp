@@ -59,8 +59,6 @@ def fetch_song():
               song_data = response.json()
               songs.setSong(song_data)  # Pass JSON data to Songs.py
               print("Song loaded successfully!")
-          else:
-              print("No song available yet.")
       except Exception as e:
           print(f"Error fetching song: {e}")
 
