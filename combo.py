@@ -46,7 +46,7 @@ start_time = None
 played_notes = []
 
 SERVER_URL = "http://192.168.4.1:5000"
-file_path = songs.json
+file_path = "song.json"
 
 def fetch_song():
     # fetching the song data from the server 
