@@ -71,13 +71,18 @@ class Songs:
         led = self.NoteConversion.get(note_name)
         print(led)
         if led:
-            if note.get("duration") > 480:
+            if note.get("duration") == 0.48:
+                print("q")
+                self.strip.turnOnLED(led, "q")
+            elif note.get("duration") == 0.96:
                 print("h")
                 self.strip.turnOnLED(led, "h")
+            elif note.get("duration") == 1.92:
+                print("w")
+                self.strip.turnOnLED(led, "w")
             else:
                 print("q")
                 self.strip.turnOnLED(led, "q")
-
 
     def noteMatch(self, played_note):
         print (self.CurrentNote.get("note"))
