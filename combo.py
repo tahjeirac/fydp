@@ -272,7 +272,7 @@ if __name__ == '__main__':
     print ("WIFI STARTED")
     try:
       fetch_song()
-      # strip.colourWipe()
+      strip.colourWipe()
 
     #   strip.rainbow()
     #   # start_time = time.time()  # Start timing the note
@@ -285,14 +285,14 @@ if __name__ == '__main__':
     #   # strip.startSeq(led)
     #   # start_time = time.time()
 
-    #   #devvice num hanges?
-    #   rpi_device = get_rpi_device()
-    #   print(f"Raspberry Pi audio device number: {rpi_device}")
-    #   with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-    #       while not songs.FINISHED:
-    #         time.sleep(0.25)
+      #devvice num hanges?
+      rpi_device = get_rpi_device()
+      print(f"Raspberry Pi audio device number: {rpi_device}")
+      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          while not songs.FINISHED:
+            time.sleep(0.25)
 
-    #   strip.endSeq()
+      strip.endSeq()
 
     #   # file_path = "feedback.json"
 

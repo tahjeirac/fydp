@@ -35,11 +35,9 @@ class Songs:
         print("song", song_data.get('title'))
         print("song", song_data.get('notes'))
 
-        print(song_data)
-
         for note in song_data["notes"]:
             note['duration'] = note['duration'] / 1000  # Convert ms to seconds
-
+        print( song_data["notes"])
         print(f"Setting song: {song_data.get('title')}")
         self.notes = song_data["notes"]  # Directly use the "notes" array
         self.NOTE_INDEX = 0  # Reset the note index
