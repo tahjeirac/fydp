@@ -59,20 +59,23 @@ def send_data():
 
     while elapsed_time < timeout:
         # Check if the feedback.json file exists and is not blank
-        if os.path.exists(FEEDBACK_FILE_PATH) and os.path.getsize(FEEDBACK_FILE_PATH) > 0:
+        if os.path.exists(FEEDBACK_FILE_PATH): 
             print ("FOUND FILE!!!!!!!!")
-            with open(FEEDBACK_FILE_PATH, 'r') as file:
-                feedback_data = json.load(file)
-            
-            # Send the data as a response
-            response = jsonify(feedback_data)
-            
-            # Clear the file contents (but do not delete the file)
-            with open(FEEDBACK_FILE_PATH, 'w') as file:
-                file.truncate(0)  # Clears the file
+            if os.path.getsize(FEEDBACK_FILE_PATH) > 0:
+                print("Blah")
+                with open(FEEDBACK_FILE_PATH, 'r') as file:
+                    feedback_data = json.load(file)
+                
+                # Send the data as a response
+                response = jsonify(feedback_data)
+                
+                # Clear the file contents (but do not delete the file)
+                with open(FEEDBACK_FILE_PATH, 'w') as file:
+                    file.truncate(0)  # Clears the file
 
-            return response, 200
-        
+                return response, 200
+        else:
+            print ("FOUND FILE!!!!!!!! NOT NOT NOT")
         # Wait for the file to be populated
         time.sleep(interval)
         elapsed_time += interval
