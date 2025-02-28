@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+import signal
 import time 
 import subprocess
 import json 
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 feedback_data = None #store the feedback data globally 
@@ -28,6 +29,12 @@ def disable_hotspot():
     subprocess.run(["sudo", "systemctl", "stop", "hostapd", "dnsmasq"], check=True)
     subprocess.run(["sudo", "ip", "addr", "flush", "dev", "wlan0"], check=True)
     print("Hotspot has been disabled.")
+
+def signal_handler(sig, frame):
+    """Handles Ctrl+C (SIGINT) to clean up before exiting."""
+    print("\nCtrl+C detected! Stopping Flask and disabling hotspot...")
+    disable_hotspot()
+    exit(0)
 
 @app.route('/receive_json', methods=['POST'])
 def receive_json():
