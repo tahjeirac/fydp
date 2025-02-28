@@ -30,7 +30,7 @@ class Songs:
         # self.notes  = data[name]["tracks"][0]["notes"]
         # Accepts JSON data directly instead of loading from a file 
         print(song_data)
-        print(f"Setting song: {song_data['title']}")
+        # print(f"Setting song: {song_data['title']}")
         self.notes = song_data["notes"]  # Directly use the "notes" array
         self.NOTE_INDEX = 0  # Reset the note index
         self.FINISHED = False  # Reset the finished flag
