@@ -3,9 +3,18 @@ import time
 import os
 import subprocess
 import json 
+import logging
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(
+    filename="output.log",  # Save logs to a file
+    level=logging.DEBUG,  # Set log level
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
+)
+
 feedback_data = None #store the feedback data globally 
 song_data = None #the song data that will get passed to combo.py to start lighting up LEDs 
 FEEDBACK_FILE_PATH = 'feedback.json'
@@ -58,10 +67,10 @@ def send_data():
     elapsed_time = 0
 
     while elapsed_time < timeout:
-        print("LOOKING FOR FILE!!!!!!", file=sys.stdout, flush=True)
+        logging.debug("LOOKING FOR FILE!!!!!!")
         # Check if the feedback.json file exists and is not blank
         if os.path.exists(FEEDBACK_FILE_PATH): 
-            print ("FOUND FILE!!!!!!!!", file=sys.stdout, flush=True)
+            logging.debug("FOUND FILE!!!!!!!!")
             if os.path.getsize(FEEDBACK_FILE_PATH) > 0:
                 print("Blah", file=sys.stdout, flush=True)
                 with open(FEEDBACK_FILE_PATH, 'r') as file:
@@ -76,7 +85,7 @@ def send_data():
 
                 return response, 200
         else:
-            print ("FOUND FILE!!!!!!!! NOT NOT NOT", file=sys.stdout, flush=True)
+            logging.debug("FOUND FILE!!!!!!!! NOTTTTT NOT NOT")
         # Wait for the file to be populated
         time.sleep(interval)
         elapsed_time += interval
