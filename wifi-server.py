@@ -29,9 +29,6 @@ def disable_hotspot():
     subprocess.run(["sudo", "ip", "addr", "flush", "dev", "wlan0"], check=True)
     print("Hotspot has been disabled.")
 
-# Call the function on startup
-setup_hotspot()
-
 @app.route('/receive_json', methods=['POST'])
 def receive_json():
         global song_data #storing received song data in JSON 
@@ -94,6 +91,7 @@ def receive_feedback():
 signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
+    disable_hotspot()
     setup_hotspot()  # Start the hotspot
     try:
         app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
