@@ -48,9 +48,15 @@ played_notes = []
 SERVER_URL = "http://192.168.4.1:5000"
 file_path = "song.json"
 
+def clear_file(file_path):
+    # Open the file in write mode, which clears the contents
+    with open(file_path, 'w'):
+        pass  # No need to write anything, just open and close the file
+    
 def fetch_song():
     # fetching the song data from the server 
     data_recv = False
+    song_data = None
     while not data_recv:
       try:
           response = requests.post(f"{SERVER_URL}/receive_json")
@@ -59,6 +65,7 @@ def fetch_song():
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
                 data_recv = True
+                song_data = content
                 print("File has data:", content)
             else:
                 print("File is empty")
@@ -66,6 +73,15 @@ def fetch_song():
 
       except Exception as e:
           print(f"Error fetching song: {e}")
+
+    with open(file_path, 'r') as file:
+        content = file.read().strip()  # Read content and remove any extra whitespace
+        song_data = content
+        songs.setSong(song_data)
+    
+    clear_file(file_path)
+
+
 
 def find_closest_note(pitch):
   """
@@ -256,27 +272,27 @@ if __name__ == '__main__':
     print ("WIFI STARTED")
     try:
       fetch_song()
-      # strip.colourWipe()
+      strip.colourWipe()
 
 
-      # start_time = time.time()  # Start timing the note
-      # dur = 0
+      start_time = time.time()  # Start timing the note
+      dur = 0
 
-      # # note = songs.setCurrentNote()
-      # # print(note)
-      # # led = NoteConversion.get(note.get("name"))
-      # # print(led)
+      # note = songs.setCurrentNote()
+      # print(note)
+      # led = NoteConversion.get(note.get("name"))
+      # print(led)
  
-      # # strip.startSeq(led)
-      # # start_time = time.time()
+      # strip.startSeq(led)
+      # start_time = time.time()
 
-      # #devvice num hanges?
-      # print (sd.query_devices())
-      # rpi_device = get_rpi_device()
-      # print(f"Raspberry Pi audio device number: {rpi_device}")
-      # with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-      #     while not songs.FINISHED:
-      #       time.sleep(0.25)
+      #devvice num hanges?
+      print (sd.query_devices())
+      rpi_device = get_rpi_device()
+      print(f"Raspberry Pi audio device number: {rpi_device}")
+      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          while not songs.FINISHED:
+            time.sleep(0.25)
 
       # strip.endSeq()
 
