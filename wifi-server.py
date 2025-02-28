@@ -37,7 +37,7 @@ def receive_json():
 
                 # Debugging output
                 print("Received JSON:", song_data)
-
+                
                 return jsonify({"status": "success", "message": "Data received"}), 200
         except Exception as e: 
                 return jsonify({"status": "error", "message": str(e)}), 400

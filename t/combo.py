@@ -9,14 +9,12 @@ import json
 import wave
 import requests
 import subprocess
-import matplotlib.pyplot as plt
-from functools import partial
-from collections import deque
+
 
 from led_control import Strip
 from songs import Songs
 from state import NoteStateMachine
-
+# General settings that can be changed by the user
 SAMPLE_FREQ = 48000 # sample frequency in Hz
 WINDOW_SIZE = 48000 # window size of the DFT in samples
 WINDOW_STEP = 12000 # step size of window
@@ -30,21 +28,21 @@ SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
 DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE # frequency step width of the interpolated DFT
 OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
 
-SIG_TOLERANCE = 0.0005
 
 MATCH_DELAY = 0.7 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
+
+#Server 
+SERVER_URL = "http://192.168.4.1:5000"
 
 # NoteConversion = {'C3':7, 'B3':1, 'A3':2, 'G3': 3, 'F3':4, 'E3': 5, 'D3':6}
 NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 strip = Strip()
 songs = Songs("songs.json", MATCH_DELAY, strip)
-feedback = []
-state_machine = NoteStateMachine(songs, feedback)
-start_time = None
-played_notes = []
+state_machine = NoteStateMachine(songs)
 
+wav_file = None
 
 def fetch_song():
     # fetching the song data from the server 
@@ -58,6 +56,24 @@ def fetch_song():
             print("No song available yet.")
     except Exception as e:
         print(f"Error fetching song: {e}")
+
+def setup_wav_file(filename, channels=1, sample_width=2, frame_rate=SAMPLE_FREQ):
+    """
+    Sets up the WAV file for recording audio.
+    Parameters:
+        filename (str): Name of the WAV file to save.
+        channels (int): Number of audio channels.
+        sample_width (int): Width of each audio sample in bytes.
+        frame_rate (int): Sampling rate in Hz.
+    Returns:
+        wave.Wave_write: Open WAV file object.
+    """
+    wav_file = wave.open(filename, 'wb')
+    wav_file.setnchannels(channels)
+    wav_file.setsampwidth(sample_width)  # 2 bytes per sample for 16-bit audio
+    wav_file.setframerate(frame_rate)
+    return wav_file
+
 
 def find_closest_note(pitch):
   """
@@ -73,71 +89,8 @@ def find_closest_note(pitch):
   closest_pitch = CONCERT_PITCH*2**(i/12)
   return closest_note, closest_pitch
 
-sig = deque(maxlen= 10)
-vol = []
-
-
-def callback_start(indata, frames, time, status):
-  """
-  Callback function of the InputStream method.
-  """
-  # define static variables
-  if not hasattr(callback_start, "window_samples"):
-    callback_start.window_samples = [0 for _ in range(WINDOW_SIZE)]
-
-  if status:
-    print(status)
-    return
-  if any(indata):
-    callback_start.window_samples = np.concatenate((callback_start.window_samples, indata[:, 0])) # append new samples
-    callback_start.window_samples = callback_start.window_samples[len(indata[:, 0]):] # remove old samples
-
-    signal_power = (np.linalg.norm(callback_start.window_samples, ord=2)**2) / len(callback_start.window_samples)
-    signal_power = signal_power * 1000
-    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
-
-    global sig
-    global vol
-    sig.append(signal_power)
-    vol.append(volume_db)
-
-   
-
-def has_valid_harmonics(magnitude_spec, fundamental_index, min_harmonics=2, harmonic_thresh=0.1):
-    """
-    Ensure that a fundamental frequency has at least `min_harmonics` harmonics.
-    Parameters:
-        magnitude_spec (np.array): Magnitude spectrum from FFT.
-        fundamental_index (int): Index of detected fundamental frequency.
-        min_harmonics (int): Minimum number of harmonics required.
-        harmonic_thresh (float): Threshold relative to fundamental magnitude.
-    Returns:
-        bool: True if enough harmonics are found, False otherwise.
-    """
-    fundamental_mag = magnitude_spec[fundamental_index]
-    harmonic_count = 0
-
-    # Check harmonics (2f, 3f, ...)
-    for h in range(2, NUM_HPS + 1):
-        harmonic_index = fundamental_index * h
-        if harmonic_index < len(magnitude_spec) and magnitude_spec[harmonic_index] > harmonic_thresh * fundamental_mag:
-            harmonic_count += 1
-        if harmonic_count >= min_harmonics:
-            return True
-
-    return False
 
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
-MINIMUM_SILENCE_DURATION = 5
-
-
-def get_rpi_device():
-    devices = sd.query_devices()
-    for i, device in enumerate(devices):
-        if "snd_rpi" in device["name"].lower() and device["max_input_channels"] > 0:
-            return i  # Return the index of the Raspberry Pi audio input device
-    return None  # Return None if not found
-
 def callback(indata, frames, time, status):
   """
   Callback function of the InputStream method.
@@ -147,12 +100,9 @@ def callback(indata, frames, time, status):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
   if not hasattr(callback, "noteBuffer"):
     callback.noteBuffer = ["1","2"]
-  if not hasattr(callback, "mean_sig"):
-    callback.mean_sig = 0
-  if not hasattr(callback, "sig_buffer"):
-    callback.sig_buffer = deque(maxlen= 10)
 
   if status:
+    print('s')
     print(status)
     return
   if any(indata):
@@ -161,17 +111,13 @@ def callback(indata, frames, time, status):
 
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
-    signal_power = signal_power * 1000
-    # volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
+    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
-    if signal_power < callback.mean_sig - SIG_TOLERANCE:
+    # print(f"Volume: {volume_db:.2f} dB")  # Display the volume
+    # print(signal_power)
+    if signal_power < POWER_THRESH:
       os.system('cls' if os.name=='nt' else 'clear')
-      callback.sig_buffer.append(signal_power)
-      callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
-      state_machine.handle_input("SILENCE")
-
-      # print ("Mean", callback.mean_sig )
-      # print(signal_power)
+      print("Closest note: ...")
       return
 
     # avoid spectral leakage by multiplying the signal with a hann window
@@ -181,7 +127,6 @@ def callback(indata, frames, time, status):
     # supress mains hum, set everything below 62Hz to zero
     for i in range(int(62/DELTA_FREQ)):
       magnitude_spec[i] = 0
-
 
     # calculate average energy per frequency for the octave bands
     # and suppress everything below it
@@ -210,6 +155,7 @@ def callback(indata, frames, time, status):
 
     max_ind = np.argmax(hps_spec)
     max_freq = max_ind * (SAMPLE_FREQ/WINDOW_SIZE) / NUM_HPS
+
     closest_note, closest_pitch = find_closest_note(max_freq)
     max_freq = round(max_freq, 1)
     closest_pitch = round(closest_pitch, 1)
@@ -219,69 +165,69 @@ def callback(indata, frames, time, status):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      # print(has_valid_harmonics(magnitude_spec, max_ind, min_harmonics=2))
-      #B2 HUM
-      if closest_note != "B2":
-      # print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      # print(f"Signal: {signal_power} dB")  # Display the volume
-      # print (callback.mean_sig)
-        state_machine.handle_input(closest_note)
-      else:
-        state_machine.handle_input("SILENCE")
-
+      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      state_machine.handle_input(closest_note)
 
     else:
       print(f"Closest note: ...")
-      callback.sig_buffer.append(signal_power)
-      callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
-      # print(f"Signal: {signal_power} dB")  # Display the volume
       state_machine.handle_input("SILENCE")
+
 
   else:
     print('no input')
 
 if __name__ == '__main__':
     # Process arguments
+    # TODO: this is hard coded stuff - delete 
+    server_process = subprocess.Popen(["python3", "wifi_server.py"])
+
+    print ("1 for mary 2 for twinkle")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
+    parser.add_argument('-s', '--song', type=int, required=True, help='song name to display')
+
+    args = parser.parse_args()
+
 
     print ('Press Ctrl-C to quit.')
+    if not args.clear:
+        print('Use "-c" argument to clear LEDs on exit')
+
+    wav_file = setup_wav_file("recorded_audio.wav")
 
     try:
+      if args.song == 1:
+        global MIDI_NOTES
+        song_name = "mary"
+        print ("Playing Mary Had a Little Lamb")
+      else:
+         song_name = "twinkle"
+         print ("Playing Twinkle Twinkle Little Star")
+      
+      #songs.setSong(song_name)
       fetch_song()
       strip.colourWipe()
 
+      note = songs.setCurrentNote()
+      print(note)
+      led = NoteConversion.get(note.get("name"))
+      print(led)
+      strip.startSeq(led)
 
-      start_time = time.time()  # Start timing the note
-      dur = 0
-
-      # note = songs.setCurrentNote()
-      # print(note)
-      # led = NoteConversion.get(note.get("name"))
-      # print(led)
- 
-      # strip.startSeq(led)
-      # start_time = time.time()
-
-      #devvice num hanges?
-      print (sd.query_devices())
-      rpi_device = get_rpi_device()
-      print(f"Raspberry Pi audio device number: {rpi_device}")
-      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      with sd.InputStream(device=2, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
           while not songs.FINISHED:
-            time.sleep(0.25)
+            time.sleep(0.5)
 
       strip.endSeq()
-
-      file_path = "feedback.json"
-
-      # Write the array to a file
-      with open(file_path, 'w') as file:
-          json.dump(feedback, file, indent=4)
-
-      print(f"Data has been written to {file_path}")
     except KeyboardInterrupt:
-        # print (sig[:50])
-        # print (vol[:50])
-        
-        print(feedback)
         if args.clear:
             strip.colourWipe()
+    # TODO: figure out server cleanup - should it ever be terminated?? 
+    #import atexit
+
+    # def cleanup():
+    #     print("Stopping server...")
+    #     server_process.terminate()  # Gracefully stop the server
+    #     server_process.wait()
+
+    # atexit.register(cleanup)

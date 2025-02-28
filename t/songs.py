@@ -38,6 +38,7 @@ class Songs:
     def setCurrentNote(self):
         if (self.NOTE_INDEX < len(self.notes)):
             note_info = self.notes[self.NOTE_INDEX]
+            note = note_info.get("name")
             self.CurrentNote = note_info
             return note_info
         
