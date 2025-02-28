@@ -52,7 +52,7 @@ def fetch_song():
     data_recv = False
     while not data_recv:
       try:
-          response = requests.get(f"{SERVER_URL}/receive_json")
+          response = requests.post(f"{SERVER_URL}/receive_json")
           time.sleep
           if response.status_code == 200:
               data_recv = True
