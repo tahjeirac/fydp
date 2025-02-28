@@ -58,12 +58,12 @@ def send_data():
     elapsed_time = 0
 
     while elapsed_time < timeout:
-        print ("LOOKING FOR FILE!!!!!!")
+        print("LOOKING FOR FILE!!!!!!", file=sys.stdout, flush=True)
         # Check if the feedback.json file exists and is not blank
         if os.path.exists(FEEDBACK_FILE_PATH): 
-            print ("FOUND FILE!!!!!!!!")
+            print ("FOUND FILE!!!!!!!!", file=sys.stdout, flush=True)
             if os.path.getsize(FEEDBACK_FILE_PATH) > 0:
-                print("Blah")
+                print("Blah", file=sys.stdout, flush=True)
                 with open(FEEDBACK_FILE_PATH, 'r') as file:
                     feedback_data = json.load(file)
                 
@@ -76,7 +76,7 @@ def send_data():
 
                 return response, 200
         else:
-            print ("FOUND FILE!!!!!!!! NOT NOT NOT")
+            print ("FOUND FILE!!!!!!!! NOT NOT NOT", file=sys.stdout, flush=True)
         # Wait for the file to be populated
         time.sleep(interval)
         elapsed_time += interval
