@@ -60,6 +60,7 @@ def send_data():
     while elapsed_time < timeout:
         # Check if the feedback.json file exists and is not blank
         if os.path.exists(FEEDBACK_FILE_PATH) and os.path.getsize(FEEDBACK_FILE_PATH) > 0:
+            print ("FOUND FILE!!!!!!!!")
             with open(FEEDBACK_FILE_PATH, 'r') as file:
                 feedback_data = json.load(file)
             

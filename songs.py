@@ -68,69 +68,28 @@ class Songs:
     def nextNote(self):
         # moves to the next note and updates the LED indicator
         self.NOTE_INDEX += 1
-        note = self.setCurrentNote()
-        note_name = note["note"]
-        print(note_name)
-        led = self.NoteConversion.get(note_name)
-        print(led)
-        if led:
-            if note.get("duration") == 0.24:
-                print("q")
-                self.strip.turnOnLED(led, "q")
-            elif note.get("duration") == 0.48:
-                print("h")
-                self.strip.turnOnLED(led, "h")
-            elif note.get("duration") == 0.96:
-                print("w")
-                self.strip.turnOnLED(led, "w")
-            else:
-                print("q")
-                self.strip.turnOnLED(led, "q")
-
-    def noteMatch(self, played_note):
-        print (self.CurrentNote.get("note"))
-        if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT:
-                        #enough time has passed
-            if played_note == self.CurrentNote.get("note"):
-                print("Match!")
-                if self.Start:
-                    #first match
-                    self.StartTime = time.time()
-                    self.Start = False
+        if (self.NOTE_INDEX < len(self.notes)):
+            note = self.setCurrentNote()
+            note_name = note["note"]
+            print(note_name)
+            led = self.NoteConversion.get(note_name)
+            print(led)
+            if led:
+                if note.get("duration") == 0.24:
+                    print("q")
+                    self.strip.turnOnLED(led, "q")
+                elif note.get("duration") == 0.48:
+                    print("h")
+                    self.strip.turnOnLED(led, "h")
+                elif note.get("duration") == 0.96:
+                    print("w")
+                    self.strip.turnOnLED(led, "w")
                 else:
-                    duration = time.time()  - self.StartTime
-                    print (duration)
-                    print(self.CurrentNote.get("duration"))
-                    if duration >= self.CurrentNote.get("duration"):
-                        #played long enough
-                        print("DONE")
-                        self.Start = True
-                        self.NOTE_INDEX = self.NOTE_INDEX+1 # get nxt not
-                        self.LAST_MATCH_TIME = time.time() 
-                        self.setSilence(False)
-
-                        if (self.NOTE_INDEX < len(self.notes)):
-                            note_info = self.notes[self.NOTE_INDEX]
-                            note = note_info.get("note")
-                            self.CurrentNote = note_info
-                            led = self.NoteConversion.get(note)
-                            print(led)
-                            if led:
-                                note_duration = self.CurrentNote.get("duration")
-                                if note_duration >= 0.96:
-                                    print("w")  # Whole note
-                                    self.strip.turnOnLED(led, "w")
-                                elif note_duration >= 0.48:
-                                    print("h")  # Half note
-                                    self.strip.turnOnLED(led, "h")
-                                else:
-                                    print("q")  # Quarter note
-                                    self.strip.turnOnLED(led, "q")
-                        else:
-                            self.FINISHED = True
-            
-            else:
-                print ("no match")
-                self.Start = True
-
+                    print("q")
+                    self.strip.turnOnLED(led, "q")
+        else:
+            self.FINISHED = True
+            print("Lesson complete!")
+            return "FINI" 
+   
 
