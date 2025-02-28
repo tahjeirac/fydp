@@ -19,6 +19,14 @@ class Songs:
         self.strip = strip
         self.SILENT = True
 
+    def start(self):
+        note = self.setCurrentNote()
+        print(note)
+        led = self.NoteConversion.get(note.get("note"))
+        print(led)
+
+        self.strip.startSeq(led)
+    
     def setSilence(self, val=True):
         print ("SILENCE")
         self.SILENT = val
@@ -31,7 +39,6 @@ class Songs:
 
         for note in song_data["notes"]:
             note['duration'] = note['duration'] / 1000  # Convert ms to seconds
-        print (song_data["notes"])
 
         print(f"Setting song: {song_data.get('title')}")
         self.notes = song_data["notes"]  # Directly use the "notes" array

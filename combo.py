@@ -286,14 +286,13 @@ if __name__ == '__main__':
       # start_time = time.time()
 
       #devvice num hanges?
-      # print (sd.query_devices())
-      # rpi_device = get_rpi_device()
-      # print(f"Raspberry Pi audio device number: {rpi_device}")
-      # with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-      #     while not songs.FINISHED:
-      #       time.sleep(0.25)
+      rpi_device = get_rpi_device()
+      print(f"Raspberry Pi audio device number: {rpi_device}")
+      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          while not songs.FINISHED:
+            time.sleep(0.25)
 
-      # strip.endSeq()
+      strip.endSeq()
 
       # file_path = "feedback.json"
 
