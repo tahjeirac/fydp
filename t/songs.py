@@ -36,7 +36,8 @@ class Songs:
                 note['duration'] = note['duration'] / 1000  # Convert ms to seconds
 
         self.notes = song_data["notes"]  # Store the updated notes
-       
+        print (self.notes)
+
         self.NOTE_INDEX = 0  # Reset the note index
         self.FINISHED = False  # Reset the finished flag
         self.setCurrentNote()  # Set the first note

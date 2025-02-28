@@ -274,9 +274,8 @@ if __name__ == '__main__':
       fetch_song()
       strip.colourWipe()
 
-
-      start_time = time.time()  # Start timing the note
-      dur = 0
+      strip.rainbow()
+      # start_time = time.time()  # Start timing the note
 
       # note = songs.setCurrentNote()
       # print(note)
@@ -287,12 +286,12 @@ if __name__ == '__main__':
       # start_time = time.time()
 
       #devvice num hanges?
-      print (sd.query_devices())
-      rpi_device = get_rpi_device()
-      print(f"Raspberry Pi audio device number: {rpi_device}")
-      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          while not songs.FINISHED:
-            time.sleep(0.25)
+      # print (sd.query_devices())
+      # rpi_device = get_rpi_device()
+      # print(f"Raspberry Pi audio device number: {rpi_device}")
+      # with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      #     while not songs.FINISHED:
+      #       time.sleep(0.25)
 
       # strip.endSeq()
 
