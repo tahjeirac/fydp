@@ -76,10 +76,10 @@ def fetch_song():
 
     with open(file_path, 'r') as file:
         content = file.read().strip()  # Read content and remove any extra whitespace
-        song_data = content
+        song_data = json.loads(content)
         songs.setSong(song_data)
     
-    clear_file(file_path)
+    #clear_file(file_path)
 
 
 
