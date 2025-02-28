@@ -272,34 +272,39 @@ if __name__ == '__main__':
     clear_file(file_path)
     clear_file("feedback.json")
 
-    # print ('Press Ctrl-C to quit.')
-    # server_process = subprocess.Popen(["python3", "wifi-server.py"])
-    # print ("WIFI STARTED")
-    # try:
-    #   fetch_song()
-    #   strip.colourWipe()
+    print ('Press Ctrl-C to quit.')
+    server_process = subprocess.Popen(["python3", "wifi-server.py"])
+    print ("WIFI STARTED")
+    try:
+      fetch_song()
+      strip.colourWipe()
 
-    #   rpi_device = get_rpi_device()
-    #   print(f"Raspberry Pi audio device number: {rpi_device}")
-    #   with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-    #       while not songs.FINISHED:
-    #         time.sleep(0.25)
+      rpi_device = get_rpi_device()
+      print(f"Raspberry Pi audio device number: {rpi_device}")
+      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          while not songs.FINISHED:
+            time.sleep(0.25)
 
-    #   strip.endSeq()
+      strip.endSeq()
 
-    #   file_path = "feedback.json"
+      file_path = "feedback.json"
 
-    #   # Write the array to a file
-    #   with open(file_path, 'w') as file:
-    #       json.dump(feedback, file, indent=4)
+      # Write the array to a file
+      with open(file_path, 'w') as file:
+          json.dump(feedback, file, indent=4)
 
-    #   print(f"Data has been written to {file_path}")
+      print(f"Data has been written to {file_path}")
 
+      with open(file_path, 'r') as file:
+        print("sending feedback data over to the server")
+        feedback_data = json.load(file)
+        response = requests.post(f"{SERVER_URL}/send_feedback", json=feedback_data)
+        print(f"Server Response: {response.status_code}, {response.text}")    
 
-    # except KeyboardInterrupt:
-    #     # print (sig[:50])
-    #     # print (vol[:50])
-    #     strip.colourWipe()
+    except KeyboardInterrupt:
+        # print (sig[:50])
+        # print (vol[:50])
+        strip.colourWipe()
 
-    #     print(feedback)
+        print(feedback)
 
