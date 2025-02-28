@@ -59,28 +59,25 @@ def receive_json():
         except Exception as e: 
                 return jsonify({"status": "error", "message": str(e)}), 400
 
+
 # SENDING JSON TO IPHONE (IPHONE DOES GET)
 @app.route('/send_json', methods=['GET'])
 def send_data():
-    timeout = 100  # maximum wait time
-    interval = 1  # how often to check
+    global feedback_data 
+    timeout = 20 #maximum wait time 
+    interval = 1 #how often to check 
     elapsed_time = 0
 
-    while elapsed_time < timeout:
-        input = sys.stdin.readline().strip()
-        if input:
-             
-            # response = jsonify(feedback_data)
-            response = jsonify({"status": "done!"})
-            print("done")
-            return response, 200
-         
+    while feedback_data is None and elapsed_time < timeout:
         time.sleep(interval)
-        elapsed_time += interval
+        elapsed_time += interval 
 
-    # If no feedback is available after timeout
-    return jsonify({"status": "pending"}), 204  # no feedback yet
-
+    if feedback_data: 
+        response = jsonify(feedback_data)
+        feedback_data = None 
+        return response, 200 
+    else: 
+        return jsonify({"status": "pending"}), 204  # no feedback yet
     
 
 # RECEIVING FEEDBACK DATA FROM RASPBERRY PI. pi will do post to here w feedback data
@@ -89,10 +86,10 @@ def receive_feedback():
     global feedback_data
     try:
         data = request.get_json()
-        
-        # CHANGE BASED ON STRUCTURE OF THE STORED NOTES
-        if "played_notes" not in data or not isinstance(data["played_notes"], list):
-            return jsonify({"status": "error", "message": "Invalid data format"}), 400
+
+        # Check if the received data is a list
+        if not isinstance(data, list):
+            return jsonify({"status": "error", "message": "Invalid data format - expected a list"}), 400
 
         feedback_data = data  # Store feedback globally
 
@@ -101,6 +98,7 @@ def receive_feedback():
         return jsonify({"status": "success", "message": "Feedback received"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
+
 
 if __name__ == '__main__':
     disable_hotspot()
