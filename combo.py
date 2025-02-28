@@ -46,6 +46,7 @@ start_time = None
 played_notes = []
 
 SERVER_URL = "http://192.168.4.1:5000"
+file_path = songs.json
 
 def fetch_song():
     # fetching the song data from the server 
@@ -53,13 +54,16 @@ def fetch_song():
     while not data_recv:
       try:
           response = requests.post(f"{SERVER_URL}/receive_json")
-          time.sleep
-          if response.status_code == 200:
-              data_recv = True
-              song_data = response.json()
-              print(song_data)
-              #songs.setSong(song_data)  # Pass JSON data to Songs.py
-              print("Song loaded successfully!")
+          
+          with open(file_path, 'r') as file:
+            content = file.read().strip()  # Read content and remove any extra whitespace
+            if content:
+                data_recv = True
+                print("File has data:", content)
+            else:
+                print("File is empty")
+          time.sleep(1)
+
       except Exception as e:
           print(f"Error fetching song: {e}")
 

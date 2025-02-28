@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import time 
 import subprocess
+import json 
 
 app = Flask(__name__)
 feedback_data = None #store the feedback data globally 
@@ -37,7 +38,8 @@ def receive_json():
 
                 # Debugging output
                 print("Received JSON:", song_data)
-                
+                with open('song.json', 'w') as file:
+                    json.dump(song_data, file, indent=4)  # 'indent' makes the JSON more readable
                 return jsonify({"status": "success", "message": "Data received",  "song_data": song_data }), 200
         except Exception as e: 
                 return jsonify({"status": "error", "message": str(e)}), 400
