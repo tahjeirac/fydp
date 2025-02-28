@@ -8,10 +8,15 @@ from rpi_ws281x import *
 CLEAR = Color(0,0,0)
 RED = Color(255,0,0)
 ROSE = Color(255,0,128)
+
 MAGENTA = Color(255,0,255)
 VIOLET = Color(128,0,255)
+
 BLUE = Color(255,255,0)
+CYAN = Color(0,255,255)
+
 GREEN = Color(0,255,0)
+
 CHART = Color(128,255,0)
 YELLOW = Color(255,255,0)
 
@@ -26,8 +31,9 @@ class Strip:
         self.LED_CHANNEL    = 1       # set to '1' for GPIOs 13, 19, 41, 45 or 53
         self.LAST = Color(0, 255, 0)
         self.LED_ON = -1
-        self.QUARTER = [RED, ROSE]
-        self.HALF = [GREEN, YELLOW]
+        self.QUARTER = [YELLOW, GREEN]
+        self.HALF = [BLUE, CYAN]
+        self.WHOLE = [VIOLET, MAGENTA]
         self.strip = Adafruit_NeoPixel(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
         self.strip.begin()
 
@@ -54,6 +60,8 @@ class Strip:
                 c = self.QUARTER[self.COLOUR_INDEX]
             elif note_type == "h":
                 c = self.HALF[self.COLOUR_INDEX]
+            elif note_type == "w":
+                c = self.WHOLE[self.COLOUR_INDEX]
             else:
                 c =  Color(0, 255, 0)
         else:

@@ -1,0 +1,110 @@
+{"title": "Mary Had a Little Lamb (Simple Version)",
+    "key": "C Major",
+    "tempo": 120,
+    "notes": [
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "C4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 960
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 960
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "G4",
+            "duration": 480
+        },
+        {
+            "note": "G4",
+            "duration": 960
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "C4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "E4",
+            "duration": 480
+        },
+        {
+            "note": "D4",
+            "duration": 480
+        },
+        {
+            "note": "C4",
+            "duration": 1920
+        }
+    ]
+}

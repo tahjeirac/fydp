@@ -27,12 +27,12 @@ class Songs:
         with open(self.file_path, 'r') as file:
             data = json.load(file)
         print (name)
-        self.notes  = data[name]["tracks"][0]["notes"]
+        self.notes  = data[name]["notes"]
 
     def setCurrentNote(self):
         if (self.NOTE_INDEX < len(self.notes)):
             note_info = self.notes[self.NOTE_INDEX]
-            note = note_info.get("name")
+            note = note_info.get("note")
             self.CurrentNote = note_info
             return note_info
         
@@ -56,7 +56,7 @@ class Songs:
     def start(self):
         note = self.setCurrentNote()
         print(note)
-        led = self.NoteConversion.get(note.get("name"))
+        led = self.NoteConversion.get(note.get("note"))
         print(led)
         self.strip.startSeq(led)
     
@@ -64,17 +64,21 @@ class Songs:
         self.NOTE_INDEX += 1
         if (self.NOTE_INDEX < len(self.notes)):
             note = self.setCurrentNote()
-            note_name = note["name"]
+            note_name = note["note"]
             print(note_name)
             led = self.NoteConversion.get(note_name)
             print(led)
             if led:
-                if note.get("duration") > 0.31:
-                    print("h")
-                    self.strip.turnOnLED(led, "h")
-                else:
+                if note.get("duration") == 480:
                     print("q")
                     self.strip.turnOnLED(led, "q")
+                elif note.get("duration") == 480 *2:
+                    print("h")
+                    self.strip.turnOnLED(led, "h")
+                if note.get("duration") == 480*3:
+                    print("w")
+                    self.strip.turnOnLED(led, "w")
+      
         else:
             self.FINISHED = True
             print("Lesson complete!")
@@ -82,10 +86,10 @@ class Songs:
 
 
     def noteMatch(self, played_note):
-        print (self.CurrentNote.get("name"))
+        print (self.CurrentNote.get("note"))
         if (time.time()  - self.LAST_MATCH_TIME > self.MATCH_DELAY) and self.SILENT: #need this?
                         #enough time has passed
-            if played_note == self.CurrentNote.get("name"):
+            if played_note == self.CurrentNote.get("note"):
                 print("Match!")
                 if self.Start:
                     #first match
@@ -105,7 +109,7 @@ class Songs:
 
                         if (self.NOTE_INDEX < len(self.notes)):
                             note_info = self.notes[self.NOTE_INDEX]
-                            note = note_info.get("name")
+                            note = note_info.get("note")
                             self.CurrentNote = note_info
                             led = self.NoteConversion.get(note)
                             print(led)
