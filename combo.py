@@ -267,9 +267,10 @@ def callback(indata, frames, time, status):
 if __name__ == '__main__':
     # Process arguments
     strip.colourWipe()
-    strip.rainbow()
-    clear_file(file_path)
-    clear_file("feedback.json")
+    strip.turnOnLED(0)
+    strip.colourWipe()
+    # clear_file(file_path)
+    # clear_file("feedback.json")
 
     # print ('Press Ctrl-C to quit.')
     # server_process = subprocess.Popen(["python3", "wifi-server.py"])
