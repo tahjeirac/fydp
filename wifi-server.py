@@ -58,6 +58,7 @@ def send_data():
     elapsed_time = 0
 
     while elapsed_time < timeout:
+        print ("LOOKING FOR FILE!!!!!!")
         # Check if the feedback.json file exists and is not blank
         if os.path.exists(FEEDBACK_FILE_PATH): 
             print ("FOUND FILE!!!!!!!!")
