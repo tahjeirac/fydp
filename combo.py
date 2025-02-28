@@ -53,6 +53,7 @@ def fetch_song():
     while not data_recv:
       try:
           response = requests.get(f"{SERVER_URL}/receive_json")
+          time.sleep(1)
           if response.status_code == 200:
               data_recv = True
               song_data = response.json()
@@ -249,38 +250,38 @@ if __name__ == '__main__':
 
     print ('Press Ctrl-C to quit.')
     server_process = subprocess.Popen(["python3", "wifi_server.py"])
-
+    print ("WIFI STARTED")
     try:
       fetch_song()
-      strip.colourWipe()
+      # strip.colourWipe()
 
 
-      start_time = time.time()  # Start timing the note
-      dur = 0
+      # start_time = time.time()  # Start timing the note
+      # dur = 0
 
-      # note = songs.setCurrentNote()
-      # print(note)
-      # led = NoteConversion.get(note.get("name"))
-      # print(led)
+      # # note = songs.setCurrentNote()
+      # # print(note)
+      # # led = NoteConversion.get(note.get("name"))
+      # # print(led)
  
-      # strip.startSeq(led)
-      # start_time = time.time()
+      # # strip.startSeq(led)
+      # # start_time = time.time()
 
-      #devvice num hanges?
-      print (sd.query_devices())
-      rpi_device = get_rpi_device()
-      print(f"Raspberry Pi audio device number: {rpi_device}")
-      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          while not songs.FINISHED:
-            time.sleep(0.25)
+      # #devvice num hanges?
+      # print (sd.query_devices())
+      # rpi_device = get_rpi_device()
+      # print(f"Raspberry Pi audio device number: {rpi_device}")
+      # with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+      #     while not songs.FINISHED:
+      #       time.sleep(0.25)
 
-      strip.endSeq()
+      # strip.endSeq()
 
-      file_path = "feedback.json"
+      # file_path = "feedback.json"
 
-      # Write the array to a file
-      with open(file_path, 'w') as file:
-          json.dump(feedback, file, indent=4)
+      # # Write the array to a file
+      # with open(file_path, 'w') as file:
+      #     json.dump(feedback, file, indent=4)
 
       print(f"Data has been written to {file_path}")
     except KeyboardInterrupt:
