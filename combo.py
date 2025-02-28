@@ -272,7 +272,13 @@ if __name__ == '__main__':
     clear_file("feedback.json")
 
     print ('Press Ctrl-C to quit.')
-    server_process = subprocess.Popen(["python3", "wifi-server.py"])
+    process = subprocess.Popen(
+    ["python3", "wifi-server.py"],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True  # Ensure text mode for easier string handling
+    )
     print ("WIFI STARTED")
     try:
       fetch_song()
@@ -294,6 +300,23 @@ if __name__ == '__main__':
 
       print(f"Data has been written to {file_path}")
 
+      process.stdin.write("all done\n")
+      process.stdin.flush()
+      
+      while True:
+          # Read a line of output from the subprocess
+          output = process.stdout.readline()
+          if output:
+              print(f"Received from child: {output.strip()}")
+          else:
+              # No output, wait for a while before checking again
+              print("Waiting for response...")
+              time.sleep(1)
+
+      # Close the pipes
+      process.stdin.close()
+      process.stdout.close()
+      process.stderr.close()
 
     except KeyboardInterrupt:
         # print (sig[:50])
