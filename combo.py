@@ -270,9 +270,9 @@ if __name__ == '__main__':
     print ('Press Ctrl-C to quit.')
     server_process = subprocess.Popen(["python3", "wifi-server.py"])
     print ("WIFI STARTED")
-    # try:
-    #   fetch_song()
-    #   strip.colourWipe()
+    try:
+      fetch_song()
+      # strip.colourWipe()
 
     #   strip.rainbow()
     #   # start_time = time.time()  # Start timing the note
@@ -301,9 +301,9 @@ if __name__ == '__main__':
     #   #     json.dump(feedback, file, indent=4)
 
     #   print(f"Data has been written to {file_path}")
-    # except KeyboardInterrupt:
-    #     # print (sig[:50])
-    #     # print (vol[:50])
+    except KeyboardInterrupt:
+        # print (sig[:50])
+        # print (vol[:50])
         
-    #     print(feedback)
+        print(feedback)
 
