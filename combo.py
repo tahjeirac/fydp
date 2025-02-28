@@ -79,7 +79,7 @@ def fetch_song():
         song_data = json.loads(content)
         songs.setSong(song_data)
     
-    #clear_file(file_path)
+    clear_file(file_path)
 
 
 
@@ -266,7 +266,7 @@ def callback(indata, frames, time, status):
 
 if __name__ == '__main__':
     # Process arguments
-
+    clear_file(file_path)
     print ('Press Ctrl-C to quit.')
     server_process = subprocess.Popen(["python3", "wifi-server.py"])
     print ("WIFI STARTED")
