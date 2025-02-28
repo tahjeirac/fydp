@@ -24,11 +24,6 @@ class Songs:
         self.SILENT = val
 
     def setSong(self, song_data): #song_data: json
-        # with open(self.file_path, 'r') as file:
-        #     data = json.load(file)
-        # print (name)
-        # self.notes  = data[name]["tracks"][0]["notes"]
-        # Accepts JSON data directly instead of loading from a file 
         print("song", song_data.get('title'))
         print("song", song_data.get('notes'))
 
@@ -51,7 +46,7 @@ class Songs:
     
     def setWrongNote(self, played_note):
         #turn off previous note if self.WrongNoteName != None & played_note != self.WrongNoteName 
-        if self.WrongNoteName != None & played_note != self.WrongNoteName:
+        if self.WrongNoteName != None and played_note != self.WrongNoteName:
             led = self.NoteConversion.get(self.WrongNoteName)
             self.strip.turnOnLED_SOLO(led, False)
 
