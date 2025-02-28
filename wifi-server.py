@@ -23,18 +23,11 @@ def setup_hotspot():
     except subprocess.CalledProcessError as e:
         print(f"Error setting up hotspot: {e}")
 
-
 def disable_hotspot():
     print("Shutting down hotspot...")
     subprocess.run(["sudo", "systemctl", "stop", "hostapd", "dnsmasq"], check=True)
     subprocess.run(["sudo", "ip", "addr", "flush", "dev", "wlan0"], check=True)
     print("Hotspot has been disabled.")
-
-def signal_handler(sig, frame):
-    """Handles Ctrl+C (SIGINT) to clean up before exiting."""
-    print("\nCtrl+C detected! Stopping Flask and disabling hotspot...")
-    disable_hotspot()
-    exit(0)
 
 @app.route('/receive_json', methods=['POST'])
 def receive_json():

@@ -53,7 +53,7 @@ class Strip:
             self.strip.setPixelColor(self.LED_ON, Color(0,0,0))
             self.strip.show()
 
-        if self.LED_ON == led:
+        # if self.LED_ON == led:
             #same note as last time
             self.COLOUR_INDEX =  0 if self.COLOUR_INDEX == 1 else 1
             if note_type == "q":
@@ -64,14 +64,14 @@ class Strip:
                 c = self.WHOLE[self.COLOUR_INDEX]
             else:
                 c =  Color(0, 255, 0)
-        else:
-            self.COLOUR_INDEX = 0
-            if note_type == "q":
-                c = self.QUARTER[self.COLOUR_INDEX]
-            elif note_type == "h":
-                c = self.HALF[self.COLOUR_INDEX]
-            else:
-                c =  Color(0, 255, 0)
+        # else:
+        #     self.COLOUR_INDEX = 0
+        #     if note_type == "q":
+        #         c = self.QUARTER[self.COLOUR_INDEX]
+        #     elif note_type == "h":
+        #         c = self.HALF[self.COLOUR_INDEX]
+        #     else:
+        #         c =  Color(0, 255, 0)
 
         self.strip.setPixelColor(led, c)
         self.strip.show()
