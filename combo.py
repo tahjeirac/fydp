@@ -53,7 +53,7 @@ def fetch_song():
     while not data_recv:
       try:
           response = requests.get(f"{SERVER_URL}/receive_json")
-          time.sleep(1)
+          time.sleep
           if response.status_code == 200:
               data_recv = True
               song_data = response.json()
@@ -249,7 +249,7 @@ if __name__ == '__main__':
     # Process arguments
 
     print ('Press Ctrl-C to quit.')
-    server_process = subprocess.Popen(["python3", "wifi_server.py"])
+    server_process = subprocess.Popen(["python3", "wifi-server.py"])
     print ("WIFI STARTED")
     try:
       fetch_song()
