@@ -285,5 +285,4 @@ if __name__ == '__main__':
         # print (vol[:50])
         
         print(feedback)
-        if args.clear:
-            strip.colourWipe()
+
