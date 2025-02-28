@@ -11,7 +11,7 @@ class NoteStateMachine:
         self.last_match_time = None
         self.feedback = feedback
         self.duaration_met = False
-        self.minimum_silence = 2
+        self.minimum_silence = 0.5
 
 
     def transition(self, new_state):
@@ -31,7 +31,7 @@ class NoteStateMachine:
             print("WAITING FOR 10S OF SILENCE...", silence_duration)
             if silence_duration > self.minimum_silence:
                 print(" Good to start", silence_duration)
-                self.song.start()
+                # self.song.start()
                 self.transition("waiting")
         else:
             self.transition("starting")
