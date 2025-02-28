@@ -49,16 +49,19 @@ SERVER_URL = "http://192.168.4.1:5000"
 
 def fetch_song():
     # fetching the song data from the server 
-    try:
-        response = requests.get(f"{SERVER_URL}/receive_json")
-        if response.status_code == 200:
-            song_data = response.json()
-            songs.setSong(song_data)  # Pass JSON data to Songs.py
-            print("Song loaded successfully!")
-        else:
-            print("No song available yet.")
-    except Exception as e:
-        print(f"Error fetching song: {e}")
+    data_recv = False
+    while not data_recv:
+      try:
+          response = requests.get(f"{SERVER_URL}/receive_json")
+          if response.status_code == 200:
+              data_recv = True
+              song_data = response.json()
+              songs.setSong(song_data)  # Pass JSON data to Songs.py
+              print("Song loaded successfully!")
+          else:
+              print("No song available yet.")
+      except Exception as e:
+          print(f"Error fetching song: {e}")
 
 def find_closest_note(pitch):
   """
