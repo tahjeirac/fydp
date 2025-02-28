@@ -39,12 +39,13 @@ ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
 
 strip = Strip()
-songs = Songs("songs.json", MATCH_DELAY, strip)
+songs = Songs(MATCH_DELAY, strip)
 feedback = []
 state_machine = NoteStateMachine(songs, feedback)
 start_time = None
 played_notes = []
 
+SERVER_URL = "http://192.168.4.1:5000"
 
 def fetch_song():
     # fetching the song data from the server 
@@ -244,6 +245,7 @@ if __name__ == '__main__':
     # Process arguments
 
     print ('Press Ctrl-C to quit.')
+    server_process = subprocess.Popen(["python3", "wifi_server.py"])
 
     try:
       fetch_song()
