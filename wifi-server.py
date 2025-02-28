@@ -1,5 +1,6 @@
 import signal
 import time 
+import os
 import subprocess
 import json 
 from flask import Flask, request, jsonify
@@ -7,6 +8,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 feedback_data = None #store the feedback data globally 
 song_data = None #the song data that will get passed to combo.py to start lighting up LEDs 
+FEEDBACK_FILE_PATH = 'feedback.json'
 
 def setup_hotspot():
     #Configures Raspberry Pi as a Wi-Fi hotspot
@@ -51,21 +53,32 @@ def receive_json():
 # SENDING JSON TO IPHONE (IPHONE DOES GET)
 @app.route('/send_json', methods=['GET'])
 def send_data():
-    global feedback_data 
-    timeout = 20 #maximum wait time 
-    interval = 1 #how often to check 
+    timeout = 20  # maximum wait time
+    interval = 1  # how often to check
     elapsed_time = 0
 
-    while feedback_data is None and elapsed_time < timeout:
-        time.sleep(interval)
-        elapsed_time += interval 
+    while elapsed_time < timeout:
+        # Check if the feedback.json file exists and is not blank
+        if os.path.exists(FEEDBACK_FILE_PATH) and os.path.getsize(FEEDBACK_FILE_PATH) > 0:
+            with open(FEEDBACK_FILE_PATH, 'r') as file:
+                feedback_data = json.load(file)
+            
+            # Send the data as a response
+            response = jsonify(feedback_data)
+            
+            # Clear the file contents (but do not delete the file)
+            with open(FEEDBACK_FILE_PATH, 'w') as file:
+                file.truncate(0)  # Clears the file
 
-    if feedback_data: 
-        response = jsonify(feedback_data)
-        feedback_data = None 
-        return response, 200 
-    else: 
-        return jsonify({"status": "pending"}), 204  # no feedback yet
+            return response, 200
+        
+        # Wait for the file to be populated
+        time.sleep(interval)
+        elapsed_time += interval
+
+    # If no feedback is available after timeout
+    return jsonify({"status": "pending"}), 204  # no feedback yet
+
     
 
 # RECEIVING FEEDBACK DATA FROM RASPBERRY PI. pi will do post to here w feedback data
