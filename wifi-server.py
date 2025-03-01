@@ -71,6 +71,7 @@ def send_data():
         ]
         
     feedback_data = mock_data  # Store feedback globally
+    print("feedback data now populated in server")
     timeout = 20 #maximum wait time 
     interval = 1 #how often to check 
     elapsed_time = 0
@@ -80,6 +81,7 @@ def send_data():
         elapsed_time += interval 
 
     if feedback_data: 
+        print("feedback_data = true")
         response = jsonify(feedback_data)
         feedback_data = None 
         return response, 200 
