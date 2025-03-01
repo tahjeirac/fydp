@@ -79,7 +79,7 @@ def fetch_song():
         song_data = json.loads(content)
         songs.setSong(song_data)
     
-    # clear_file(file_path)
+    clear_file(file_path)
 
 
 def find_closest_note(pitch):
@@ -204,44 +204,33 @@ def callback(indata, frames, time, status):
 
 if __name__ == '__main__':
     # Process arguments
-    strip.colourWipe()
-    clear_file(file_path)
-    clear_file("feedback.json")
 
-    print ('Press Ctrl-C to quit.')
-    server_process = subprocess.Popen(["python3", "wifi-server.py"])
-    print ("WIFI STARTED")
-    try:
-      fetch_song()
       strip.colourWipe()
+      clear_file(file_path)
+      clear_file("feedback.json")
 
-      rpi_device = get_rpi_device()
-      print(f"Raspberry Pi audio device number: {rpi_device}")
-      with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          while not songs.FINISHED:
-            time.sleep(0.25)
+      print ('Press Ctrl-C to quit.')
+      server_process = subprocess.Popen(["python3", "wifi-server.py"])
+      print ("WIFI STARTED")
+      try:
+        while True:
+          fetch_song()
+          strip.colourWipe()
 
-      strip.endSeq()
+          rpi_device = get_rpi_device()
+          print(f"Raspberry Pi audio device number: {rpi_device}")
+          with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+              while not songs.FINISHED:
+                time.sleep(0.25)
 
-      print(feedback)
-      file_path = "feedback.json"
+          strip.endSeq()
+          print(feedback)
+          headers = {"Content-Type": "application/json"}
+          response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback), headers=headers)
+          print(f"Server Response: {response.status_code}, {response.text}")
 
-      # Write the array to a file
-      with open(file_path, 'w') as file:
-          json.dump(feedback, file, indent=4)
+      except KeyboardInterrupt:
+          strip.colourWipe()
 
-      print(f"Data has been written to {file_path}")
-
-      with open(file_path, 'r') as file:
-        print("sending feedback data over to the server")
-        feedback_data = json.load(file)
-    
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback_data), headers=headers)
-        print(f"Server Response: {response.status_code}, {response.text}")
-
-    except KeyboardInterrupt:
-        strip.colourWipe()
-
-        print(feedback)
+          print(feedback)
 
