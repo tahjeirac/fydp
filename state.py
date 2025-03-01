@@ -78,7 +78,7 @@ class NoteStateMachine:
                 self.record_feedback(current_note_name)
                 self.song.nextNote() #set to next note
                 self.start_time = time.perf_counter()
-                self.transition("idle") 
+                self.transition("waiting") 
 
         else:
             print("Wrong note detected!")

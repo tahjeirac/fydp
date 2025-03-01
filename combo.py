@@ -190,8 +190,6 @@ def callback(indata, frames, time, status):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      if (closest_note == "D4"):
-         print ("hello")
       state_machine.handle_input(closest_note)
 
 
