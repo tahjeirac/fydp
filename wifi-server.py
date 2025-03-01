@@ -64,6 +64,13 @@ def receive_json():
 @app.route('/send_json', methods=['GET'])
 def send_data():
     global feedback_data 
+    mock_data = [
+            {"C4": 1.0001378059387207},
+            {"C4": 0.5009052753448486},
+            {"A4": 0.25047969818115234}
+        ]
+        
+    feedback_data = mock_data  # Store feedback globally
     timeout = 20 #maximum wait time 
     interval = 1 #how often to check 
     elapsed_time = 0
