@@ -295,13 +295,13 @@ if __name__ == '__main__':
 
       print(f"Data has been written to {file_path}")
 
-      with open(file_path, 'r') as file:
-        print("sending feedback data over to the server")
-        feedback_data = json.load(file)
+      # with open(file_path, 'r') as file:
+      #   print("sending feedback data over to the server")
+      #   feedback_data = json.load(file)
     
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(f"{SERVER_URL}/send_feedback", headers=headers)
-        print(f"Server Response<3: {response.status_code}, {response.text}")   
+      #   headers = {"Content-Type": "application/json"}
+      #   response = requests.post(f"{SERVER_URL}/send_feedback", headers=headers)
+      #   print(f"Server Response<3: {response.status_code}, {response.text}")   
 
     except KeyboardInterrupt:
         # print (sig[:50])
