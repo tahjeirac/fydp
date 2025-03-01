@@ -298,11 +298,10 @@ if __name__ == '__main__':
       with open(file_path, 'r') as file:
         print("sending feedback data over to the server")
         feedback_data = json.load(file)
-        print("Feedback data being sent:", feedback_data)
-        if not isinstance(feedback_data, list):
-            print("Data is not a list! Check the content.")
-        response = requests.post(f"{SERVER_URL}/send_feedback", json=feedback_data)
-        print(f"Server Response: {response.status_code}, {response.text}")    
+    
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback_data), headers=headers)
+        print(f"Server Response<3: {response.status_code}, {response.text}")   
 
     except KeyboardInterrupt:
         # print (sig[:50])
