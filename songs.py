@@ -21,15 +21,11 @@ class Songs:
 
     def start(self):
         note = self.setCurrentNote()
-        print(note)
+        # print(note)
         led = self.NoteConversion.get(note.get("note"))
-        print(led)
+        # print(led)
 
         self.strip.startSeq(led)
-    
-    def setSilence(self, val=True):
-        print ("SILENCE")
-        self.SILENT = val
 
     def setSong(self, song_data): #song_data: json
         print("song", song_data.get('title'))
@@ -71,21 +67,21 @@ class Songs:
         if (self.NOTE_INDEX < len(self.notes)):
             note = self.setCurrentNote()
             note_name = note["note"]
-            print(note_name)
+            # print(note_name)
             led = self.NoteConversion.get(note_name)
-            print(led)
+            # print(led)
             if led:
                 if note.get("duration") == 0.24:
-                    print("q")
+                    # print("q")
                     self.strip.turnOnLED(led, "q")
                 elif note.get("duration") == 0.48:
-                    print("h")
+                    # print("h")
                     self.strip.turnOnLED(led, "h")
                 elif note.get("duration") == 0.96:
-                    print("w")
+                    # print("w")
                     self.strip.turnOnLED(led, "w")
                 else:
-                    print("q")
+                    # print("q")
                     self.strip.turnOnLED(led, "q")
         else:
             self.FINISHED = True

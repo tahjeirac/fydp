@@ -11,7 +11,7 @@ class NoteStateMachine:
         self.last_match_time = None
         self.feedback = feedback
         self.duaration_met = False
-        self.minimum_silence = 0.5
+        self.minimum_silence = 1
 
 
     def transition(self, new_state):
@@ -29,7 +29,7 @@ class NoteStateMachine:
     def silent_start(self, played_note):
         if played_note == "SILENCE":
             silence_duration = time.perf_counter() - self.start_time
-            print("WAITING FOR 10S OF SILENCE...", silence_duration)
+            print("WAITING FOR 1s OF SILENCE...", silence_duration)
             if silence_duration > self.minimum_silence:
                 print(" Good to start", silence_duration)
                 self.song.start()
@@ -48,9 +48,10 @@ class NoteStateMachine:
             self.transition("listening")
 
         elif played_note == "SILENCE":
-            print("Still waiting...")
+            pass
+            # print("Still waiting...")
         else:
-            print("Wrong note!")
+            # print("Wrong note!")
             self.start_time = time.perf_counter()
   # Start timing the note
             self.transition("listening_wrong_note")
@@ -66,19 +67,19 @@ class NoteStateMachine:
         elif played_note == "SILENCE": #not relased
             #check if long enoguh
             if self.current_duration <= intended_duration: #played too short
-                print("Silence detected! and note not held for right time")
+                # print("Silence detected! and note not held for right time")
                 self.record_feedback(current_note_name)
                 self.transition("waiting")
             # elif self.current_duration <= 3 * intended_duration: #played long enogu change times
             else:
-                print("Silence detected! and note held for right time")
+                # print("Silence detected! and note held for right time")
                 self.record_feedback(current_note_name)
                 self.song.nextNote() #set to next note
                 self.start_time = time.perf_counter()
                 self.transition("idle") 
 
         else:
-            print("Wrong note detected!")
+            # print("Wrong note detected!")
             self.song.setWrongNote(played_note)
             self.record_feedback(current_note_name)
             self.start_time = time.perf_counter()
@@ -92,7 +93,7 @@ class NoteStateMachine:
         self.current_duration = time.perf_counter() - self.start_time
 
         if played_note == current_wrong_note_name:
-            print("Wrong note being held")
+            # print("Wrong note being held")
             self.current_duration = time.perf_counter() - self.start_time
         elif played_note == current_note_name:
             self.song.setWrongNote(None)
@@ -103,7 +104,7 @@ class NoteStateMachine:
         elif played_note == "SILENCE":
             self.song.setWrongNote(None)
             self.record_feedback(current_wrong_note_name)
-            print("Silence detected!")
+            # print("Silence detected!")
             self.transition("waiting")
         else: #new wrong note
             self.record_feedback(current_wrong_note_name)
@@ -118,8 +119,8 @@ class NoteStateMachine:
 
     def idle(self, played_note):
         if played_note == "SILENCE":
-            self.current_duration = time.perf_counter() - self.start_time
-            if (self.current_duration > 0.2):
+            # self.current_duration = time.perf_counter() - self.start_time
+            # if (self.current_duration > 0.):
                 self.song.nextNote()
                 self.transition("waiting")
         else:

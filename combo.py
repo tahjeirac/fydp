@@ -82,7 +82,6 @@ def fetch_song():
     clear_file(file_path)
 
 
-
 def find_closest_note(pitch):
   """
   This function finds the closest note for a given pitch
@@ -101,59 +100,8 @@ sig = deque(maxlen= 10)
 vol = []
 
 
-def callback_start(indata, frames, time, status):
-  """
-  Callback function of the InputStream method.
-  """
-  # define static variables
-  if not hasattr(callback_start, "window_samples"):
-    callback_start.window_samples = [0 for _ in range(WINDOW_SIZE)]
-
-  if status:
-    print(status)
-    return
-  if any(indata):
-    callback_start.window_samples = np.concatenate((callback_start.window_samples, indata[:, 0])) # append new samples
-    callback_start.window_samples = callback_start.window_samples[len(indata[:, 0]):] # remove old samples
-
-    signal_power = (np.linalg.norm(callback_start.window_samples, ord=2)**2) / len(callback_start.window_samples)
-    signal_power = signal_power * 1000
-    volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
-
-    global sig
-    global vol
-    sig.append(signal_power)
-    vol.append(volume_db)
-
-   
-
-def has_valid_harmonics(magnitude_spec, fundamental_index, min_harmonics=2, harmonic_thresh=0.1):
-    """
-    Ensure that a fundamental frequency has at least `min_harmonics` harmonics.
-    Parameters:
-        magnitude_spec (np.array): Magnitude spectrum from FFT.
-        fundamental_index (int): Index of detected fundamental frequency.
-        min_harmonics (int): Minimum number of harmonics required.
-        harmonic_thresh (float): Threshold relative to fundamental magnitude.
-    Returns:
-        bool: True if enough harmonics are found, False otherwise.
-    """
-    fundamental_mag = magnitude_spec[fundamental_index]
-    harmonic_count = 0
-
-    # Check harmonics (2f, 3f, ...)
-    for h in range(2, NUM_HPS + 1):
-        harmonic_index = fundamental_index * h
-        if harmonic_index < len(magnitude_spec) and magnitude_spec[harmonic_index] > harmonic_thresh * fundamental_mag:
-            harmonic_count += 1
-        if harmonic_count >= min_harmonics:
-            return True
-
-    return False
-
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 MINIMUM_SILENCE_DURATION = 5
-
 
 def get_rpi_device():
     devices = sd.query_devices()
@@ -186,7 +134,6 @@ def callback(indata, frames, time, status):
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     signal_power = signal_power * 1000
-    # volume_db = 10 * np.log10(signal_power) if signal_power > 0 else -np.inf  # dB scale
 
     if signal_power < callback.mean_sig - SIG_TOLERANCE:
       os.system('cls' if os.name=='nt' else 'clear')
@@ -243,22 +190,13 @@ def callback(indata, frames, time, status):
 
     os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      # print(has_valid_harmonics(magnitude_spec, max_ind, min_harmonics=2))
-      #B2 HUM
-      if closest_note != "B2":
-      # print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-      # print(f"Signal: {signal_power} dB")  # Display the volume
-      # print (callback.mean_sig)
-        state_machine.handle_input(closest_note)
-      else:
-        state_machine.handle_input("SILENCE")
+      state_machine.handle_input(closest_note)
 
 
     else:
       print(f"Closest note: ...")
       callback.sig_buffer.append(signal_power)
       callback.mean_sig  = np.mean(callback.sig_buffer)  # Output: 30.0
-      # print(f"Signal: {signal_power} dB")  # Display the volume
       state_machine.handle_input("SILENCE")
 
   else:
@@ -266,8 +204,6 @@ def callback(indata, frames, time, status):
 
 if __name__ == '__main__':
     # Process arguments
-    strip.colourWipe()
-    strip.rainbow()
     strip.colourWipe()
     clear_file(file_path)
     clear_file("feedback.json")
@@ -304,8 +240,6 @@ if __name__ == '__main__':
         print(f"Server Response: {response.status_code}, {response.text}")
 
     except KeyboardInterrupt:
-        # print (sig[:50])
-        # print (vol[:50])
         strip.colourWipe()
 
         print(feedback)
