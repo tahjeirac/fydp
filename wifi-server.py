@@ -64,29 +64,35 @@ def receive_json():
 @app.route('/send_json', methods=['GET'])
 def send_data():
     global feedback_data 
-    mock_data = [
+    response = jsonify([
             {"C4": 1.0001378059387207},
             {"C4": 0.5009052753448486},
             {"A4": 0.25047969818115234}
-        ]
+        ])
+    return response, 200 
+    # mock_data = [
+    #         {"C4": 1.0001378059387207},
+    #         {"C4": 0.5009052753448486},
+    #         {"A4": 0.25047969818115234}
+    #     ]
         
-    feedback_data = mock_data  # Store feedback globally
-    print("feedback data now populated in server")
-    timeout = 20 #maximum wait time 
-    interval = 1 #how often to check 
-    elapsed_time = 0
+    # feedback_data = mock_data  # Store feedback globally
+    # print("feedback data now populated in server")
+    # timeout = 20 #maximum wait time 
+    # interval = 1 #how often to check 
+    # elapsed_time = 0
 
-    while feedback_data is None and elapsed_time < timeout:
-        time.sleep(interval)
-        elapsed_time += interval 
+    # while feedback_data is None and elapsed_time < timeout:
+    #     time.sleep(interval)
+    #     elapsed_time += interval 
 
-    if feedback_data: 
-        print("feedback_data = true")
-        response = jsonify(feedback_data)
-        feedback_data = None 
-        return response, 200 
-    else: 
-        return jsonify({"status": "pending"}), 204  # no feedback yet
+    # if feedback_data: 
+    #     print("feedback_data = true")
+    #     response = jsonify(feedback_data)
+    #     feedback_data = None 
+    #     return response, 200 
+    # else: 
+    #     return jsonify({"status": "pending"}), 204  # no feedback yet
     
 
 # RECEIVING FEEDBACK DATA FROM RASPBERRY PI. pi will do post to here w feedback data
