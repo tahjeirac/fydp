@@ -59,7 +59,7 @@ def fetch_song():
     song_data = None
     while not data_recv:
       try:
-          response = requests.post(f"{SERVER_URL}/receive_json")
+          # response = requests.post(f"{SERVER_URL}/receive_json")
           
           with open(file_path, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
@@ -79,7 +79,7 @@ def fetch_song():
         song_data = json.loads(content)
         songs.setSong(song_data)
     
-    clear_file(file_path)
+    # clear_file(file_path)
 
 
 def find_closest_note(pitch):
@@ -205,11 +205,11 @@ def callback(indata, frames, time, status):
 if __name__ == '__main__':
     # Process arguments
     strip.colourWipe()
-    clear_file(file_path)
+    # clear_file(file_path)
     clear_file("feedback.json")
 
     print ('Press Ctrl-C to quit.')
-    server_process = subprocess.Popen(["python3", "wifi-server.py"])
+    # server_process = subprocess.Popen(["python3", "wifi-server.py"])
     print ("WIFI STARTED")
     try:
       fetch_song()
@@ -223,21 +223,22 @@ if __name__ == '__main__':
 
       strip.endSeq()
 
+      print(feedback)
       file_path = "feedback.json"
 
-      # Write the array to a file
-      with open(file_path, 'w') as file:
-          json.dump(feedback, file, indent=4)
+      # # Write the array to a file
+      # with open(file_path, 'w') as file:
+      #     json.dump(feedback, file, indent=4)
 
-      print(f"Data has been written to {file_path}")
+      # print(f"Data has been written to {file_path}")
 
-      with open(file_path, 'r') as file:
-        print("sending feedback data over to the server")
-        feedback_data = json.load(file)
+      # with open(file_path, 'r') as file:
+      #   print("sending feedback data over to the server")
+      #   feedback_data = json.load(file)
     
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback_data), headers=headers)
-        print(f"Server Response: {response.status_code}, {response.text}")
+      #   headers = {"Content-Type": "application/json"}
+      #   response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback_data), headers=headers)
+      #   print(f"Server Response: {response.status_code}, {response.text}")
 
     except KeyboardInterrupt:
         strip.colourWipe()
