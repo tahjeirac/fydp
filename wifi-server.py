@@ -86,7 +86,8 @@ def receive_feedback():
     global feedback_data
     try:
         data = request.get_json()
-
+        print(f"Received data: {data}")
+        
         # Check if the received data is a list
         if not isinstance(data, list):
             return jsonify({"status": "error", "message": "invalid dataa format - expected a list"}), 400
