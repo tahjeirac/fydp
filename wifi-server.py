@@ -64,36 +64,20 @@ def receive_json():
 @app.route('/send_json', methods=['GET'])
 def send_data():
     global feedback_data 
-    print("sending feedback data")
-    response = jsonify([
-            {"C4": 1.0001378059387207},
-            {"C4": 0.5009052753448486},
-            {"A4": 0.25047969818115234}
-        ])
-    return response, 200 
-    # mock_data = [
-    #         {"C4": 1.0001378059387207},
-    #         {"C4": 0.5009052753448486},
-    #         {"A4": 0.25047969818115234}
-    #     ]
-        
-    # feedback_data = mock_data  # Store feedback globally
-    # print("feedback data now populated in server")
-    # timeout = 20 #maximum wait time 
-    # interval = 1 #how often to check 
-    # elapsed_time = 0
+    timeout = 20 #maximum wait time 
+    interval = 1 #how often to check 
+    elapsed_time = 0
 
-    # while feedback_data is None and elapsed_time < timeout:
-    #     time.sleep(interval)
-    #     elapsed_time += interval 
+    while feedback_data is None and elapsed_time < timeout:
+        time.sleep(interval)
+        elapsed_time += interval 
 
-    # if feedback_data: 
-    #     print("feedback_data = true")
-    #     response = jsonify(feedback_data)
-    #     feedback_data = None 
-    #     return response, 200 
-    # else: 
-    #     return jsonify({"status": "pending"}), 204  # no feedback yet
+    if feedback_data: 
+        response = jsonify(feedback_data)
+        feedback_data = None 
+        return response, 200 
+    else: 
+        return jsonify({"status": "pending"}), 204  # no feedback yet
     
 
 # RECEIVING FEEDBACK DATA FROM RASPBERRY PI. pi will do post to here w feedback data
@@ -101,19 +85,20 @@ def send_data():
 def receive_feedback():
     global feedback_data
     try:
-        mock_data = [
-            {"C4": 1.0001378059387207},
-            {"C4": 0.5009052753448486},
-            {"A4": 0.25047969818115234}
-        ]
-        
-        feedback_data = mock_data  # Store feedback globally
+        data = request.get_json()
+
+        # Check if the received data is a list
+        if not isinstance(data, list):
+            return jsonify({"status": "error", "message": "Invalid data format - expected a list"}), 400
+
+        feedback_data = data  # Store feedback globally
 
         print("Feedback received:", feedback_data)  # Debugging output
 
         return jsonify({"status": "success", "message": "Feedback received"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
+
 
 
 if __name__ == '__main__':
