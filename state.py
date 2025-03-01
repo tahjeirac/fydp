@@ -57,6 +57,7 @@ class NoteStateMachine:
             self.transition("listening_wrong_note")
 
     def listening(self, played_note):
+        print ("LISTEN LISTEN")
         current_note_name = self.song.CurrentNote.get("note")
         intended_duration = self.song.CurrentNote.get("duration")
 
