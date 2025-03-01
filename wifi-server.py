@@ -85,6 +85,7 @@ def send_data():
 def receive_feedback():
     global feedback_data
     try:
+        print("Raw request body:", request.data)
         data = request.get_json()
         print(f"Received data: {data}")
         
