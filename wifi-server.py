@@ -64,6 +64,7 @@ def receive_json():
 @app.route('/send_json', methods=['GET'])
 def send_data():
     global feedback_data 
+    print("sending feedback data")
     response = jsonify([
             {"C4": 1.0001378059387207},
             {"C4": 0.5009052753448486},
