@@ -33,7 +33,7 @@ class Songs:
 
         print( song_data["notes"])
         print(f"Setting song: {song_data.get('title')}")
-        self.notes = song_data["notes"][:4]  # Directly use the "notes" array
+        self.notes = song_data["notes"]  # Directly use the "notes" array
         self.NOTE_INDEX = 0  # Reset the note index
         self.FINISHED = False  # Reset the finished flag
         self.setCurrentNote()  # Set the first note
