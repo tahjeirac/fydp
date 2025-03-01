@@ -89,7 +89,7 @@ def receive_feedback():
 
         # Check if the received data is a list
         if not isinstance(data, list):
-            return jsonify({"status": "error", "message": "Invalid data format - expected a list"}), 400
+            return jsonify({"status": "error", "message": "invalid dataa format - expected a list"}), 400
 
         feedback_data = data  # Store feedback globally
 
