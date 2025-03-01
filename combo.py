@@ -300,7 +300,7 @@ if __name__ == '__main__':
         feedback_data = json.load(file)
     
         headers = {"Content-Type": "application/json"}
-        response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback_data), headers=headers)
+        response = requests.post(f"{SERVER_URL}/send_feedback", headers=headers)
         print(f"Server Response<3: {response.status_code}, {response.text}")   
 
     except KeyboardInterrupt:
