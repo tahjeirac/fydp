@@ -85,15 +85,13 @@ def send_data():
 def receive_feedback():
     global feedback_data
     try:
-        print("Raw request body:", request.data)
-        data = request.get_json()
-        print(f"Received data: {data}")
+        mock_data = [
+            {"C4": 1.0001378059387207},
+            {"C4": 0.5009052753448486},
+            {"A4": 0.25047969818115234}
+        ]
         
-        # Check if the received data is a list
-        if not isinstance(data, list):
-            return jsonify({"status": "error", "message": "invalid dataa format - expected a list"}), 400
-
-        feedback_data = data  # Store feedback globally
+        feedback_data = mock_data  # Store feedback globally
 
         print("Feedback received:", feedback_data)  # Debugging output
 
