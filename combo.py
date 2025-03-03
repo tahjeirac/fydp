@@ -35,6 +35,7 @@ SIG_TOLERANCE = 0.0005
 MATCH_DELAY = 0.7 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 
+MINIMUM_FEEDBACK_DURATION = 0.3
 NoteConversion = {'C6':1, 'B5':2, 'A5':3, 'G5':4, 'F5':5, 'E5':6, 'D5':7, 'C5':8, 'B4': 9, 'A4':10, 'G4':11, 'F4':12, 'E4':13, 'D4':14, 'C4':15, 'B3': 16, 'A3': 17, 'G3':18, 'F3':19, 'E3':20, 'D3':21, 'C3':22}
 strip = Strip()
 songs = Songs(MATCH_DELAY, strip, note_conversion=NoteConversion)
@@ -219,9 +220,12 @@ if __name__ == '__main__':
                 time.sleep(0.25)
 
           strip.endSeq()
-          print(feedback)
+          filtered_feedback = [note for note in feedback if note["duration"] >= MINIMUM_FEEDBACK_DURATION]
+
+          print(filtered_feedback)
+          # print(feedback)
           headers = {"Content-Type": "application/json"}
-          # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback), headers=headers)
+          # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
           # print(f"Server Response: {response.status_code}, {response.text}")
 
       except KeyboardInterrupt:
