@@ -35,7 +35,7 @@ SIG_TOLERANCE = 0.0005
 MATCH_DELAY = 0.7 # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 
-NoteConversion = {'C6':1, 'B5':2, 'A5':3, 'G5':4, 'F5':5, 'E5':6, 'D5':7, 'C5':8, 'B4': 9, 'A4':10, 'G4':11, 'F4':13, 'E4':14, 'D4':15, 'C4':16, 'B4': 17, 'A3': 18, 'G3':19, 'F3':20, 'E3':21, 'D3':22, 'C3':23}
+NoteConversion = {'C6':1, 'B5':2, 'A5':3, 'G5':4, 'F5':5, 'E5':6, 'D5':7, 'C5':8, 'B4': 9, 'A4':10, 'G4':11, 'F4':12, 'E4':13, 'D4':14, 'C4':15, 'B3': 16, 'A3': 17, 'G3':18, 'F3':19, 'E3':20, 'D3':21, 'C3':22}
 strip = Strip()
 songs = Songs(MATCH_DELAY, strip, note_conversion=NoteConversion)
 feedback = []
