@@ -11,7 +11,7 @@ class NoteStateMachine:
         self.last_match_time = None
         self.feedback = feedback
         self.duaration_met = False
-        self.minimum_silence = 1
+        self.minimum_silence = -1
 
 
     def transition(self, new_state):
