@@ -47,6 +47,7 @@ played_notes = []
 
 SERVER_URL = "http://192.168.4.1:5000"
 file_path = "song.json"
+file_path_no_app = "song_no_app.json"
 
 def clear_file(file_path):
     # Open the file in write mode, which clears the contents
@@ -61,7 +62,7 @@ def fetch_song():
       try:
           response = requests.post(f"{SERVER_URL}/receive_json")
           
-          with open(file_path, 'r') as file:
+          with open(file_path_no_app, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
                 data_recv = True
