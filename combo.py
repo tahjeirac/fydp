@@ -221,7 +221,7 @@ if __name__ == '__main__':
                 time.sleep(0.25)
 
           strip.endSeq()
-          filtered_feedback = [note for note in feedback if note["duration"] >= MINIMUM_FEEDBACK_DURATION]
+          filtered_feedback = [{k: v for k, v in note.items() if v >= MINIMUM_FEEDBACK_DURATION} for note in feedback] 
 
           print(filtered_feedback)
           # print(feedback)
