@@ -212,20 +212,24 @@ if __name__ == '__main__':
       print ("WIFI STARTED")
       try:
         while True:
-          fetch_song()
-          strip.colourWipe()
+          strip.turnOnLED(0)
+          strip.turnOnLED(1, 'h')
+          strip.turnOnLED(2,'w')
+          time.sleep(10)
+          # fetch_song()
+          # strip.colourWipe()
 
-          rpi_device = get_rpi_device()
-          print(f"Raspberry Pi audio device number: {rpi_device}")
-          with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-              while not songs.FINISHED:
-                time.sleep(0.25)
+          # rpi_device = get_rpi_device()
+          # print(f"Raspberry Pi audio device number: {rpi_device}")
+          # with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+          #     while not songs.FINISHED:
+          #       time.sleep(0.25)
 
-          strip.endSeq()
-          print(feedback)
-          headers = {"Content-Type": "application/json"}
-          response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback), headers=headers)
-          print(f"Server Response: {response.status_code}, {response.text}")
+          # strip.endSeq()
+          # print(feedback)
+          # headers = {"Content-Type": "application/json"}
+          # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback), headers=headers)
+          # print(f"Server Response: {response.status_code}, {response.text}")
 
       except KeyboardInterrupt:
           strip.colourWipe()
