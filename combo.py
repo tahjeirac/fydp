@@ -66,7 +66,8 @@ def fetch_song():
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
                 data_recv = True
-                song_data = content
+                song_data = json.loads(content)
+                songs.setSong(song_data)
                 print("File has data:", content)
             else:
                 print("File is empty")
@@ -74,11 +75,6 @@ def fetch_song():
 
       except Exception as e:
           print(f"Error fetching song: {e}")
-
-    with open(file_path, 'r') as file:
-        content = file.read().strip()  # Read content and remove any extra whitespace
-        song_data = json.loads(content)
-        songs.setSong(song_data)
     
     clear_file(file_path)
 
