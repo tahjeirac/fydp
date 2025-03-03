@@ -61,7 +61,7 @@ def fetch_song():
     song_data = None
     while not data_recv:
       try:
-          response = requests.post(f"{SERVER_URL}/receive_json")
+          # response = requests.post(f"{SERVER_URL}/receive_json")
           
           with open(file_path_no_app, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
@@ -208,7 +208,7 @@ if __name__ == '__main__':
       clear_file("feedback.json")
 
       print ('Press Ctrl-C to quit.')
-      server_process = subprocess.Popen(["python3", "wifi-server.py"])
+      # server_process = subprocess.Popen(["python3", "wifi-server.py"])
       print ("WIFI STARTED")
       try:
         while True:
