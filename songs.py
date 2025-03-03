@@ -11,7 +11,7 @@ class Songs:
         self.LAST_MATCH_TIME = 0  # Store the time of the last match
         self.MATCH_DELAY = MATCH_DELAY # Delay in seconds between allowed matches (0.5s to prevent rapid repeats)
         # self.NoteConversion = {'C3':7, 'B3':1, 'A3':2, 'G3': 3, 'F3':4, 'E3': 5, 'D3':6}
-        self.NoteConversion = {'C4':7, 'B4':1, 'A4':2, 'G4': 3, 'F4':4, 'E4': 5, 'D4':6}
+        self.NoteConversion = {'A6':1, 'G5':2, 'F5':3, 'E5': 4, 'D5':5, 'C5': 6, 'B5':7, 'A5':8,'G4':9, 'F4':10, 'E4':11, 'D4':12, 'C4':13, 'B4': 14, 'A4':15, 'G3':16, 'F3':17, 'E3':18, 'D3':19, 'C3':20, 'B3': 21, 'A3': 22}
         self.Start = True
         self.CurrentNote = None
         self.WrongNoteName = None
