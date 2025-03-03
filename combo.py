@@ -212,12 +212,21 @@ if __name__ == '__main__':
       print ("WIFI STARTED")
       try:
         while True:
-          strip.turnOnLED(0)
-          strip.turnOnLED(1, 'h')
-          strip.turnOnLED(2,'w')
-          strip.turnOnLED(3)
-          strip.turnOnLED(4, 'h')
-          strip.turnOnLED(5,'w')
+          strip.turnOnLED_SOLO(0, True)
+          time.sleep(2)
+
+          strip.turnOnLED_SOLO(1, True)
+          time.sleep(2)
+
+          strip.turnOnLED_SOLO(2,True)
+          time.sleep(2)
+
+          strip.turnOnLED_SOLO(3, True)
+          time.sleep(2)
+
+          strip.turnOnLED_SOLO(4, True)
+          time.sleep(2)
+          strip.turnOnLED_SOLO(5,True)
           time.sleep(10)
           # fetch_song()
           # strip.colourWipe()
