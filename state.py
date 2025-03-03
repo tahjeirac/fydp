@@ -18,7 +18,7 @@ class NoteStateMachine:
         print(f"Transitioning from {self.state} to {new_state}")
         self.state = new_state
 
-    
+        
     def starting(self, played_note):
         self.start_time = time.perf_counter()
   # Start timing the note

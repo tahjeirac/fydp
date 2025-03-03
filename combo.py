@@ -67,6 +67,7 @@ def fetch_song():
                 data_recv = True
                 song_data = json.loads(content)
                 songs.setSong(song_data)
+                state_machine.transition("starting") #go back to starting
                 print("File has data:", content)
             else:
                 print("File is empty")
