@@ -212,34 +212,18 @@ if __name__ == '__main__':
       print ("WIFI STARTED")
       try:
         while True:
-          strip.turnOnLED_SOLO(0, True)
-          time.sleep(2)
+          fetch_song()
+          strip.colourWipe()
 
-          strip.turnOnLED_SOLO(1, True)
-          time.sleep(2)
+          rpi_device = get_rpi_device()
+          print(f"Raspberry Pi audio device number: {rpi_device}")
+          with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+              while not songs.FINISHED:
+                time.sleep(0.25)
 
-          strip.turnOnLED_SOLO(2,True)
-          time.sleep(2)
-
-          strip.turnOnLED_SOLO(3, True)
-          time.sleep(2)
-
-          strip.turnOnLED_SOLO(4, True)
-          time.sleep(2)
-          strip.turnOnLED_SOLO(5,True)
-          time.sleep(10)
-          # fetch_song()
-          # strip.colourWipe()
-
-          # rpi_device = get_rpi_device()
-          # print(f"Raspberry Pi audio device number: {rpi_device}")
-          # with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-          #     while not songs.FINISHED:
-          #       time.sleep(0.25)
-
-          # strip.endSeq()
-          # print(feedback)
-          # headers = {"Content-Type": "application/json"}
+          strip.endSeq()
+          print(feedback)
+          headers = {"Content-Type": "application/json"}
           # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(feedback), headers=headers)
           # print(f"Server Response: {response.status_code}, {response.text}")
 
