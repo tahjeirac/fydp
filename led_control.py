@@ -22,7 +22,7 @@ YELLOW = Color(255,255,0)
 
 class Strip:
     def __init__(self):
-        self.LED_COUNT      = 23     # Number of LED pixels.
+        self.LED_COUNT      = 24     # Number of LED pixels.
         self.LED_PIN        = 13      # GPIO pin connected to the pixels (18 uses PWM!).
         self.LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
         self.LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
