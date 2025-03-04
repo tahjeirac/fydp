@@ -201,6 +201,7 @@ def callback(indata, frames, time, status):
 if __name__ == '__main__':
     # Process arguments
 
+      strip.rainbow()
       strip.colourWipe()
       strip.show_ON() #show that running
       clear_file(file_path)
