@@ -207,8 +207,9 @@ if __name__ == '__main__':
       clear_file(file_path)
       clear_file("feedback.json")
       time.sleep(5)
-      strip.showWifi(1)
-      server_process = subprocess.Popen(["python3", "wifi-server.py"])
+      strip.showIndicator(1)
+      time.sleep(5)
+      #server_process = subprocess.Popen(["python3", "wifi-server.py"])
       strip.turn_OFF(1)
       print ("WIFI STARTED")
       try:

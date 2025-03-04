@@ -96,8 +96,8 @@ class Strip:
         self.strip.setPixelColor(23, GREEN)
         self.strip.show()
 
-    def showWifi(self, led):
-        self.strip.setPixelColor(led, WHITE)
+    def showIndicator(self, led):
+        self.strip.setPixelColor(led, ORANGE)
         self.strip.show() 
     
     def turn_OFF(self, led):
