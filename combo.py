@@ -225,6 +225,7 @@ if __name__ == '__main__':
           headers = {"Content-Type": "application/json"}
           # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
           # print(f"Server Response: {response.status_code}, {response.text}")
+          strip.show_ON()
 
       except KeyboardInterrupt:
           strip.colourWipe()
