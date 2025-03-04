@@ -57,6 +57,7 @@ def fetch_song():
     # fetching the song data from the server 
     data_recv = False
     song_data = None
+    print("FETCH")
     while not data_recv:
       try:
           response = requests.post(f"{SERVER_URL}/receive_json")
