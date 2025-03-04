@@ -62,8 +62,8 @@ def fetch_song():
       try:
           # response = requests.post(f"{SERVER_URL}/receive_json")
           response = requests.post(f"{SERVER_URL}/receive_json", timeout=10)
-          print("Status code:", response.status_code)
-          print("Response text:", response.text)
+          # print("Status code:", response.status_code)
+          # print("Response text:", response.text)
           with open(file_path_no_app, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
@@ -202,6 +202,18 @@ def callback(indata, frames, time, status):
   else:
     print('no input')
 
+
+def ping_server():
+    hostname = "192.168.4.1"  # Google's DNS server (you can change it to the desired host)
+    
+    response = os.system(f"ping -c 1 {hostname}")
+    
+    if response == 0:
+        return True
+    else:
+        return False
+    
+
 if __name__ == '__main__':
     # Process arguments
 
@@ -210,7 +222,8 @@ if __name__ == '__main__':
       strip.show_ON() #show that running
       clear_file(file_path)
       clear_file("feedback.json")
-      # server_process = subprocess.Popen(["python3", "wifi-server.py"])
+      if not ping_server():
+        server_process = subprocess.Popen(["python3", "wifi-server.py"])
       try:
         while True:
           fetch_song()
