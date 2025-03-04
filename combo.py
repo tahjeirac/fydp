@@ -206,7 +206,7 @@ if __name__ == '__main__':
       strip.show_ON() #show that running
       clear_file(file_path)
       clear_file("feedback.json")
-      server_process = subprocess.Popen(["python3", "wifi-server.py"])
+      # server_process = subprocess.Popen(["python3", "wifi-server.py"])
       try:
         while True:
           fetch_song()
@@ -222,9 +222,9 @@ if __name__ == '__main__':
 
           print(filtered_feedback)
           strip.showIndicator(1)
-          headers = {"Content-Type": "application/json"}
-          response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
-          print(f"Server Response: {response.status_code}, {response.text}")
+          # headers = {"Content-Type": "application/json"}
+          # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
+          # print(f"Server Response: {response.status_code}, {response.text}")
           strip.turn_OFF(1)
           strip.show_ON()
 
