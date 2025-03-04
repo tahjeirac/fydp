@@ -20,6 +20,9 @@ GREEN = Color(0,255,0)
 CHART = Color(128,255,0)
 YELLOW = Color(255,255,0)
 
+WHITE = Color(255,255,255)
+ORANGE = Color(255,165,0)
+
 class Strip:
     def __init__(self):
         self.LED_COUNT      = 24     # Number of LED pixels.
@@ -42,7 +45,7 @@ class Strip:
         self.strip.setPixelColor(led, BLUE)
         self.strip.show()
         time.sleep(0.5)
-        self.strip.setPixelColor(led, BLUE)
+        self.strip.setPixelColor(led, CLEAR)
         self.strip.show()
         time.sleep(0.5)
 
@@ -93,7 +96,14 @@ class Strip:
         self.strip.setPixelColor(23, GREEN)
         self.strip.show()
 
-       
+    def showWifi(self, led):
+        self.strip.setPixelColor(led, WHITE)
+        self.strip.show() 
+    
+    def turn_OFF(self, led):
+        self.strip.setPixelColor(led, CLEAR)
+        self.strip.show()
+
     def wheel(self, pos):
         """Generate rainbow colors across 0-255 positions."""
         if pos < 85:
