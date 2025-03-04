@@ -60,7 +60,10 @@ def fetch_song():
     print("FETCH")
     while not data_recv:
       try:
-          response = requests.post(f"{SERVER_URL}/receive_json")
+          # response = requests.post(f"{SERVER_URL}/receive_json")
+          response = requests.post(f"{SERVER_URL}/receive_json", timeout=10)
+          print("Status code:", response.status_code)
+          print("Response text:", response.text)
           with open(file_path_no_app, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
