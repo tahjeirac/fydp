@@ -206,10 +206,7 @@ if __name__ == '__main__':
       strip.show_ON() #show that running
       clear_file(file_path)
       clear_file("feedback.json")
-      strip.showIndicator(1)
       server_process = subprocess.Popen(["python3", "wifi-server.py"])
-      strip.turn_OFF(1)
-      print ("WIFI STARTED")
       try:
         while True:
           fetch_song()
