@@ -39,10 +39,10 @@ class Strip:
 
 
     def blinkLED(self, led):
-        self.strip.setPixelColor(led, Color(255, 0, 0))
+        self.strip.setPixelColor(led, BLUE)
         self.strip.show()
         time.sleep(0.5)
-        self.strip.setPixelColor(led, Color(0,0,0))
+        self.strip.setPixelColor(led, BLUE)
         self.strip.show()
         time.sleep(0.5)
 
