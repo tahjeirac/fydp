@@ -11,7 +11,7 @@ class NoteStateMachine:
         self.last_match_time = None
         self.feedback = feedback
         self.duaration_met = False
-        self.minimum_silence = -1
+        self.minimum_silence = 3
 
 
     def transition(self, new_state):
@@ -21,22 +21,18 @@ class NoteStateMachine:
         
     def starting(self, played_note):
         self.start_time = time.perf_counter()
-  # Start timing the note
-        if played_note == "SILENCE":
-            print(" WAITING FOR  OF SILENCE...")
-            print(self.song.notes)
-            self.transition("silent_start")
+#   # Start timing the note
+#         if played_note == "SILENCE":
+#             print(" WAITING FOR  OF SILENCE...")
+        self.transition("silent_start")
     
     def silent_start(self, played_note):
-        if played_note == "SILENCE":
-            silence_duration = time.perf_counter() - self.start_time
-            print("WAITING FOR 1s OF SILENCE...", silence_duration)
-            if silence_duration > self.minimum_silence:
-                print(" Good to start", silence_duration)
-                self.song.start()
-                self.transition("waiting")
-        else:
-            self.transition("starting")
+        silence_duration = time.perf_counter() - self.start_time
+        if silence_duration > self.minimum_silence:
+            print(" Good to start", silence_duration)
+            self.song.start()
+            self.transition("waiting")
+     
 
 
     def waiting(self, played_note):
@@ -115,7 +111,6 @@ class NoteStateMachine:
             self.song.setWrongNote(played_note)
         
     def record_feedback(self, played_note):
-        print ("recording feedback", played_note)
         if played_note:
             self.feedback.append({played_note:self.current_duration})
 

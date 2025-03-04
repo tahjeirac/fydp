@@ -60,7 +60,7 @@ def fetch_song():
     while not data_recv:
       try:
           # response = requests.post(f"{SERVER_URL}/receive_json")
-          
+          strip.blinkLED(23)
           with open(file_path_no_app, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
@@ -205,15 +205,13 @@ if __name__ == '__main__':
       strip.colourWipe()
       clear_file(file_path)
       clear_file("feedback.json")
-
-      print ('Press Ctrl-C to quit.')
+      strip.show_ON() #show that running
       # server_process = subprocess.Popen(["python3", "wifi-server.py"])
       print ("WIFI STARTED")
       try:
         while True:
           fetch_song()
           strip.colourWipe()
-
           rpi_device = get_rpi_device()
           print(f"Raspberry Pi audio device number: {rpi_device}")
           with sd.InputStream(device=rpi_device, channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
@@ -224,13 +222,11 @@ if __name__ == '__main__':
           filtered_feedback = [{k: v for k, v in note.items() if v >= MINIMUM_FEEDBACK_DURATION} for note in feedback] 
 
           print(filtered_feedback)
-          # print(feedback)
           headers = {"Content-Type": "application/json"}
           # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
           # print(f"Server Response: {response.status_code}, {response.text}")
 
       except KeyboardInterrupt:
           strip.colourWipe()
-
-          print(feedback)
+          print(filtered_feedback)
 
