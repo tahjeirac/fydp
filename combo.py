@@ -206,10 +206,8 @@ if __name__ == '__main__':
       strip.show_ON() #show that running
       clear_file(file_path)
       clear_file("feedback.json")
-      time.sleep(5)
       strip.showIndicator(1)
-      time.sleep(5)
-      #server_process = subprocess.Popen(["python3", "wifi-server.py"])
+      server_process = subprocess.Popen(["python3", "wifi-server.py"])
       strip.turn_OFF(1)
       print ("WIFI STARTED")
       try:
@@ -226,9 +224,11 @@ if __name__ == '__main__':
           filtered_feedback = [{k: v for k, v in note.items() if v >= MINIMUM_FEEDBACK_DURATION} for note in feedback] 
 
           print(filtered_feedback)
+          strip.showIndicator(1)
           headers = {"Content-Type": "application/json"}
-          # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
-          # print(f"Server Response: {response.status_code}, {response.text}")
+          response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
+          print(f"Server Response: {response.status_code}, {response.text}")
+          strip.turn_OFF(1)
           strip.show_ON()
 
       except KeyboardInterrupt:
