@@ -91,6 +91,8 @@ class Strip:
 
     def show_ON(self):
         self.strip.setPixelColor(23, GREEN)
+        self.strip.show()
+
        
     def wheel(self, pos):
         """Generate rainbow colors across 0-255 positions."""
