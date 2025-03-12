@@ -58,13 +58,14 @@ def fetch_song():
     data_recv = False
     song_data = None
     print("FETCH")
+    time.sleep(5)
     while not data_recv:
       try:
           # response = requests.post(f"{SERVER_URL}/receive_json")
           response = requests.post(f"{SERVER_URL}/receive_json", timeout=10)
           # print("Status code:", response.status_code)
           # print("Response text:", response.text)
-          with open(file_path_no_app, 'r') as file:
+          with open(file_path, 'r') as file:
             content = file.read().strip()  # Read content and remove any extra whitespace
             if content:
                 data_recv = True
@@ -216,14 +217,13 @@ def ping_server():
 
 if __name__ == '__main__':
     # Process arguments
-
+      subprocess.run(["sudo", "systemctl", "restart", "hostapd", "dnsmasq"], check=True) 
       strip.rainbow()
       strip.colourWipe()
       strip.show_ON() #show that running
       clear_file(file_path)
       clear_file("feedback.json")
-      if not ping_server():
-        server_process = subprocess.Popen(["python3", "wifi-server.py"])
+#      server_process = subprocess.Popen(["python3", "wifi-server.py"])
       try:
         while True:
           fetch_song()
@@ -239,13 +239,15 @@ if __name__ == '__main__':
 
           print(filtered_feedback)
           strip.showIndicator(1)
-          # headers = {"Content-Type": "application/json"}
-          # response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
-          # print(f"Server Response: {response.status_code}, {response.text}")
+          headers = {"Content-Type": "application/json"}
+          response = requests.post(f"{SERVER_URL}/send_feedback", data=json.dumps(filtered_feedback), headers=headers)
+          print(f"Server Response: {response.status_code}, {response.text}")
+          clear_file("feedback.json")
           strip.turn_OFF(1)
           strip.show_ON()
 
       except KeyboardInterrupt:
           strip.colourWipe()
           print(feedback)
+          subprocess.run(["sudo", "systemctl", "restart", "hostapd", "dnsmasq"], check=True)
 

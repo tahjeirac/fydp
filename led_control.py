@@ -142,3 +142,6 @@ class Strip:
     def endSeq(self):
         self.rainbow()
         self.colourWipe()
+
+str = Strip()
+str.rainbow(1)
